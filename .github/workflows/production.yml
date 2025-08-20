@@ -1,0 +1,48 @@
+name: CI-PRODUCTION
+
+on:
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Generate .env.local
+        run: |
+          echo "NEXT_PUBLIC_WEB_TITLE=${{ vars.WEB_TITLE }}" > .env.local
+          echo "NEXT_PUBLIC_WEB_TITLE_INITIAL=${{ vars.WEB_TITLE_INITIAL }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_DESCRIPTION=${{ vars.WEB_DESCRIPTION }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_BRAND_ICON=${{ vars.WEB_BRAND_ICON }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_BRAND_LOGO=${{ vars.WEB_BRAND_LOGO }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_PHONE_CODE=${{ vars.WEB_PHONE_CODE }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_CURRENCY=${{ vars.WEB_CURRENCY }}" >> .env.local
+          echo "NEXT_PUBLIC_API_URL=${{ vars.API_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_PROJECT_REF=${{ vars.SUPABASE_PROJECT_REF }}" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_URL=${{ vars.SUPABASE_URL }}" >> .env.local
+          echo "SUPABASE_ACCESS_TOKEN=${{ secrets.SUPABASE_ACCESS_TOKEN }}" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=${{ secrets.SUPABASE_PUBLISHABLE_OR_ANON_KEY }}" >> .env.local
+          echo "NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> .env.local
+          echo "SUPABASE_JWT_SECRET=${{ secrets.SUPABASE_JWT_SECRET }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_HOST_URL=${{ vars.WEB_HOST_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_IDENTIFIER=${{ vars.WEB_IDENTIFIER }}" >> .env.local
+          echo "NEXT_PUBLIC_WEB_MODE=${{ vars.WEB_MODE }}" >> .env.local
+          echo "NEXT_PUBLIC_ENABLE_RBAC=${{ vars.ENABLE_RBAC }}" >> .env.local
+
+      - name: Logging to DockerHub
+        run: |
+          echo -n "${{ secrets.DOCKERHUB_PASSWORD }}" > /tmp/dhp
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin < /tmp/dhp
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME_LOWERCASE }}:latest
+
+      - name: Push DockerHub
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ vars.PROJECT_NAME_LOWERCASE }}:latest
+          echo "Done!"

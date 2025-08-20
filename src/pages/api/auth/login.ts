@@ -1,0 +1,122 @@
+import { Env } from '.environments';
+import { IBaseResponse } from '@base/interfaces';
+import { supabaseServiceClient } from '@lib/config/supabase';
+import { Database } from '@lib/constant/database';
+import { TPermission } from '@lib/constant/permissions';
+import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { IUser } from '@modules/users/lib/interfaces';
+import bcrypt from 'bcryptjs';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { jwtSign } from '../utils/jwt';
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 405,
+      message: 'Method not allowed',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(405).json(response);
+  }
+
+  const { phone, password } = req.body;
+
+  if (!phone || !password) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 400,
+      message: 'Missing phone or password',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(400).json(response);
+  }
+
+  const user = await SupabaseAdapter.findOne<IUser & { password: string }>(supabaseServiceClient, Database.users, {
+    textFilters: { phone: { eq: phone } },
+  });
+
+  if (!user.success || !user.data) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'User not found',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
+  const isPasswordMatched = await bcrypt.compare(password, user.data.password);
+
+  if (!isPasswordMatched) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Invalid password',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
+  if (!user.data.is_admin) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 403,
+      message: 'User is not permitted to login',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(403).json(response);
+  }
+
+  const userRoles = await SupabaseAdapter.find(
+    supabaseServiceClient,
+    Database.userRoles,
+    {
+      textFilters: { user_id: { eq: user.data.id as string } },
+    },
+    { selection: '*, role:roles(*)' },
+  );
+
+  const roles = userRoles.data.map((ur) => ur.role.name);
+  const roleIds = userRoles.data.map((ur) => ur.role.id);
+  let permissions: TPermission[] = [];
+
+  if (roleIds.length) {
+    const rolePermissions = await SupabaseAdapter.find(
+      supabaseServiceClient,
+      Database.rolePermissions,
+      {
+        textFilters: { role_id: { in: roleIds } },
+      },
+      { selection: '*, permission:permissions(*)' },
+    );
+
+    permissions = rolePermissions?.data?.map((rp) => rp?.permission?.name);
+  }
+
+  const token = jwtSign({ user: { id: user.data.id, roles, permissions } });
+  delete user.data.password;
+
+  const response: IBaseResponse<{ user: IUser; token: string }> = {
+    success: true,
+    statusCode: 200,
+    message: 'Logged in successfully',
+    data: {
+      user: Env.isProduction ? null : user.data,
+      token,
+    },
+    meta: null,
+  };
+
+  return res.status(200).json(response);
+}

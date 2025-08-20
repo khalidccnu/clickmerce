@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  // Customize Scrollbar
+  .hidden_scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .designed_scrollbar {
+    &::-webkit-scrollbar {
+      width: 0.25rem;
+      &-track {
+        background-color: var(--color-secondary);
+      }
+      &-thumb {
+        background-color: var(--color-primary);
+        border-radius: 1rem;
+      }
+    }
+  }
+}
+
+@import './utils/index.scss';
+@import './core/index.scss';
+
+:root {
+  @apply designed_scrollbar;
+}
+
+// AntD
+.ant-btn-primary {
+  box-shadow: none !important;
+}
+
+.ant-select-dropdown {
+  .rc-virtual-list {
+    .rc-virtual-list-holder {
+      @apply designed_scrollbar;
+    }
+  }
+}
