@@ -1,13 +1,14 @@
+import { cn } from '@lib/utils/cn';
 import { TreeSelect, TreeSelectProps } from 'antd';
 import { useCallback } from 'react';
 import useValue from '../hooks/useValue';
 import FloatLabel from './FloatLabel';
 
-export interface FloatTreeSelectProps extends TreeSelectProps {
+export interface IProps extends TreeSelectProps {
   required?: boolean;
 }
 
-const FloatTreeSelect = ({
+const FloatTreeSelect: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -17,8 +18,9 @@ const FloatTreeSelect = ({
   required,
   size,
   style,
+  className,
   ...rest
-}: FloatTreeSelectProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id?.toString(),
     defaultValue,
@@ -46,16 +48,15 @@ const FloatTreeSelect = ({
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <TreeSelect
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        className={cn('[&_.ant-select-selector]:!shadow-none', className)}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}
         defaultValue={defaultValue}
         size={size}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-select"
       />
     </FloatLabel>
   );

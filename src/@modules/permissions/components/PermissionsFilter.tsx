@@ -24,7 +24,7 @@ const PermissionsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
 
   const permissionTypesQuery = PermissionTypesHooks.useFindInfinite({
     options: {
-      limit: 20,
+      limit: '20',
       search_term: permissionTypeSearchTerm,
       search_field: 'name',
     },

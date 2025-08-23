@@ -17,7 +17,7 @@ const RolesPage = () => {
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const { page = 1, limit = 10, ...rest } = Toolbox.parseQueryParams<IBaseFilter>(router.asPath);
+  const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IBaseFilter>(router.asPath);
 
   const rolesQuery = RolesHooks.useFind({
     options: {
@@ -62,8 +62,8 @@ const RolesPage = () => {
         isLoading={rolesQuery.isLoading}
         data={rolesQuery.data?.data}
         pagination={{
-          current: page,
-          pageSize: limit,
+          current: +page,
+          pageSize: +limit,
           total: rolesQuery.data?.meta?.total,
           onChange: (page, limit) =>
             router.push({

@@ -1,13 +1,14 @@
 import useValue from '@base/antd/hooks/useValue';
+import { cn } from '@lib/utils/cn';
 import { AutoComplete, AutoCompleteProps } from 'antd';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatAutoCompleteProps extends AutoCompleteProps {
+export interface IProps extends AutoCompleteProps {
   required?: boolean;
 }
 
-const FloatAutoComplete = ({
+const FloatAutoComplete: React.FC<IProps> = ({
   required,
   placeholder,
   defaultValue,
@@ -16,8 +17,9 @@ const FloatAutoComplete = ({
   onBlur,
   onChange,
   style,
+  className,
   ...rest
-}: FloatAutoCompleteProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id,
     defaultValue,
@@ -47,19 +49,14 @@ const FloatAutoComplete = ({
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <AutoComplete
-        variant="borderless"
-        style={{
-          width: '100%',
-          border: 'none',
-          ...style,
-        }}
         {...rest}
+        className={cn('[&_.ant-select-selector]:!shadow-none', className)}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-auto-complete"
       />
     </FloatLabel>
   );

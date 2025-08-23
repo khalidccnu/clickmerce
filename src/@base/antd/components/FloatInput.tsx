@@ -3,11 +3,11 @@ import { Input, InputProps } from 'antd';
 import { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatInputProps extends InputProps {
+export interface IProps extends InputProps {
   required?: boolean;
 }
 
-const FloatInput = ({
+const FloatInput: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -18,7 +18,7 @@ const FloatInput = ({
   size,
   style,
   ...rest
-}: FloatInputProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id,
     defaultValue,
@@ -46,9 +46,8 @@ const FloatInput = ({
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <Input
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        style={{ boxShadow: 'none', ...style }}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}

@@ -1,13 +1,14 @@
 import useValue from '@base/antd/hooks/useValue';
+import { cn } from '@lib/utils/cn';
 import { Select, SelectProps } from 'antd';
 import { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatSelectProps extends SelectProps {
+export interface IProps extends SelectProps {
   required?: boolean;
 }
 
-const FloatSelect = ({
+const FloatSelect: React.FC<IProps> = ({
   defaultValue,
   value,
   placeholder,
@@ -18,8 +19,9 @@ const FloatSelect = ({
   mode,
   size,
   style,
+  className,
   ...rest
-}: FloatSelectProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id?.toString(),
     defaultValue,
@@ -47,9 +49,9 @@ const FloatSelect = ({
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <Select
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        className={cn('[&_.ant-select-selector]:!shadow-none', className)}
+        style={{ height: 'auto', ...style }}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}
@@ -57,7 +59,6 @@ const FloatSelect = ({
         size={size}
         onChange={changeHandlerFn}
         mode={mode}
-        rootClassName="ant-float-label-form-select"
       />
     </FloatLabel>
   );

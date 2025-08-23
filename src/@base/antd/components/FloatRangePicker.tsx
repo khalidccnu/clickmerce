@@ -4,11 +4,11 @@ import { RangePickerProps } from 'antd/es/date-picker';
 import { useCallback, useMemo } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatRangePickerProps extends RangePickerProps {
+export interface IProps extends RangePickerProps {
   required?: boolean;
 }
 
-const FloatRangePicker = ({
+const FloatRangePicker: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -18,7 +18,7 @@ const FloatRangePicker = ({
   required,
   style,
   ...rest
-}: FloatRangePickerProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id?.toString(),
     defaultValue,
@@ -50,15 +50,13 @@ const FloatRangePicker = ({
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <DatePicker.RangePicker
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        style={{ boxShadow: 'none', ...style }}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-picker"
         placeholder={haveValue && placeholder ? null : placeholder}
       />
     </FloatLabel>

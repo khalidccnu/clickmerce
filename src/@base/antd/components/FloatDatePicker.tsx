@@ -3,11 +3,11 @@ import { DatePicker, DatePickerProps } from 'antd';
 import { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatDatePickerProps extends DatePickerProps {
+export interface IProps extends DatePickerProps {
   required?: boolean;
 }
 
-const FloatDatePicker = ({
+const FloatDatePicker: React.FC<IProps> = ({
   required,
   placeholder,
   defaultValue,
@@ -17,7 +17,7 @@ const FloatDatePicker = ({
   onChange,
   style,
   ...rest
-}: FloatDatePickerProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id,
     defaultValue,
@@ -45,16 +45,14 @@ const FloatDatePicker = ({
       required={required}
     >
       <DatePicker
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        style={{ boxShadow: 'none', ...style }}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
         placeholder={null}
-        rootClassName="ant-float-label-form-picker"
       />
     </FloatLabel>
   );

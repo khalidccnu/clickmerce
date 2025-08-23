@@ -1,26 +1,33 @@
 import { Form } from 'antd';
-import { FormContext } from 'antd/es/form/context';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { FormContext, FormItemInputContext } from 'antd/es/form/context';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FloatFormListContext } from '../components/FloatFormList';
 
-const useValue = ({
-  id,
-  defaultValue,
-  value,
-  onFocus,
-  onBlur,
-}: {
+interface IProps {
   id?: string;
   defaultValue?: any;
   value?: any;
   onFocus?: (...args: any) => void;
   onBlur?: (...args: any) => void;
-}) => {
+}
+
+const useValue = ({ id, defaultValue, value, onFocus, onBlur }: IProps) => {
   const initFlag = useRef(false);
   const [isFocus, setFocus] = useState(false);
   const { form } = useContext(FormContext);
+  const { name } = useContext(FormItemInputContext);
+  const { name: formListName } = useContext(FloatFormListContext);
   const [inputValue, setInputValue] = useState(defaultValue ?? value);
-  const fieldPath = Array.isArray(id) ? id : id?.split('_');
-  const changeValue = Form.useWatch(fieldPath, form);
+
+  const memoName = useMemo(() => {
+    if (Array.isArray(name) && formListName) {
+      return [formListName, ...name];
+    }
+
+    return name;
+  }, [name, formListName]);
+
+  const changeValue = Form.useWatch(memoName, form);
 
   const handleFocusFn = useCallback(
     (...args: any) => {
@@ -44,8 +51,8 @@ const useValue = ({
   }, [value]);
 
   useEffect(() => {
-    if (form && fieldPath) setInputValue(changeValue);
-  }, [fieldPath, changeValue, form]);
+    if (form && id) setInputValue(changeValue);
+  }, [id, changeValue, form]);
 
   return {
     hasValue: Array.isArray(inputValue) ? inputValue.length > 0 : typeof value === 'number' ? true : !!inputValue,

@@ -58,7 +58,7 @@ const UsersForm: React.FC<IProps> = ({
       enabled: !isInitiate && hasAccessPermission(['roles:read']),
     },
     options: {
-      limit: 20,
+      limit: '20',
       search_term: roleSearchTerm,
       search_field: 'name',
     },
@@ -171,7 +171,10 @@ const UsersForm: React.FC<IProps> = ({
               className="!mb-0"
             >
               <Input
-                classNames={{ input: 'placeholder:text-[0.85rem] placeholder:text-[rgba(0,_0,_0,_0.45)]' }}
+                classNames={{
+                  input:
+                    'placeholder:text-base placeholder:text-[rgba(0,_0,_0,_0.45)] dark:placeholder:text-[rgba(255,_255,_255,_0.45)] !shadow-none',
+                }}
                 placeholder="XXXXXXXXXX"
                 addonBefore={
                   <PhoneCodeSelect

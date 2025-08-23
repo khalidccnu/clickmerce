@@ -2,6 +2,8 @@ import { IBaseResponse } from '@base/interfaces';
 import { createSupabaseBrowserClient } from '@lib/config/supabase';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { validate } from '@lib/utils/yup';
+import { changePasswordSchema, TChangePasswordDto } from '@modules/auth/lib/dtos';
 import { getServerAuthSession } from '@modules/auth/lib/utils';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
@@ -21,14 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json(response);
   }
 
-  const { current_password, new_password } = req.body;
   const { token } = getServerAuthSession(req);
 
   if (!token) {
     const response: IBaseResponse = {
       success: false,
       statusCode: 401,
-      message: 'No token provided',
+      message: 'Unauthorized',
       data: null,
       meta: null,
     };
@@ -36,9 +37,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json(response);
   }
 
+  const { success, data, ...restProps } = await validate<TChangePasswordDto>(changePasswordSchema, req.body);
+
+  if (!success) return res.status(400).json({ success, data, ...restProps });
+
+  const { current_password, new_password } = data;
+
   const payload = jwtVerify(token);
 
-  if (!payload.user.id || !current_password || !new_password) {
+  if (!payload.user.id) {
     const response: IBaseResponse = {
       success: false,
       statusCode: 400,

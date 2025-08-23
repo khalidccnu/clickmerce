@@ -22,13 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { token } = getServerAuthSession(req);
-    const supabaseBrowserClient = createSupabaseBrowserClient(token);
 
     if (!token) {
       const response: IBaseResponse = {
         success: false,
         statusCode: 401,
-        message: 'No token provided',
+        message: 'Unauthorized',
         data: null,
         meta: null,
       };
@@ -36,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json(response);
     }
 
+    const supabaseBrowserClient = createSupabaseBrowserClient(token);
     const payload = jwtVerify(token);
 
     if (!payload) {

@@ -11,8 +11,8 @@ export type TDeepPartial<T> = T extends (...args: any[]) => any
       : T;
 
 export interface IBaseFilter {
-  page?: number;
-  limit?: number;
+  page?: string;
+  limit?: string;
   search_term?: string;
   search_field?: string;
   search_fields?: string[];

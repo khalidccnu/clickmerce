@@ -1,8 +1,9 @@
+import { cn } from '@lib/utils/cn';
 import { theme } from 'antd';
 import { InputStatus } from 'antd/es/_util/statusUtils';
 import { useMemo } from 'react';
 
-export interface FloatLabelProps {
+export interface IProps {
   focused?: boolean;
   haveValue?: boolean;
   label?: React.ReactNode;
@@ -13,27 +14,21 @@ export interface FloatLabelProps {
   required?: boolean;
 }
 
-const FloatLabel = ({ focused, haveValue, label, children, width, height, status, required }: FloatLabelProps) => {
+const FloatLabel: React.FC<IProps> = ({ focused, haveValue, label, children, width, height, status, required }) => {
   const { token } = theme.useToken();
 
   const statusColor = useMemo(() => {
     const colors = {
-      borderColorActive: token.colorPrimaryActive,
-      textColorActive: token.colorPrimary,
       textColor: token.colorTextTertiary,
-      borderColor: token.colorBorder,
+      textColorActive: token.colorPrimary,
     };
 
     if (status === 'warning') {
-      colors.borderColorActive = token.colorWarningActive;
-      colors.textColorActive = token.colorWarningTextActive;
       colors.textColor = token.colorWarningText;
-      colors.borderColor = token.colorWarningBorder;
+      colors.textColorActive = token.colorWarningTextActive;
     } else if (status === 'error') {
-      colors.borderColorActive = token.colorErrorActive;
-      colors.textColorActive = token.colorErrorTextActive;
       colors.textColor = token.colorErrorText;
-      colors.borderColor = token.colorErrorBorder;
+      colors.textColorActive = token.colorErrorTextActive;
     }
 
     return colors;
@@ -41,55 +36,38 @@ const FloatLabel = ({ focused, haveValue, label, children, width, height, status
 
   return (
     <div
-      className="ant-float-label-box"
+      className="relative"
       style={{
         width: width ?? '100%',
         height,
       }}
     >
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden',
-          borderRadius: token.borderRadius,
-        }}
-      >
-        {children}
-      </div>
+      {children}
       <label
-        className="ant-float-label-box-label"
+        className={cn(
+          "pointer-events-none absolute left-0 top-0 flex h-full origin-top-left items-center overflow-hidden text-ellipsis whitespace-nowrap transition-all ease-in-out text-base before:content-[''] before:absolute before:left-0 before:-top-1/2 before:-translate-y-1/2 before:w-full before:h-12 before:-z-10",
+          { 'before:bg-[var(--bg-before)]': focused || haveValue },
+        )}
         style={{
           color: focused ? statusColor.textColorActive : statusColor.textColor,
           height: focused || haveValue ? 'auto' : '100%',
-          transform: focused || haveValue ? 'translate(14px, -9px) scale(0.75)' : `translate(1em, 0px) scale(1)`,
+          paddingInline: focused || haveValue ? 4 : 0,
+          borderRadius: focused || haveValue ? 4 : 0,
+          transform: focused || haveValue ? 'translate(11px, -8px) scale(0.75)' : `translate(1em, 0px) scale(1)`,
+          ...({
+            '--bg-before': token.colorBgContainer,
+          } as React.CSSProperties),
         }}
       >
         {required ? (
-          <div style={{ display: 'flex', gap: '0.3em', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '0.2em', alignItems: 'center' }}>
             <span>{label}</span>
-            <span style={{ marginTop: '3px' }}>*</span>
+            <span>*</span>
           </div>
         ) : (
           label
         )}
       </label>
-      <fieldset
-        style={{
-          border: focused ? `2px solid ${statusColor.borderColorActive}` : `1px solid ${statusColor.borderColor}`,
-          borderRadius: token.borderRadius,
-        }}
-        className="ant-float-label-box-fieldset"
-      >
-        <legend
-          className="ant-float-label-box-legend"
-          style={{
-            maxWidth: focused || haveValue ? '100%' : '0.01px',
-          }}
-        >
-          {label}
-        </legend>
-      </fieldset>
     </div>
   );
 };

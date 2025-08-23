@@ -3,11 +3,11 @@ import { InputNumber, InputNumberProps } from 'antd';
 import { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatInputNumberProps extends InputNumberProps {
+export interface IProps extends InputNumberProps {
   required?: boolean;
 }
 
-const FloatInputNumber = ({
+const FloatInputNumber: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -17,7 +17,7 @@ const FloatInputNumber = ({
   required,
   style,
   ...rest
-}: FloatInputNumberProps) => {
+}) => {
   const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
     id: rest.id,
     defaultValue,
@@ -45,15 +45,13 @@ const FloatInputNumber = ({
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <InputNumber
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        style={{ boxShadow: 'none', ...style }}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-input-number"
       />
     </FloatLabel>
   );
