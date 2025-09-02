@@ -3,11 +3,11 @@ import { useCallback } from 'react';
 import useValue from '../hooks/useValue';
 import FloatLabel from './FloatLabel';
 
-export interface FloatTreeSelectProps extends TreeSelectProps {
+export interface IProps extends TreeSelectProps {
   required?: boolean;
 }
 
-const FloatTreeSelect = ({
+const FloatTreeSelect: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -17,9 +17,19 @@ const FloatTreeSelect = ({
   required,
   size,
   style,
+  className,
   ...rest
-}: FloatTreeSelectProps) => {
-  const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
+}) => {
+  const {
+    hasValue,
+    handleChangeFn,
+    handleBlurFn,
+    handleFocusFn,
+    handleMouseEnterFn,
+    handleMouseLeaveFn,
+    isFocus,
+    isHover,
+  } = useValue({
     id: rest.id?.toString(),
     defaultValue,
     value,
@@ -39,23 +49,25 @@ const FloatTreeSelect = ({
     <FloatLabel
       label={placeholder}
       focused={isFocus}
-      haveValue={hasValue}
+      hovered={isHover}
+      hasValue={hasValue}
       width={style?.width}
       height={style?.height}
       required={required}
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <TreeSelect
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        className={className}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
+        onMouseEnter={handleMouseEnterFn}
+        onMouseLeave={handleMouseLeaveFn}
         value={value}
         defaultValue={defaultValue}
         size={size}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-select"
       />
     </FloatLabel>
   );

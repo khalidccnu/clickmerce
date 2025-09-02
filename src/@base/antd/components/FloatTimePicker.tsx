@@ -3,11 +3,11 @@ import { TimePicker, TimePickerProps } from 'antd';
 import { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatTimePickerProps extends TimePickerProps {
+export interface IProps extends TimePickerProps {
   required?: boolean;
 }
 
-const FloatTimePicker = ({
+const FloatTimePicker: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -18,9 +18,19 @@ const FloatTimePicker = ({
   mode,
   size,
   style,
+  className,
   ...rest
-}: FloatTimePickerProps) => {
-  const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
+}) => {
+  const {
+    hasValue,
+    handleChangeFn,
+    handleBlurFn,
+    handleFocusFn,
+    handleMouseEnterFn,
+    handleMouseLeaveFn,
+    isFocus,
+    isHover,
+  } = useValue({
     id: rest.id?.toString(),
     defaultValue,
     value,
@@ -40,25 +50,27 @@ const FloatTimePicker = ({
     <FloatLabel
       label={placeholder}
       focused={isFocus}
-      haveValue={hasValue}
+      hovered={isHover}
+      hasValue={hasValue}
       width={style?.width}
       height={style?.height}
       required={required}
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <TimePicker
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        className={className}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
+        onMouseEnter={handleMouseEnterFn}
+        onMouseLeave={handleMouseLeaveFn}
         value={value}
         defaultValue={defaultValue}
         size={size}
         onChange={changeHandlerFn}
         mode={mode}
         placeholder={null}
-        rootClassName="ant-float-label-form-select"
       />
     </FloatLabel>
   );

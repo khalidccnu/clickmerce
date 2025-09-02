@@ -41,9 +41,11 @@ export const PermissionTypesHooks = {
 
     return useInfiniteQuery({
       queryKey: [...(queryKey || []), PermissionTypesServices.NAME, options],
-      queryFn: ({ pageParam }) => PermissionTypesServices.find({ ...options, page: pageParam as number }),
+      queryFn: ({ pageParam }) => PermissionTypesServices.find({ ...options, page: pageParam }),
       initialPageParam: 1,
       getNextPageParam: (lastPage, allPages) => {
+        if (!lastPage?.meta) return null;
+
         const totalFetched = allPages.reduce((count, page) => count + page.data.length, 0);
         return totalFetched < lastPage.meta.total ? lastPage.meta.page + 1 : null;
       },

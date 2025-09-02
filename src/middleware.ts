@@ -5,7 +5,7 @@ import { UnAuthPaths } from '@lib/constant/unAuthPaths';
 import { Toolbox } from '@lib/utils/toolbox';
 import { REDIRECT_PREFIX } from '@modules/auth/lib/constant';
 import { ISession } from '@modules/auth/lib/interfaces';
-import { getServerAuthSession } from '@modules/auth/lib/utils';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 

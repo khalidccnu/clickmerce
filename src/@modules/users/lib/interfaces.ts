@@ -4,7 +4,6 @@ export interface IUsersFilter extends IBaseFilter {}
 
 export interface IUser extends IBaseEntity {
   name: string;
-  phone_code: string;
   phone: string;
   email: string;
   is_admin: boolean;
@@ -22,7 +21,6 @@ export interface IUsersResponse extends IBaseResponse {
 export interface IUserCreate {
   name: string;
   password: string;
-  phone_code: string;
   phone: string;
   email: string;
   birthday: string;

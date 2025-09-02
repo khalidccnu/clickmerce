@@ -1,16 +1,33 @@
 import { IBaseResponse, TId } from '@base/interfaces';
-import { supabaseServiceClient } from '@lib/config/supabase';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { Roles } from '@lib/constant/roles';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
+import { validate } from '@lib/utils/yup';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { IRole } from '@modules/roles/lib/interfaces';
+import { TUserCreateDto, TUserFilterDto, userCreateSchema, userFilterSchema } from '@modules/users/lib/dtos';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
+
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
 
   switch (method) {
     case 'GET':
@@ -31,7 +48,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-  const filters = req.query;
+  const { success, data, ...restProps } = await validate<TUserFilterDto>(userFilterSchema, req.query);
+
+  if (!success) return res.status(400).json({ success, data, ...restProps });
+
+  const filters = data;
 
   try {
     const result = await SupabaseAdapter.find<IUser & { password: string }>(
@@ -83,19 +104,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
-  const { name, phone_code, phone, email, password, is_admin, is_active, roles, ...rest } = req.body;
+  const { success, data, ...restProps } = await validate<TUserCreateDto>(userCreateSchema, req.body);
 
-  if (!phone) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 400,
-      message: 'Missing required phone field',
-      data: null,
-      meta: null,
-    };
+  if (!success) return res.status(400).json({ success, data, ...restProps });
 
-    return res.status(400).json(response);
-  }
+  const { name, phone, email, password, is_admin, is_active, roles, ...rest } = data;
 
   try {
     const phoneCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
@@ -136,11 +149,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       }
     }
 
-    const userPayload: any = {
+    const userPayload = {
       name,
-      phone_code,
       phone,
       email,
+      password: null,
       is_admin,
       is_active,
     };

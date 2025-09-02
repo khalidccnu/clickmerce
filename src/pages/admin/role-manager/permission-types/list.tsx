@@ -17,7 +17,7 @@ const PermissionTypesPage = () => {
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const { page = 1, limit = 10, ...rest } = Toolbox.parseQueryParams<IBaseFilter>(router.asPath);
+  const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IBaseFilter>(router.asPath);
 
   const permissionTypesQuery = PermissionTypesHooks.useFind({
     options: {
@@ -51,7 +51,7 @@ const PermissionTypesPage = () => {
         subTitle={<BaseSearch />}
         tags={[<Tag key={1}>Total: {permissionTypesQuery.data?.meta?.total || 0}</Tag>]}
         extra={
-          <Authorization allowedAccess={['permission_types:write']}>
+          <Authorization allowedPermissions={['permission_types:write']}>
             <Button type="primary" onClick={() => setDrawerOpen(true)}>
               Create
             </Button>
@@ -62,8 +62,8 @@ const PermissionTypesPage = () => {
         isLoading={permissionTypesQuery.isLoading}
         data={permissionTypesQuery.data?.data}
         pagination={{
-          current: page,
-          pageSize: limit,
+          current: +page,
+          pageSize: +limit,
           total: permissionTypesQuery.data?.meta?.total,
           onChange: (page, limit) =>
             router.push({
@@ -84,5 +84,5 @@ const PermissionTypesPage = () => {
 };
 
 export default WithAuthorization(PermissionTypesPage, {
-  allowedAccess: ['permission_types:read'],
+  allowedPermissions: ['permission_types:read'],
 });

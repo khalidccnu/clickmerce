@@ -1,7 +1,7 @@
 import CustomSwitch from '@base/components/CustomSwitch';
 import { Paths } from '@lib/constant/paths';
 import { Roles } from '@lib/constant/roles';
-import { getAccess } from '@modules/auth/lib/utils';
+import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, message, Space, Table } from 'antd';
 import dayjs from 'dayjs';
@@ -68,13 +68,16 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
             disabled={record?.name === Roles.SUPER_ADMIN}
             checked={is_active}
             onChange={(checked) => {
-              getAccess(['roles:update'], () => {
-                roleUpdateFn.mutate({
-                  id: record?.id,
-                  data: {
-                    is_active: checked.toString(),
-                  },
-                });
+              getAccess({
+                allowedPermissions: ['roles:update'],
+                func: () => {
+                  roleUpdateFn.mutate({
+                    id: record?.id,
+                    data: {
+                      is_active: checked.toString(),
+                    },
+                  });
+                },
               });
             }}
           />
@@ -95,9 +98,12 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               ghost
               disabled={isDisabled}
               onClick={() => {
-                getAccess(['roles:update'], () => {
-                  const path = Paths.admin.roleManager.roles.toId(id);
-                  router.push(path);
+                getAccess({
+                  allowedPermissions: ['roles:update'],
+                  func: () => {
+                    const path = Paths.admin.roleManager.roles.toId(id);
+                    router.push(path);
+                  },
                 });
               }}
             >
@@ -107,9 +113,12 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               disabled={isDisabled}
               type="primary"
               onClick={() => {
-                getAccess(['roles:update'], () => {
-                  const item = data?.find((item) => item.id === id);
-                  setUpdateItem(item);
+                getAccess({
+                  allowedPermissions: ['roles:update'],
+                  func: () => {
+                    const item = data?.find((item) => item.id === id);
+                    setUpdateItem(item);
+                  },
                 });
               }}
             >

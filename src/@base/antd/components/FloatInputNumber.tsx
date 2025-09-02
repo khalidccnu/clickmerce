@@ -3,11 +3,11 @@ import { InputNumber, InputNumberProps } from 'antd';
 import { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatInputNumberProps extends InputNumberProps {
+export interface IProps extends InputNumberProps {
   required?: boolean;
 }
 
-const FloatInputNumber = ({
+const FloatInputNumber: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -16,9 +16,19 @@ const FloatInputNumber = ({
   onChange,
   required,
   style,
+  className,
   ...rest
-}: FloatInputNumberProps) => {
-  const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
+}) => {
+  const {
+    hasValue,
+    handleChangeFn,
+    handleBlurFn,
+    handleFocusFn,
+    handleMouseEnterFn,
+    handleMouseLeaveFn,
+    isFocus,
+    isHover,
+  } = useValue({
     id: rest.id,
     defaultValue,
     value,
@@ -38,22 +48,24 @@ const FloatInputNumber = ({
     <FloatLabel
       label={placeholder}
       focused={isFocus}
-      haveValue={hasValue}
+      hovered={isHover}
+      hasValue={hasValue}
       width={style?.width}
       height={style?.height}
       required={required}
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <InputNumber
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        className={className}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
+        onMouseEnter={handleMouseEnterFn}
+        onMouseLeave={handleMouseLeaveFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-input-number"
       />
     </FloatLabel>
   );

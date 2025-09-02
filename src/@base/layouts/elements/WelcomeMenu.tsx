@@ -2,7 +2,7 @@ import { Env } from '.environments';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import ThemeToggler from '@base/components/ThemeToggler';
 import { AuthHooks } from '@modules/auth/lib/hooks';
-import { useAuthSession } from '@modules/auth/lib/utils';
+import { useAuthSession } from '@modules/auth/lib/utils/client';
 import ProfileCard from '@modules/ProfileCard';
 import { Button, Dropdown } from 'antd';
 import React, { useState } from 'react';

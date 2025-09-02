@@ -1,10 +1,11 @@
 import { IBaseResponse } from '@base/interfaces';
-import { supabaseServiceClient } from '@lib/config/supabase';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { Roles } from '@lib/constant/roles';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
-import { IInitiate } from '@modules/initiate/lib/interfaces';
+import { validate } from '@lib/utils/yup';
+import { initiateSchema, TInitiateDto } from '@modules/initiate/lib/dtos';
 import { IRole } from '@modules/roles/lib/interfaces';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
@@ -47,8 +48,14 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
-  const { type: _, user }: IInitiate = req.body;
-  const { name, phone_code, phone, email, password, is_admin = true, is_active = true, roles: __, ...rest } = user;
+  const { success, data, ...restProps } = await validate<TInitiateDto>(initiateSchema, req.body, {
+    stripUnknown: true,
+  });
+
+  if (!success) return res.status(400).json({ success, data, ...restProps });
+
+  const { type: _, user } = data;
+  const { name, phone, email, password, ...rest } = user;
 
   try {
     const users = await SupabaseAdapter.find(supabaseServiceClient, Database.users);
@@ -66,18 +73,16 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json(response);
     }
 
-    const userPayload: any = {
+    const userPayload = {
       name,
-      phone_code,
       phone,
       email,
-      is_admin,
-      is_active,
+      password: null,
+      is_admin: true,
+      is_active: true,
     };
 
-    if (password) {
-      userPayload.password = await bcrypt.hash(password, 12);
-    }
+    userPayload.password = await bcrypt.hash(password, 12);
 
     const createResult = await SupabaseAdapter.create<IUser & { password: string }>(
       supabaseServiceClient,

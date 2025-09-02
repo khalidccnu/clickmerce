@@ -1,7 +1,7 @@
 import CustomLink from '@base/components/CustomLink';
 import { Paths } from '@lib/constant/paths';
 import { Toolbox } from '@lib/utils/toolbox';
-import { getContentAccess } from '@modules/auth/lib/utils';
+import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
 import { FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
 import { GrUserAdmin } from 'react-icons/gr';
@@ -24,65 +24,53 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
       selectedKeys={selectedKeys}
       openKeys={openKeys}
       onOpenChange={onOpenChange}
-      items={[
+      items={getMenuItemsAccess([
         {
           key: Paths.admin.root,
           icon: <MdDashboard />,
           label: <CustomLink href={Paths.admin.root}>Dashboard</CustomLink>,
         },
-        getContentAccess({
-          content: {
-            key: Paths.admin.users.list,
-            icon: <FaUsers />,
-            label: <CustomLink href={Toolbox.appendPagination(Paths.admin.users.list)}>Users</CustomLink>,
-          },
-          allowedAccess: ['users:read'],
-        }),
-        getContentAccess({
-          content: {
-            key: Paths.admin.roleManager.root,
-            icon: <FaUserShield />,
-            label: 'Role Manager',
-            children: [
-              getContentAccess({
-                content: {
-                  key: Paths.admin.roleManager.permissionTypes.list,
-                  icon: <RiUserStarFill />,
-                  label: (
-                    <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.permissionTypes.list)}>
-                      Permission Types
-                    </CustomLink>
-                  ),
-                },
-                allowedAccess: ['permission_types:read'],
-              }),
-              getContentAccess({
-                content: {
-                  key: Paths.admin.roleManager.permissions.list,
-                  icon: <FaUserTag />,
-                  label: (
-                    <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.permissions.list)}>
-                      Permissions
-                    </CustomLink>
-                  ),
-                },
-                allowedAccess: ['permissions:read'],
-              }),
-              getContentAccess({
-                content: {
-                  key: Paths.admin.roleManager.roles.list,
-                  icon: <GrUserAdmin />,
-                  label: (
-                    <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.roles.list)}>Roles</CustomLink>
-                  ),
-                },
-                allowedAccess: ['roles:read'],
-              }),
-            ],
-          },
-          allowedAccess: ['permission_types:read', 'permissions:read', 'roles:read'],
-        }),
-      ]}
+        {
+          key: Paths.admin.users.list,
+          icon: <FaUsers />,
+          label: <CustomLink href={Toolbox.appendPagination(Paths.admin.users.list)}>Users</CustomLink>,
+          allowedPermissions: ['users:read'],
+        },
+        {
+          key: Paths.admin.roleManager.root,
+          icon: <FaUserShield />,
+          label: 'Role Manager',
+          allowedPermissions: ['permission_types:read', 'permissions:read', 'roles:read'],
+          children: [
+            {
+              key: Paths.admin.roleManager.permissionTypes.list,
+              icon: <RiUserStarFill />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.permissionTypes.list)}>
+                  Permission Types
+                </CustomLink>
+              ),
+              allowedPermissions: ['permission_types:read'],
+            },
+            {
+              key: Paths.admin.roleManager.permissions.list,
+              icon: <FaUserTag />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.permissions.list)}>
+                  Permissions
+                </CustomLink>
+              ),
+              allowedPermissions: ['permissions:read'],
+            },
+            {
+              key: Paths.admin.roleManager.roles.list,
+              icon: <GrUserAdmin />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.roles.list)}>Roles</CustomLink>,
+              allowedPermissions: ['roles:read'],
+            },
+          ],
+        },
+      ])}
     />
   );
 };

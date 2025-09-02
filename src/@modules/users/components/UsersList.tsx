@@ -1,5 +1,5 @@
 import CustomSwitch from '@base/components/CustomSwitch';
-import { getAccess } from '@modules/auth/lib/utils';
+import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, Table, message } from 'antd';
 import dayjs from 'dayjs';
@@ -38,7 +38,6 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
     key: elem?.id,
     id: elem?.id,
     name: elem?.name,
-    phone_code: elem?.phone_code,
     phone: elem?.phone,
     email: elem?.email,
     birthday: elem?.user_info?.birthday,
@@ -57,7 +56,6 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       key: 'phone',
       dataIndex: 'phone',
       title: 'Phone',
-      render: (phone, record) => record?.phone_code + phone,
     },
     {
       key: 'email',
@@ -80,13 +78,16 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
           <CustomSwitch
             checked={is_active}
             onChange={(checked) => {
-              getAccess(['users:update'], () => {
-                userUpdateFn.mutate({
-                  id: record?.id,
-                  data: {
-                    is_active: checked.toString(),
-                  },
-                });
+              getAccess({
+                allowedPermissions: ['users:update'],
+                func: () => {
+                  userUpdateFn.mutate({
+                    id: record?.id,
+                    data: {
+                      is_active: checked.toString(),
+                    },
+                  });
+                },
               });
             }}
           />
@@ -101,9 +102,12 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       render: (id) => (
         <Button
           onClick={() => {
-            getAccess(['users:update'], () => {
-              const item = data?.find((item) => item.id === id);
-              setUpdateItem(item);
+            getAccess({
+              allowedPermissions: ['users:update'],
+              func: () => {
+                const item = data?.find((item) => item.id === id);
+                setUpdateItem(item);
+              },
             });
           }}
         >
@@ -134,7 +138,6 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
           form={formInstance}
           initialValues={{
             ...updateItem,
-            phone_code: updateItem?.phone_code,
             birthday: updateItem?.user_info?.birthday,
             blood_group: updateItem?.user_info?.blood_group,
             roles: updateItem?.user_roles?.map((userRole) => ({ id: userRole?.role_id })),

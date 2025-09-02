@@ -1,5 +1,5 @@
 import { IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
-import { supabaseBrowserClient } from '@lib/config/supabase';
+import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';

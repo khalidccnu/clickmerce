@@ -83,10 +83,7 @@ const ProfileCard: React.FC<IProps> = ({ user }) => {
           </div>
           <div className="text-center mt-2">
             <h2 className="font-semibold">{user?.name}</h2>
-            <p className="text-gray-500">
-              {user?.phone_code}
-              {user?.phone}
-            </p>
+            <p className="text-gray-500">{user?.phone}</p>
             {user?.email && <p className="text-gray-500">{user?.email}</p>}
           </div>
           <div className="p-4 border-t dark:border-[var(--color-dark-gray)] mx-8 mt-2 text-center">

@@ -3,17 +3,15 @@ import FloatInput from '@base/antd/components/FloatInput';
 import FloatInputPassword from '@base/antd/components/FloatInputPassword';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
-import PhoneCodeSelect from '@base/components/PhoneCodeSelect';
+import InputPhone from '@base/components/InputPhone';
 import { TId } from '@base/interfaces';
 import { bloodGroups } from '@lib/data/bloodGroups';
-import { Storage } from '@lib/utils/storage';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
-import { PC_KEY } from '@modules/auth/lib/constant';
-import { hasAccessPermission } from '@modules/auth/lib/utils';
+import { hasAccess } from '@modules/auth/lib/utils/client';
 import { RolesHooks } from '@modules/roles/lib/hooks';
 import { IRole } from '@modules/roles/lib/interfaces';
-import { Button, Col, Form, FormInstance, Input, message, Radio, Row } from 'antd';
+import { Button, Col, Form, FormInstance, message, Radio, Row } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { IoCalendar } from 'react-icons/io5';
@@ -38,7 +36,6 @@ const UsersForm: React.FC<IProps> = ({
 }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const formValues = Form.useWatch([], form);
-  const [phoneCode, setPhoneCode] = useState(null);
   const [roleSearchTerm, setRoleSearchTerm] = useState(null);
 
   const rolesSpecificQuery = RolesHooks.useFindSpecifics({
@@ -55,21 +52,19 @@ const UsersForm: React.FC<IProps> = ({
   const rolesQuery = RolesHooks.useFindInfinite({
     config: {
       queryKey: [],
-      enabled: !isInitiate && hasAccessPermission(['roles:read']),
+      enabled: !isInitiate && hasAccess({ allowedPermissions: ['roles:read'] }),
     },
     options: {
-      limit: 20,
+      limit: '20',
       search_term: roleSearchTerm,
       search_field: 'name',
     },
   });
 
   const handleFinishFn = (values) => {
-    values.phone_code = phoneCode;
-
     let sanitizedRoles = [];
 
-    if (!isInitiate && hasAccessPermission(['roles:read'])) {
+    if (!isInitiate && hasAccess({ allowedPermissions: ['roles:read'] })) {
       const currentSanitizedRoles = values?.roles?.map((role: TId) => ({ id: role }));
       sanitizedRoles = Toolbox.computeArrayDiffs(initialValues?.roles, currentSanitizedRoles, 'id');
     }
@@ -80,15 +75,12 @@ const UsersForm: React.FC<IProps> = ({
   useEffect(() => {
     form.resetFields();
 
-    if (formType === 'update' && !isInitiate && hasAccessPermission(['roles:read'])) {
+    if (formType === 'update' && !isInitiate && hasAccess({ allowedPermissions: ['roles:read'] })) {
       if (Toolbox.isNotEmpty(initialValues?.roles)) {
         const roles = initialValues?.roles?.map((role) => role?.id);
         rolesSpecificQuery.mutate(roles);
       }
     }
-
-    const initialPhoneCode = formType === 'create' ? Storage.getData(PC_KEY) : initialValues?.phone_code;
-    setPhoneCode(initialPhoneCode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formType, form, initialValues]);
 
@@ -156,33 +148,13 @@ const UsersForm: React.FC<IProps> = ({
                       return Promise.reject(new Error('Phone must contain only numbers!'));
                     }
 
-                    if (!/^(13|14|15|16|17|18|19)/.test(value)) {
-                      return Promise.reject(new Error('Please enter a valid phone!'));
-                    }
-
-                    if (value.length !== 10) {
-                      return Promise.reject(new Error('Phone must be exactly 10 digits!'));
-                    }
-
                     return Promise.resolve();
                   },
                 },
               ]}
               className="!mb-0"
             >
-              <Input
-                classNames={{ input: 'placeholder:text-[0.85rem] placeholder:text-[rgba(0,_0,_0,_0.45)]' }}
-                placeholder="XXXXXXXXXX"
-                addonBefore={
-                  <PhoneCodeSelect
-                    disabled
-                    showSearch
-                    code={phoneCode}
-                    onSelectCode={setPhoneCode}
-                    style={{ width: 120 }}
-                  />
-                }
-              />
+              <InputPhone size="large" />
             </Form.Item>
           </Col>
           <Col xs={24}>
@@ -253,7 +225,7 @@ const UsersForm: React.FC<IProps> = ({
           </Col>
           {isInitiate || (
             <React.Fragment>
-              <Authorization allowedAccess={['roles:read']}>
+              <Authorization allowedPermissions={['roles:read']}>
                 <Col xs={24} md={24}>
                   <Form.Item className="!mb-0" name="roles">
                     <InfiniteScrollSelect<IRole>

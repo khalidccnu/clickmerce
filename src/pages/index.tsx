@@ -1,7 +1,7 @@
 import BrandLogo from '@base/components/BrandLogo';
 import PageWrapper from '@base/container/PageWrapper';
 import { Paths } from '@lib/constant/paths';
-import { useAuthSession } from '@modules/auth/lib/utils';
+import { useAuthSession } from '@modules/auth/lib/utils/client';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 

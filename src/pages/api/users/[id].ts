@@ -1,14 +1,31 @@
 import { IBaseResponse, TId } from '@base/interfaces';
-import { supabaseServiceClient } from '@lib/config/supabase';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
-import { IUser, IUserCreate } from '@modules/users/lib/interfaces';
+import { validate } from '@lib/utils/yup';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
+import { TUserUpdateDto, userUpdateSchema } from '@modules/users/lib/dtos';
+import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
+
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
 
   switch (method) {
     case 'GET':
@@ -93,17 +110,6 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
 async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
   const { id }: { id?: TId } = req.query;
-  const {
-    name,
-    phone_code,
-    phone,
-    email,
-    password,
-    is_admin,
-    is_active,
-    roles,
-    ...rest
-  }: IUserCreate & { password: string } = req.body;
 
   if (!id) {
     const response: IBaseResponse = {
@@ -116,6 +122,12 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
     return res.status(400).json(response);
   }
+
+  const { success, data, ...restProps } = await validate<TUserUpdateDto>(userUpdateSchema, req.body);
+
+  if (!success) return res.status(400).json({ success, data, ...restProps });
+
+  const { name, phone, email, password, is_admin, is_active, roles, ...rest } = data;
 
   try {
     const existingUser = await SupabaseAdapter.findById<IUser & { password: string }>(
@@ -138,7 +150,6 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
     const userPayload: any = {
       name,
-      phone_code,
       phone,
       email,
       is_admin,

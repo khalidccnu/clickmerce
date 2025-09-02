@@ -1,7 +1,7 @@
 import { Env } from '.environments';
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
-import PhoneCodeSelect from '@base/components/PhoneCodeSelect';
+import InputPhone from '@base/components/InputPhone';
 import ThemeToggler from '@base/components/ThemeToggler';
 import { Messages } from '@lib/constant/messages';
 import { Paths } from '@lib/constant/paths';
@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CURRENCY_KEY, PC_KEY, REDIRECT_PREFIX } from '../lib/constant';
 import { AuthHooks } from '../lib/hooks';
-import { setAuthSession } from '../lib/utils';
+import { setAuthSession } from '../lib/utils/client';
 
 const Lottie = dynamic(() => import('lottie-react'), {
   ssr: false,
@@ -24,7 +24,6 @@ const SignInSection = () => {
   const [messageApi, messageHolder] = message.useMessage();
   const redirectUrl = router.query?.[REDIRECT_PREFIX]?.toString();
   const [anmSignIn, setAnmSignIn] = useState(null);
-  const [phoneCode, setPhoneCode] = useState(null);
 
   const signInFn = AuthHooks.useSignIn({
     config: {
@@ -45,10 +44,6 @@ const SignInSection = () => {
       },
     },
   });
-
-  useEffect(() => {
-    setPhoneCode(Env.webPhoneCode);
-  }, []);
 
   useEffect(() => {
     import('@lib/assets/anm_signin.json').then((response) => setAnmSignIn(response.default));
@@ -87,31 +82,12 @@ const SignInSection = () => {
                           return Promise.reject(new Error('Phone must contain only numbers!'));
                         }
 
-                        if (!/^(13|14|15|16|17|18|19)/.test(value)) {
-                          return Promise.reject(new Error('Please enter a valid phone!'));
-                        }
-
-                        if (value.length !== 10) {
-                          return Promise.reject(new Error('Phone must be exactly 10 digits!'));
-                        }
-
                         return Promise.resolve();
                       },
                     },
                   ]}
                 >
-                  <Input
-                    placeholder="XXXXXXXXXX"
-                    addonBefore={
-                      <PhoneCodeSelect
-                        disabled
-                        showSearch
-                        code={phoneCode}
-                        onSelectCode={setPhoneCode}
-                        style={{ width: 120 }}
-                      />
-                    }
-                  />
+                  <InputPhone size="large" />
                 </Form.Item>
                 <Form.Item
                   name="password"

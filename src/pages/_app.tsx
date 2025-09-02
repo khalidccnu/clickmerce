@@ -1,5 +1,4 @@
 import { Env } from '.environments';
-import '@base/antd/index.css';
 import AdminLayout from '@base/layouts/AdminLayout';
 import { AuthPaths } from '@lib/constant/authPaths';
 import { Providers } from '@lib/context';

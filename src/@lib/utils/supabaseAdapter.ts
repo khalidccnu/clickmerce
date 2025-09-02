@@ -272,8 +272,8 @@ export const SupabaseAdapter = {
       let offset = 0;
 
       if (filters.page && filters.limit) {
-        offset = (filters.page - 1) * filters.limit;
-        query = query.range(offset, offset + filters.limit - 1);
+        offset = (+filters.page - 1) * +filters.limit;
+        query = query.range(offset, offset + +filters.limit - 1);
       }
 
       const result = maybeSingle ? await query.maybeSingle() : await query;
@@ -285,7 +285,7 @@ export const SupabaseAdapter = {
       const total = result.count || 0;
       const page = filters.page || 1;
       const limit = filters.limit || total;
-      const skip = filters.page && filters.limit ? (filters.page - 1) * filters.limit : 0;
+      const skip = filters.page && filters.limit ? (+filters.page - 1) * +filters.limit : 0;
       const data = Array.isArray(result.data)
         ? (result.data as T[])
         : result.data
@@ -299,8 +299,8 @@ export const SupabaseAdapter = {
         data,
         meta: {
           total,
-          page,
-          limit,
+          page: +page,
+          limit: +limit,
           skip,
         },
       };

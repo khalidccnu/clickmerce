@@ -1,9 +1,11 @@
 import { Env } from '.environments';
 import { IBaseResponse } from '@base/interfaces';
-import { supabaseServiceClient } from '@lib/config/supabase';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { TPermission } from '@lib/constant/permissions';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { validate } from '@lib/utils/yup';
+import { loginSchema, TLoginDto } from '@modules/auth/lib/dtos';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -22,19 +24,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json(response);
   }
 
-  const { phone, password } = req.body;
+  const { success, data, ...restProps } = await validate<TLoginDto>(loginSchema, req.body);
 
-  if (!phone || !password) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 400,
-      message: 'Missing phone or password',
-      data: null,
-      meta: null,
-    };
+  if (!success) return res.status(400).json({ success, data, ...restProps });
 
-    return res.status(400).json(response);
-  }
+  const { phone, password } = data;
 
   const user = await SupabaseAdapter.findOne<IUser & { password: string }>(supabaseServiceClient, Database.users, {
     textFilters: { phone: { eq: phone } },

@@ -1,5 +1,5 @@
 import CustomSwitch from '@base/components/CustomSwitch';
-import { getAccess } from '@modules/auth/lib/utils';
+import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, message, Table } from 'antd';
 import dayjs from 'dayjs';
@@ -63,13 +63,16 @@ const PermissionTypesList: React.FC<IProps> = ({ isLoading, data, pagination }) 
           <CustomSwitch
             checked={is_active}
             onChange={(checked) => {
-              getAccess(['permission_types:update'], () => {
-                permissionTypeUpdateFn.mutate({
-                  id: record?.id,
-                  data: {
-                    is_active: checked.toString(),
-                  },
-                });
+              getAccess({
+                allowedPermissions: ['permission_types:update'],
+                func: () => {
+                  permissionTypeUpdateFn.mutate({
+                    id: record?.id,
+                    data: {
+                      is_active: checked.toString(),
+                    },
+                  });
+                },
               });
             }}
           />
@@ -84,9 +87,12 @@ const PermissionTypesList: React.FC<IProps> = ({ isLoading, data, pagination }) 
         <Button
           type="primary"
           onClick={() => {
-            getAccess(['permission_types:update'], () => {
-              const item = data?.find((item) => item.id === id);
-              setUpdateItem(item);
+            getAccess({
+              allowedPermissions: ['permission_types:update'],
+              func: () => {
+                const item = data?.find((item) => item.id === id);
+                setUpdateItem(item);
+              },
             });
           }}
         >

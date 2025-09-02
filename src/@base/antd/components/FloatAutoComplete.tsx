@@ -1,13 +1,13 @@
 import useValue from '@base/antd/hooks/useValue';
 import { AutoComplete, AutoCompleteProps } from 'antd';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatAutoCompleteProps extends AutoCompleteProps {
+export interface IProps extends AutoCompleteProps {
   required?: boolean;
 }
 
-const FloatAutoComplete = ({
+const FloatAutoComplete: React.FC<IProps> = ({
   required,
   placeholder,
   defaultValue,
@@ -16,9 +16,19 @@ const FloatAutoComplete = ({
   onBlur,
   onChange,
   style,
+  className,
   ...rest
-}: FloatAutoCompleteProps) => {
-  const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
+}) => {
+  const {
+    hasValue,
+    handleChangeFn,
+    handleBlurFn,
+    handleFocusFn,
+    handleMouseEnterFn,
+    handleMouseLeaveFn,
+    isFocus,
+    isHover,
+  } = useValue({
     id: rest.id,
     defaultValue,
     value,
@@ -41,25 +51,23 @@ const FloatAutoComplete = ({
       label={placeholder}
       required={required}
       focused={isFocus}
-      haveValue={hasValue}
+      hovered={isHover}
+      hasValue={hasValue}
       width={style?.width}
       height={style?.height}
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <AutoComplete
-        variant="borderless"
-        style={{
-          width: '100%',
-          border: 'none',
-          ...style,
-        }}
         {...rest}
+        className={className}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
+        onMouseEnter={handleMouseEnterFn}
+        onMouseLeave={handleMouseLeaveFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-auto-complete"
       />
     </FloatLabel>
   );

@@ -1,16 +1,25 @@
 import { TPermission } from '@lib/constant/permissions';
-import { hasAccessPermission } from '../lib/utils';
+import { TRole } from '@lib/constant/roles';
+import { hasAccess } from '../lib/utils/client';
 
 interface IProps {
-  allowedAccess: TPermission[];
+  allowedPermissions?: TPermission[];
+  allowedRoles?: TRole[];
+  disallowedRoles?: TRole[];
   children?: React.ReactNode;
   fallBack?: React.ReactNode;
 }
 
-const Authorization: React.FC<IProps> = ({ allowedAccess, children = null, fallBack = null }) => {
-  const hasAccess: boolean = hasAccessPermission(allowedAccess);
+const Authorization: React.FC<IProps> = ({
+  allowedPermissions,
+  allowedRoles,
+  disallowedRoles,
+  children = null,
+  fallBack = null,
+}) => {
+  const isAuthorized: boolean = hasAccess({ allowedPermissions, allowedRoles, disallowedRoles });
 
-  return hasAccess ? children : fallBack;
+  return isAuthorized ? children : fallBack;
 };
 
 export default Authorization;

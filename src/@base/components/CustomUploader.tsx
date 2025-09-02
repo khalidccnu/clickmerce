@@ -1,6 +1,6 @@
 import { Env } from '.environments';
 import { Toolbox } from '@lib/utils/toolbox';
-import { getAuthToken } from '@modules/auth/lib/utils';
+import { getAuthToken } from '@modules/auth/lib/utils/client';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { Button, Image, message, Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';

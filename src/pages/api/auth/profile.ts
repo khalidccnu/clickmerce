@@ -1,8 +1,8 @@
 import { IBaseResponse } from '@base/interfaces';
-import { createSupabaseBrowserClient } from '@lib/config/supabase';
+import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
-import { getServerAuthSession } from '@modules/auth/lib/utils';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { IUser } from '@modules/users/lib/interfaces';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { jwtVerify } from '../utils/jwt';
@@ -22,13 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     const { token } = getServerAuthSession(req);
-    const supabaseBrowserClient = createSupabaseBrowserClient(token);
 
     if (!token) {
       const response: IBaseResponse = {
         success: false,
         statusCode: 401,
-        message: 'No token provided',
+        message: 'Unauthorized',
         data: null,
         meta: null,
       };
@@ -36,6 +35,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json(response);
     }
 
+    const supabaseServerClient = createSupabaseServerClient(req, res);
     const payload = jwtVerify(token);
 
     if (!payload) {
@@ -51,7 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const user = await SupabaseAdapter.findById<IUser & { password: string }>(
-      supabaseBrowserClient,
+      supabaseServerClient,
       Database.users,
       payload.user.id,
       {

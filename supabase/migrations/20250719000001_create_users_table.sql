@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS users (
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     
     name VARCHAR NOT NULL,
-    phone_code VARCHAR NOT NULL,
     phone VARCHAR UNIQUE NOT NULL,
     email VARCHAR UNIQUE,
     password VARCHAR,

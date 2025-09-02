@@ -2,7 +2,7 @@ import { Env } from '.environments';
 import { IBaseResponse } from '@base/interfaces';
 import { getNotificationInstance } from '@lib/utils/notificationInstance';
 import { AuthHooks } from '@modules/auth/lib/hooks';
-import { getAuthToken } from '@modules/auth/lib/utils';
+import { getAuthToken } from '@modules/auth/lib/utils/client';
 import axios, { AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 // Axios Instance

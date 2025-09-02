@@ -18,7 +18,7 @@ const UsersPage = () => {
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const { page = 1, limit = 10, ...rest } = Toolbox.parseQueryParams<IUsersFilter>(router.asPath);
+  const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IUsersFilter>(router.asPath);
 
   const usersQuery = UsersHooks.useFind({
     options: {
@@ -52,7 +52,7 @@ const UsersPage = () => {
         subTitle={<BaseSearch />}
         tags={[<Tag key={1}>Total: {usersQuery.data?.meta?.total || 0}</Tag>]}
         extra={
-          <Authorization allowedAccess={['users:write']}>
+          <Authorization allowedPermissions={['users:write']}>
             <Button type="primary" onClick={() => setDrawerOpen(true)}>
               Create
             </Button>
@@ -71,8 +71,8 @@ const UsersPage = () => {
         isLoading={usersQuery.isLoading}
         data={usersQuery.data?.data}
         pagination={{
-          current: page,
-          pageSize: limit,
+          current: +page,
+          pageSize: +limit,
           total: usersQuery.data?.meta?.total,
           onChange: (page, limit) =>
             router.push({
@@ -92,4 +92,4 @@ const UsersPage = () => {
   );
 };
 
-export default WithAuthorization(UsersPage, { allowedAccess: ['users:read'] });
+export default WithAuthorization(UsersPage, { allowedPermissions: ['users:read'] });

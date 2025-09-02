@@ -1,7 +1,7 @@
 import { MutationConfig, QueryConfig } from '@lib/config/reactQuery';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { AuthServices } from './services';
-import { clearAuthSession } from './utils';
+import { clearAuthSession } from './utils/client';
 
 export const AuthHooks = {
   useProfile: ({ config }: { config?: QueryConfig<typeof AuthServices.profile> } = {}) => {

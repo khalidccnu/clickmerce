@@ -4,11 +4,11 @@ import { RangePickerProps } from 'antd/es/date-picker';
 import { useCallback, useMemo } from 'react';
 import FloatLabel from './FloatLabel';
 
-export interface FloatRangePickerProps extends RangePickerProps {
+export interface IProps extends RangePickerProps {
   required?: boolean;
 }
 
-const FloatRangePicker = ({
+const FloatRangePicker: React.FC<IProps> = ({
   placeholder,
   defaultValue,
   value,
@@ -17,9 +17,19 @@ const FloatRangePicker = ({
   onChange,
   required,
   style,
+  className,
   ...rest
-}: FloatRangePickerProps) => {
-  const { hasValue, handleChangeFn, handleBlurFn, handleFocusFn, isFocus } = useValue({
+}) => {
+  const {
+    hasValue,
+    handleChangeFn,
+    handleBlurFn,
+    handleFocusFn,
+    handleMouseEnterFn,
+    handleMouseLeaveFn,
+    isFocus,
+    isHover,
+  } = useValue({
     id: rest.id?.toString(),
     defaultValue,
     value,
@@ -43,22 +53,24 @@ const FloatRangePicker = ({
     <FloatLabel
       label={haveValue && placeholder ? placeholder.join(' - ') : null}
       focused={isFocus}
-      haveValue={haveValue}
+      hovered={isHover}
+      hasValue={haveValue}
       width={style?.width}
       height={style?.height}
       required={required}
       status={rest.status || (rest['aria-invalid'] ? 'error' : undefined)}
     >
       <DatePicker.RangePicker
-        style={{ width: '100%', border: 'none', ...style }}
-        variant="borderless"
         {...rest}
+        className={className}
+        style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
+        onMouseEnter={handleMouseEnterFn}
+        onMouseLeave={handleMouseLeaveFn}
         value={value}
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
-        rootClassName="ant-float-label-form-picker"
         placeholder={haveValue && placeholder ? null : placeholder}
       />
     </FloatLabel>

@@ -36,9 +36,11 @@ export const UsersHooks = {
 
     return useInfiniteQuery({
       queryKey: [...(queryKey || []), UsersServices.NAME, options],
-      queryFn: ({ pageParam }) => UsersServices.find({ ...options, page: pageParam as number }),
+      queryFn: ({ pageParam }) => UsersServices.find({ ...options, page: pageParam }),
       initialPageParam: 1,
       getNextPageParam: (lastPage, allPages) => {
+        if (!lastPage?.meta) return null;
+
         const totalFetched = allPages.reduce((count, page) => count + page.data.length, 0);
         return totalFetched < lastPage.meta.total ? lastPage.meta.page + 1 : null;
       },

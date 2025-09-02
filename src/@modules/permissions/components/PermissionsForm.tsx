@@ -28,7 +28,7 @@ const PermissionsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
 
   const permissionTypesQuery = PermissionTypesHooks.useFindInfinite({
     options: {
-      limit: 20,
+      limit: '20',
       search_term: permissionTypeSearchTerm,
       search_field: 'name',
       is_active: 'true',
@@ -37,8 +37,8 @@ const PermissionsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
 
   const permissionsQuery = PermissionsHooks.useFind({
     options: {
-      page: 1,
-      limit: 500,
+      page: '1',
+      limit: '500',
     },
   });
 

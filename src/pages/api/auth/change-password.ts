@@ -1,8 +1,10 @@
 import { IBaseResponse } from '@base/interfaces';
-import { createSupabaseBrowserClient } from '@lib/config/supabase';
+import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
-import { getServerAuthSession } from '@modules/auth/lib/utils';
+import { validate } from '@lib/utils/yup';
+import { changePasswordSchema, TChangePasswordDto } from '@modules/auth/lib/dtos';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -21,14 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json(response);
   }
 
-  const { current_password, new_password } = req.body;
   const { token } = getServerAuthSession(req);
 
   if (!token) {
     const response: IBaseResponse = {
       success: false,
       statusCode: 401,
-      message: 'No token provided',
+      message: 'Unauthorized',
       data: null,
       meta: null,
     };
@@ -36,9 +37,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json(response);
   }
 
+  const { success, data, ...restProps } = await validate<TChangePasswordDto>(changePasswordSchema, req.body);
+
+  if (!success) return res.status(400).json({ success, data, ...restProps });
+
+  const { current_password, new_password } = data;
+
   const payload = jwtVerify(token);
 
-  if (!payload.user.id || !current_password || !new_password) {
+  if (!payload.user.id) {
     const response: IBaseResponse = {
       success: false,
       statusCode: 400,
@@ -50,10 +57,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json(response);
   }
 
-  const supabaseBrowserClient = createSupabaseBrowserClient(token);
+  const supabaseServerClient = createSupabaseServerClient(req, res);
 
   const user = await SupabaseAdapter.findById<IUser & { password: string }>(
-    supabaseBrowserClient,
+    supabaseServerClient,
     Database.users,
     payload.user.id,
   );
@@ -86,7 +93,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const hashedPassword = await bcrypt.hash(new_password, 12);
 
-  const updateResult = await SupabaseAdapter.update<IUser>(supabaseBrowserClient, Database.users, payload.user.id, {
+  const updateResult = await SupabaseAdapter.update<IUser>(supabaseServerClient, Database.users, payload.user.id, {
     password: hashedPassword,
   });
 

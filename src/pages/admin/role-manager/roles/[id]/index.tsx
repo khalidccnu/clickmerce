@@ -3,7 +3,7 @@ import PageWrapper from '@base/container/PageWrapper';
 import { Roles } from '@lib/constant/roles';
 import { Toolbox } from '@lib/utils/toolbox';
 import WithAuthorization from '@modules/auth/components/WithAuthorization';
-import { getAccess } from '@modules/auth/lib/utils';
+import { getAccess } from '@modules/auth/lib/utils/client';
 import { IPermission } from '@modules/permissions/lib/interfaces';
 import { RolesHooks } from '@modules/roles/lib/hooks';
 import { Checkbox, Empty, message, Spin } from 'antd';
@@ -118,24 +118,27 @@ const RolesIdPage = () => {
                       !permission?.values?.every((permission) => permission.is_already_added)
                     }
                     onChange={() => {
-                      getAccess(['roles:update'], () => {
-                        const checkedAll = permission?.values?.every((permission) => permission?.is_already_added);
+                      getAccess({
+                        allowedPermissions: ['roles:update'],
+                        func: () => {
+                          const checkedAll = permission?.values?.every((permission) => permission?.is_already_added);
 
-                        if (checkedAll) {
-                          rolePermissionsRemoveFn.mutate({
-                            id: String(id),
-                            permissions: permission?.values
-                              ?.filter((permission) => permission?.is_already_added)
-                              .map((permission) => permission?.id),
-                          });
-                        } else {
-                          rolePermissionsCreateFn.mutate({
-                            id: String(id),
-                            permissions: permission?.values
-                              ?.filter((permission) => !permission?.is_already_added)
-                              .map((permission) => permission?.id),
-                          });
-                        }
+                          if (checkedAll) {
+                            rolePermissionsRemoveFn.mutate({
+                              id: String(id),
+                              permissions: permission?.values
+                                ?.filter((permission) => permission?.is_already_added)
+                                .map((permission) => permission?.id),
+                            });
+                          } else {
+                            rolePermissionsCreateFn.mutate({
+                              id: String(id),
+                              permissions: permission?.values
+                                ?.filter((permission) => !permission?.is_already_added)
+                                .map((permission) => permission?.id),
+                            });
+                          }
+                        },
                       });
                     }}
                   >
@@ -148,18 +151,21 @@ const RolesIdPage = () => {
                       <Checkbox
                         checked={value?.is_already_added}
                         onChange={() => {
-                          getAccess(['roles:update'], () => {
-                            if (value?.is_already_added) {
-                              rolePermissionsRemoveFn.mutate({
-                                id: String(id),
-                                permissions: [value?.id],
-                              });
-                            } else {
-                              rolePermissionsCreateFn.mutate({
-                                id: String(id),
-                                permissions: [value?.id],
-                              });
-                            }
+                          getAccess({
+                            allowedPermissions: ['roles:update'],
+                            func: () => {
+                              if (value?.is_already_added) {
+                                rolePermissionsRemoveFn.mutate({
+                                  id: String(id),
+                                  permissions: [value?.id],
+                                });
+                              } else {
+                                rolePermissionsCreateFn.mutate({
+                                  id: String(id),
+                                  permissions: [value?.id],
+                                });
+                              }
+                            },
                           });
                         }}
                       >
@@ -180,5 +186,5 @@ const RolesIdPage = () => {
 };
 
 export default WithAuthorization(RolesIdPage, {
-  allowedAccess: ['roles:update'],
+  allowedPermissions: ['roles:update'],
 });

@@ -185,7 +185,6 @@ export type Database = {
           name: string;
           password: string | null;
           phone: string;
-          phone_code: string;
           updated_at: string;
         };
         Insert: {
@@ -197,7 +196,6 @@ export type Database = {
           name: string;
           password?: string | null;
           phone: string;
-          phone_code: string;
           updated_at?: string;
         };
         Update: {
@@ -209,7 +207,6 @@ export type Database = {
           name?: string;
           password?: string | null;
           phone?: string;
-          phone_code?: string;
           updated_at?: string;
         };
         Relationships: [];

@@ -39,10 +39,7 @@ export const UsersServices = {
 
   update: async (payload: { id: TId; data: Partial<IUserCreate> }): Promise<IBaseResponse<IUser>> => {
     try {
-      const res = await AxiosSecureInstance.patch(`/${END_POINT}/${payload.id}`, {
-        ...Toolbox.toNullifyTraverse(payload.data),
-        password: payload.data.password,
-      });
+      const res = await AxiosSecureInstance.patch(`/${END_POINT}/${payload.id}`, payload.data);
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
