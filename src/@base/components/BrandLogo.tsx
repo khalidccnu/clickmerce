@@ -14,7 +14,7 @@ const BrandLogo: React.FC<IProps> = ({ className, width = 180, height = 50 }) =>
   const renderImageFn = (src: string) => {
     const altText = `${Env.webTitleInitial ? Toolbox.toLowerText(Env.webTitleInitial) + ' ' : ''}logo`;
 
-    return <Image width={width} height={height} src={src} alt={altText} className={className} />;
+    return <Image priority width={width} height={height} src={src} alt={altText} className={className} />;
   };
 
   return renderImageFn(ImagePaths.logo);

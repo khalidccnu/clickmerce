@@ -2,14 +2,16 @@ import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
+import { useClickOutside } from '@lib/hooks/useClickOutside';
 import useLocalState from '@lib/hooks/useLocalState';
 import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
 import useTheme from '@lib/hooks/useTheme';
-import { Button, Grid, Layout } from 'antd';
+import { Button, FloatButton, Grid, Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
 import React, { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import { IoClose } from 'react-icons/io5';
 import { MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 
 const AdminMenu = dynamic(() => import('./elements/AdminMenu'), { ssr: false });
@@ -29,7 +31,10 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
   const [isCollapsed, setCollapsed] = useState(false);
   const [menu, setMenu] = useLocalState<IMenu>(States.menu);
   const { elemRef: siderRef, width: siderWidth } = useResize<HTMLDivElement>();
+  const siderFloatButtonRef = useRef(null);
   const { isLight } = useTheme();
+
+  useClickOutside([siderRef, siderFloatButtonRef], () => (screens.md ? null : setCollapsed(true)));
 
   const styles: any = {
     sider: {
@@ -111,15 +116,23 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       </Layout.Sider>
       <Layout style={styles.layout}>
         <Layout.Header style={styles.header} ref={headerRef}>
-          <Button type="text" size="large" onClick={() => setCollapsed(!isCollapsed)}>
+          <Button type="text" size="large" onClick={() => setCollapsed((prev) => !prev)}>
             <MdOutlineKeyboardDoubleArrowRight size={24} className={isCollapsed ? 'rotate-0' : 'rotate-180'} />
           </Button>
           <WelcomeMenu />
         </Layout.Header>
-        <Layout.Content onClick={() => (screens.md ? null : setCollapsed(true))}>
+        <Layout.Content>
           <div className="md:h-full container py-4">{children}</div>
         </Layout.Content>
       </Layout>
+      <FloatButton
+        ref={siderFloatButtonRef}
+        style={{
+          display: screens.md || isCollapsed ? 'none' : 'block',
+        }}
+        icon={<IoClose />}
+        onClick={() => setCollapsed((prev) => !prev)}
+      />
     </Layout>
   );
 };

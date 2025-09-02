@@ -139,9 +139,14 @@ const InputPhone: React.FC<IProps> = ({
               }
 
               .country {
-                &:hover,
+                &:hover {
+                  background-color: ${token.controlItemBgHover};
+                }
+
                 &.highlight {
-                  background-color: ${token.colorFillTertiary};
+                  color: ${token.colorText};
+                  background-color: ${token.controlItemBgActive};
+                  font-weight: ${token.fontWeightStrong};
                 }
               }
             }

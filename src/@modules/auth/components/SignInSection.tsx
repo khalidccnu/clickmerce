@@ -62,7 +62,7 @@ const SignInSection = () => {
               <div className="flex flex-col items-center md:items-start gap-2 mb-4">
                 <ThemeToggler className="absolute top-4 right-4" />
                 <CustomLink href={Paths.root}>
-                  <BrandLogo />
+                  <BrandLogo width={220} />
                 </CustomLink>
                 <h3 className="text-xl font-medium md:text-2xl dark:text-white">Sign in to your account</h3>
               </div>
