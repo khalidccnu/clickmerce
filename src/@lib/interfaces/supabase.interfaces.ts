@@ -1,35 +1,78 @@
 import { IBaseFilter } from '@base/interfaces';
 
-export interface ISupabaseFilterCondition {
-  ilike?: string;
+export interface ISupabaseTextFilterCondition {
+  eq?: string;
+  neq?: string;
+  in?: string[];
+  notin?: string[];
   like?: string;
-  eq?: string | number | boolean;
-  neq?: string | number | boolean;
-  in?: (string | number | boolean)[];
-  notin?: (string | number | boolean)[];
-  gte?: string | number;
-  lte?: string | number;
-  gt?: string | number;
-  lt?: string | number;
+  ilike?: string;
 }
 
-export interface ISupabaseNestedFilter {
-  [key: string]: ISupabaseFilterCondition | ISupabaseNestedFilter | string | number | boolean;
+export interface ISupabaseNumericFilterCondition {
+  eq?: number;
+  neq?: number;
+  in?: number[];
+  notin?: number[];
+  gt?: number;
+  lt?: number;
+  gte?: number;
+  lte?: number;
+}
+
+export interface ISupabaseDateFilterCondition {
+  eq?: string;
+  neq?: string;
+  in?: string[];
+  notin?: string[];
+  gt?: string;
+  lt?: string;
+  gte?: string;
+  lte?: string;
+}
+
+export interface ISupabaseBooleanFilterCondition {
+  eq?: boolean;
+  neq?: boolean;
 }
 
 export interface ISupabaseFilter extends IBaseFilter {
   textFilters?:
-    | { [field: string]: ISupabaseFilterCondition }
-    | { [tableName: string]: { [fieldName: string]: ISupabaseFilterCondition } };
+    | {
+        [field: string]: ISupabaseTextFilterCondition;
+      }
+    | {
+        [tableName: string]: {
+          [fieldName: string]: ISupabaseTextFilterCondition;
+        };
+      };
   numericFilters?:
-    | { [field: string]: ISupabaseFilterCondition }
-    | { [tableName: string]: { [fieldName: string]: ISupabaseFilterCondition } };
+    | {
+        [field: string]: ISupabaseNumericFilterCondition;
+      }
+    | {
+        [tableName: string]: {
+          [fieldName: string]: ISupabaseNumericFilterCondition;
+        };
+      };
   dateFilters?:
-    | { [field: string]: ISupabaseFilterCondition }
-    | { [tableName: string]: { [fieldName: string]: ISupabaseFilterCondition } };
-  customFilters?:
-    | { [field: string]: string | number | boolean }
-    | { [tableName: string]: { [fieldName: string]: string | number | boolean } };
+    | {
+        [field: string]: ISupabaseDateFilterCondition;
+      }
+    | {
+        [tableName: string]: {
+          [fieldName: string]: ISupabaseDateFilterCondition;
+        };
+      };
+  booleanFilters?:
+    | {
+        [field: string]: ISupabaseBooleanFilterCondition;
+      }
+    | {
+        [tableName: string]: {
+          [fieldName: string]: ISupabaseBooleanFilterCondition;
+        };
+      };
 }
 
 export interface ISupabaseQueryOption {

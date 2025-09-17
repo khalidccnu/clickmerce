@@ -1,10 +1,5 @@
 import { IBaseResponse, TId } from '@base/interfaces';
-import {
-  ISupabaseFilter,
-  ISupabaseFilterCondition,
-  ISupabaseNestedFilter,
-  ISupabaseQueryOption,
-} from '@lib/interfaces/supabase.interfaces';
+import { ISupabaseFilter, ISupabaseQueryOption } from '@lib/interfaces/supabase.interfaces';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 export const SupabaseAdapter = {
@@ -177,10 +172,10 @@ export const SupabaseAdapter = {
         'end_date',
         'sort_by',
         'sort_order',
-        'dateFilters',
-        'numericFilters',
         'textFilters',
-        'customFilters',
+        'numericFilters',
+        'dateFilters',
+        'booleanFilters',
       ];
 
       let query = supabase.from(table).select(selection, {
@@ -238,7 +233,7 @@ export const SupabaseAdapter = {
       query = recursivelyTraverseFilterFn(query, filters.textFilters, 'textFilters');
       query = recursivelyTraverseFilterFn(query, filters.numericFilters, 'numericFilters');
       query = recursivelyTraverseFilterFn(query, filters.dateFilters, 'dateFilters');
-      query = recursivelyTraverseFilterFn(query, filters.customFilters, 'customFilters');
+      query = recursivelyTraverseFilterFn(query, filters.booleanFilters, 'booleanFilters');
 
       const result = maybeSingle ? await query.maybeSingle() : await query;
 
@@ -646,19 +641,14 @@ export const SupabaseAdapter = {
   },
 };
 
-const recursivelyTraverseFilterFn = (
-  query,
-  filters: ISupabaseNestedFilter,
-  filterType: 'textFilters' | 'numericFilters' | 'dateFilters' | 'customFilters',
-  currentPath: string[] = [],
-) => {
+const recursivelyTraverseFilterFn = (query, filters, filterType, currentPath = []) => {
   if (!filters || typeof filters !== 'object') return query;
 
   const validConditions = {
-    textFilters: ['ilike', 'like', 'eq', 'neq', 'in', 'notin'],
-    numericFilters: ['gte', 'lte', 'gt', 'lt', 'eq'],
-    dateFilters: ['gte', 'lte', 'gt', 'lt'],
-    customFilters: ['eq'],
+    textFilters: ['eq', 'neq', 'in', 'notin', 'like', 'ilike'],
+    numericFilters: ['eq', 'neq', 'in', 'notin', 'gt', 'lt', 'gte', 'lte'],
+    dateFilters: ['eq', 'neq', 'in', 'notin', 'gt', 'lt', 'gte', 'lte'],
+    booleanFilters: ['eq', 'neq'],
   };
 
   const conditions = validConditions[filterType] || [];
@@ -672,12 +662,7 @@ const recursivelyTraverseFilterFn = (
     Object.entries(filters).forEach(([key, value]) => {
       if (value && typeof value === 'object') {
         const newPath = [...currentPath, key];
-        query = recursivelyTraverseFilterFn(query, value as ISupabaseNestedFilter, filterType, newPath);
-      } else if (filterType === 'customFilters') {
-        const fieldName = [...currentPath, key].join('.');
-        if (value !== undefined) {
-          query = query.eq(fieldName, value);
-        }
+        query = recursivelyTraverseFilterFn(query, value, filterType, newPath);
       }
     });
   }
@@ -685,27 +670,74 @@ const recursivelyTraverseFilterFn = (
   return query;
 };
 
-const applyConditionsToQueryFn = (
-  query,
-  fieldName: string,
-  conditions: ISupabaseFilterCondition,
-  filterType: 'textFilters' | 'numericFilters' | 'dateFilters' | 'customFilters',
-) => {
+const applyConditionsToQueryFn = (query, fieldName, conditions, filterType) => {
   if (filterType === 'textFilters') {
-    if ('ilike' in conditions && conditions.ilike !== undefined) {
-      query = query.ilike(fieldName, conditions.ilike);
+    if ('in' in conditions && Array.isArray(conditions.in)) {
+      query = query.in(fieldName, conditions.in);
+    }
+
+    if ('notin' in conditions && Array.isArray(conditions.notin)) {
+      query = query.not(fieldName, 'in', conditions.notin);
     }
 
     if ('like' in conditions && conditions.like !== undefined) {
       query = query.like(fieldName, conditions.like);
     }
 
-    if ('in' in conditions && conditions.in !== undefined && Array.isArray(conditions.in)) {
+    if ('ilike' in conditions && conditions.ilike !== undefined) {
+      query = query.ilike(fieldName, conditions.ilike);
+    }
+  }
+
+  if (filterType === 'numericFilters') {
+    if ('in' in conditions && Array.isArray(conditions.in)) {
       query = query.in(fieldName, conditions.in);
     }
 
-    if ('notin' in conditions && conditions.notin !== undefined && Array.isArray(conditions.notin)) {
+    if ('notin' in conditions && Array.isArray(conditions.notin)) {
       query = query.not(fieldName, 'in', conditions.notin);
+    }
+
+    if ('gt' in conditions && conditions.gt !== undefined) {
+      query = query.gt(fieldName, conditions.gt);
+    }
+
+    if ('lt' in conditions && conditions.lt !== undefined) {
+      query = query.lt(fieldName, conditions.lt);
+    }
+
+    if ('gte' in conditions && conditions.gte !== undefined) {
+      query = query.gte(fieldName, conditions.gte);
+    }
+
+    if ('lte' in conditions && conditions.lte !== undefined) {
+      query = query.lte(fieldName, conditions.lte);
+    }
+  }
+
+  if (filterType === 'dateFilters') {
+    if ('in' in conditions && Array.isArray(conditions.in)) {
+      query = query.in(fieldName, conditions.in);
+    }
+
+    if ('notin' in conditions && Array.isArray(conditions.notin)) {
+      query = query.not(fieldName, 'in', conditions.notin);
+    }
+
+    if ('gt' in conditions && conditions.gt !== undefined) {
+      query = query.gt(fieldName, conditions.gt);
+    }
+
+    if ('lt' in conditions && conditions.lt !== undefined) {
+      query = query.lt(fieldName, conditions.lt);
+    }
+
+    if ('gte' in conditions && conditions.gte !== undefined) {
+      query = query.gte(fieldName, conditions.gte);
+    }
+
+    if ('lte' in conditions && conditions.lte !== undefined) {
+      query = query.lte(fieldName, conditions.lte);
     }
   }
 
@@ -715,22 +747,6 @@ const applyConditionsToQueryFn = (
 
   if ('neq' in conditions && conditions.neq !== undefined) {
     query = query.neq(fieldName, conditions.neq);
-  }
-
-  if ('gte' in conditions && conditions.gte !== undefined) {
-    query = query.gte(fieldName, conditions.gte);
-  }
-
-  if ('lte' in conditions && conditions.lte !== undefined) {
-    query = query.lte(fieldName, conditions.lte);
-  }
-
-  if ('gt' in conditions && conditions.gt !== undefined) {
-    query = query.gt(fieldName, conditions.gt);
-  }
-
-  if ('lt' in conditions && conditions.lt !== undefined) {
-    query = query.lt(fieldName, conditions.lt);
   }
 
   return query;
