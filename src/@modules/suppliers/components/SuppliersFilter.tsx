@@ -1,6 +1,4 @@
 import FloatRangePicker from '@base/antd/components/FloatRangePicker';
-import FloatSelect from '@base/antd/components/FloatSelect';
-import { bloodGroups } from '@lib/data/bloodGroups';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Drawer, Form, Radio, Space } from 'antd';
 import dayjs from 'dayjs';
@@ -8,14 +6,14 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
 import { MdClear } from 'react-icons/md';
-import { IUsersFilter } from '../lib/interfaces';
+import { ISuppliersFilter } from '../lib/interfaces';
 
 interface IProps {
-  initialValues: IUsersFilter;
-  onChange: (values: IUsersFilter) => void;
+  initialValues: ISuppliersFilter;
+  onChange: (values: ISuppliersFilter) => void;
 }
 
-const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
+const SuppliersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
   const router = useRouter();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -24,7 +22,6 @@ const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
     formInstance.resetFields();
 
     const values = {
-      is_admin: '',
       is_active: '',
       sort_order: '',
       date_range: [],
@@ -64,33 +61,6 @@ const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
           }, 1000)}
           className="flex flex-col gap-3"
         >
-          <Form.Item name="blood_group" className="!mb-0">
-            <FloatSelect
-              allowClear
-              showSearch
-              virtual={false}
-              placeholder="Blood Group"
-              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
-              options={bloodGroups.map((bloodGroup) => ({
-                key: bloodGroup.key,
-                label: bloodGroup.label,
-                value: bloodGroup.value,
-              }))}
-            />
-          </Form.Item>
-          <Form.Item name="is_admin" className="!mb-0">
-            <Radio.Group buttonStyle="solid" className="w-full text-center">
-              <Radio.Button className="w-1/3" value="">
-                All
-              </Radio.Button>
-              <Radio.Button className="w-1/3" value="true">
-                Admin
-              </Radio.Button>
-              <Radio.Button className="w-1/3" value="false">
-                Customer
-              </Radio.Button>
-            </Radio.Group>
-          </Form.Item>
           <Form.Item name="date_range" className="!mb-0">
             <FloatRangePicker placeholder={['Start Date', 'End Date']} className="w-full" />
           </Form.Item>
@@ -151,4 +121,4 @@ const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
   );
 };
 
-export default UsersFilter;
+export default SuppliersFilter;

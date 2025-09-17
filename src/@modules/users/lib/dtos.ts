@@ -16,7 +16,7 @@ export const userCreateSchema = yup.object({
   name: yup.string().min(3).required(),
   phone: yup
     .string()
-    .matches(/^\d+$/, ({ path }) => `${path} must contain only numbers`)
+    .matches(/^\+\d+$/, ({ path }) => `${path} must start with + followed by numbers`)
     .required(),
   email: yup.string().email().optional().nullable(),
   password: yup.string().min(8).max(20).optional().nullable(),
@@ -33,7 +33,9 @@ export const userUpdateSchema = PartialType(OmitType(userCreateSchema, ['roles']
   }),
 );
 
-export const userFilterSchema = PickType(userCreateSchema, ['is_admin', 'is_active']).concat(baseFilterSchema);
+export const userFilterSchema = PickType(userCreateSchema, ['blood_group', 'is_admin', 'is_active']).concat(
+  baseFilterSchema,
+);
 
 export type TUserCreateDto = yup.InferType<typeof userCreateSchema>;
 export type TUserUpdateDto = yup.InferType<typeof userUpdateSchema>;

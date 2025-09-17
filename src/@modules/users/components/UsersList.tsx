@@ -1,13 +1,15 @@
+import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Drawer, Form, Table, message } from 'antd';
+import { Button, Drawer, Form, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { AiFillEdit } from 'react-icons/ai';
+import { AiFillEdit, AiFillEye } from 'react-icons/ai';
 import { UsersHooks } from '../lib/hooks';
 import { IUser } from '../lib/interfaces';
 import UsersForm from './UsersForm';
+import UsersView from './UsersView';
 
 interface IProps {
   isLoading: boolean;
@@ -18,6 +20,7 @@ interface IProps {
 const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
+  const [viewItem, setViewItem] = useState<IUser>(null);
   const [updateItem, setUpdateItem] = useState<IUser>(null);
 
   const userUpdateFn = UsersHooks.useUpdate({
@@ -99,21 +102,29 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       dataIndex: 'id',
       title: 'Action',
       align: 'center',
-      render: (id) => (
-        <Button
-          onClick={() => {
-            getAccess({
-              allowedPermissions: ['users:update'],
-              func: () => {
-                const item = data?.find((item) => item.id === id);
-                setUpdateItem(item);
-              },
-            });
-          }}
-        >
-          <AiFillEdit />
-        </Button>
-      ),
+      render: (id) => {
+        const item = data?.find((item) => item.id === id);
+
+        return (
+          <Space>
+            <Button type="dashed" onClick={() => setViewItem(item)}>
+              <AiFillEye />
+            </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                getAccess({
+                  allowedPermissions: ['users:update'],
+                  func: () => setUpdateItem(item),
+                });
+              }}
+              ghost
+            >
+              <AiFillEdit />
+            </Button>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -127,6 +138,15 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         pagination={pagination}
         scroll={{ x: true }}
       />
+      <BaseModalWithoutClicker
+        width={640}
+        title={viewItem?.name}
+        open={!!viewItem?.id}
+        onCancel={() => setViewItem(null)}
+        footer={null}
+      >
+        <UsersView data={viewItem} />
+      </BaseModalWithoutClicker>
       <Drawer
         width={640}
         title={`Update ${updateItem?.name}`}

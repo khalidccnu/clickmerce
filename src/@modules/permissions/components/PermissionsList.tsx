@@ -105,6 +105,7 @@ const PermissionsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               },
             });
           }}
+          ghost
         >
           <AiFillEdit />
         </Button>

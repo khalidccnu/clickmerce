@@ -1,5 +1,5 @@
 import { theme } from 'antd';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import PhoneInput, { PhoneInputProps } from 'react-phone-input-2';
 
 interface IProps extends PhoneInputProps {
@@ -21,11 +21,30 @@ const InputPhone: React.FC<IProps> = ({
   buttonStyle,
   dropdownStyle,
   searchStyle,
+  value,
+  onChange,
   ...rest
 }) => {
   const { token } = theme.useToken();
+  const [internalValue, setInternalValue] = useState(value);
 
   const isError = rest['aria-invalid'] === 'true';
+
+  const handleChangeFn = (
+    value: string,
+    country: { countryCode: string; dialCode: string; format: string; name: string },
+    event: React.ChangeEvent<HTMLInputElement>,
+    formattedValue: string,
+  ) => {
+    setInternalValue(value);
+
+    const countryCode = country?.dialCode || '';
+    const hasAdditionalDigits = value.length > countryCode.length;
+
+    if (onChange) {
+      onChange(hasAdditionalDigits ? formattedValue : null, country, event, formattedValue);
+    }
+  };
 
   const styles = useMemo(() => {
     const input = {
@@ -86,6 +105,8 @@ const InputPhone: React.FC<IProps> = ({
         buttonStyle={{ pointerEvents: disabled ? 'none' : 'auto', ...styles.button, ...buttonStyle }}
         dropdownStyle={{ ...styles.dropdown, ...dropdownStyle }}
         searchStyle={{ ...styles.search, ...searchStyle }}
+        value={internalValue}
+        onChange={handleChangeFn}
         {...rest}
       />
       <style jsx global>{`
@@ -100,21 +121,28 @@ const InputPhone: React.FC<IProps> = ({
             border-color 0.2s,
             box-shadow 0.2s;
 
-          &:hover,
-          &:has(input:focus) {
-            border-color: ${isError ? token.colorError : token.colorPrimary} !important;
+          &:hover:has(input:not(:disabled)) {
+            border-color: ${isError ? token.colorErrorBorderHover : token.colorPrimary} !important;
             .flag-dropdown {
-              border-color: ${isError ? token.colorError : token.colorPrimary} !important;
-              transition: border-color 0.2s;
+              border-color: ${isError ? token.colorErrorBorderHover : token.colorPrimary} !important;
             }
           }
 
           &:has(input:focus) {
+            border-color: ${isError ? token.colorError : token.colorPrimary} !important;
             box-shadow: 0 0 0 ${token.controlOutlineWidth}px ${isError ? token.colorErrorOutline : token.controlOutline} !important;
+            .flag-dropdown {
+              border-color: ${isError ? token.colorError : token.colorPrimary} !important;
+            }
+          }
+
+          input {
+            color: ${disabled ? token.colorTextDisabled : isError ? token.colorError : token.colorText} !important;
           }
 
           .flag-dropdown {
             border-right: 1px solid ${isError ? token.colorError : token.colorBorder} !important;
+            transition: border-color 0.2s;
 
             .selected-flag {
               border-radius: ${size === 'large'
@@ -122,7 +150,7 @@ const InputPhone: React.FC<IProps> = ({
                 : size === 'small'
                   ? token.borderRadiusSM
                   : token.borderRadius}px !important;
-              background-color: ${token.colorBgContainer} !important;
+              background-color: ${disabled ? token.colorBgContainerDisabled : token.colorBgContainer} !important;
             }
 
             .country-list {
@@ -135,7 +163,7 @@ const InputPhone: React.FC<IProps> = ({
 
               .search {
                 padding: ${token.padding}px;
-                background-color: ${token.colorBgContainer};
+                background-color: ${disableDropdown ? token.colorBgContainerDisabled : token.colorBgContainer};
               }
 
               .country {

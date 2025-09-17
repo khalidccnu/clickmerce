@@ -1,30 +1,29 @@
+import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
-import { Paths } from '@lib/constant/paths';
-import { Roles } from '@lib/constant/roles';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Drawer, Form, message, Space, Table } from 'antd';
+import { Button, Drawer, Form, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { AiFillEdit } from 'react-icons/ai';
-import { RolesHooks } from '../lib/hooks';
-import { IRole } from '../lib/interfaces';
-import RolesForm from './RolesForm';
+import { AiFillEdit, AiFillEye } from 'react-icons/ai';
+import { SuppliersHooks } from '../lib/hooks';
+import { ISupplier } from '../lib/interfaces';
+import SuppliersForm from './SuppliersForm';
+import SuppliersView from './SuppliersView';
 
 interface IProps {
   isLoading: boolean;
-  data: IRole[];
+  data: ISupplier[];
   pagination: PaginationProps;
 }
 
-const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
-  const router = useRouter();
+const SuppliersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
-  const [updateItem, setUpdateItem] = useState<IRole>(null);
+  const [viewItem, setViewItem] = useState<ISupplier>(null);
+  const [updateItem, setUpdateItem] = useState<ISupplier>(null);
 
-  const roleUpdateFn = RolesHooks.useUpdate({
+  const supplierUpdateFn = SuppliersHooks.useUpdate({
     config: {
       onSuccess: (res) => {
         if (!res.success) {
@@ -42,6 +41,9 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
     key: elem?.id,
     id: elem?.id,
     name: elem?.name,
+    phone: elem?.phone,
+    email: elem?.email,
+    address: elem?.address,
     is_active: elem?.is_active,
     created_at: elem?.created_at,
   }));
@@ -53,10 +55,22 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       title: 'Name',
     },
     {
+      key: 'phone',
+      dataIndex: 'phone',
+      title: 'Phone',
+      render: (phone) => phone || 'N/A',
+    },
+    {
+      key: 'email',
+      dataIndex: 'email',
+      title: 'Email',
+      render: (email) => email || 'N/A',
+    },
+    {
       key: 'created_at',
       dataIndex: 'created_at',
       title: 'Created At',
-      render: (created_at) => <p className="min-w-24">{dayjs(created_at).format('DD-MM-YYYY')}</p>,
+      render: (created_at) => dayjs(created_at).format('DD-MM-YYYY hh:mm:ss a'),
     },
     {
       key: 'is_active',
@@ -65,13 +79,12 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       render: (is_active, record) => {
         return (
           <CustomSwitch
-            disabled={record?.name === Roles.SUPER_ADMIN}
             checked={is_active}
             onChange={(checked) => {
               getAccess({
-                allowedPermissions: ['roles:update'],
+                allowedPermissions: ['suppliers:update'],
                 func: () => {
-                  roleUpdateFn.mutate({
+                  supplierUpdateFn.mutate({
                     id: record?.id,
                     data: {
                       is_active: checked.toString(),
@@ -88,36 +101,21 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       key: 'id',
       dataIndex: 'id',
       title: 'Action',
-      render: (id, record) => {
-        const isDisabled = record?.name === Roles.SUPER_ADMIN;
+      align: 'center',
+      render: (id) => {
+        const item = data?.find((item) => item.id === id);
 
         return (
           <Space>
-            <Button
-              type="dashed"
-              disabled={isDisabled}
-              onClick={() => {
-                getAccess({
-                  allowedPermissions: ['roles:update'],
-                  func: () => {
-                    const path = Paths.admin.roleManager.roles.toId(id);
-                    router.push(path);
-                  },
-                });
-              }}
-            >
-              Edit Permissions
+            <Button type="dashed" onClick={() => setViewItem(item)}>
+              <AiFillEye />
             </Button>
             <Button
-              disabled={isDisabled}
               type="primary"
               onClick={() => {
                 getAccess({
-                  allowedPermissions: ['roles:update'],
-                  func: () => {
-                    const item = data?.find((item) => item.id === id);
-                    setUpdateItem(item);
-                  },
+                  allowedPermissions: ['suppliers:update'],
+                  func: () => setUpdateItem(item),
                 });
               }}
               ghost
@@ -140,19 +138,31 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         pagination={pagination}
         scroll={{ x: true }}
       />
+      <BaseModalWithoutClicker
+        width={640}
+        title={viewItem?.name}
+        open={!!viewItem?.id}
+        onCancel={() => setViewItem(null)}
+        footer={null}
+      >
+        <SuppliersView data={viewItem} />
+      </BaseModalWithoutClicker>
       <Drawer
-        width={450}
+        width={640}
         title={`Update ${updateItem?.name}`}
         open={!!updateItem?.id}
         onClose={() => setUpdateItem(null)}
       >
-        <RolesForm
+        <SuppliersForm
           formType="update"
           form={formInstance}
-          initialValues={{ ...updateItem, is_active: updateItem?.is_active?.toString() }}
-          isLoading={roleUpdateFn.isPending}
+          initialValues={{
+            ...updateItem,
+            is_active: updateItem?.is_active?.toString(),
+          }}
+          isLoading={supplierUpdateFn.isPending}
           onFinish={(values) =>
-            roleUpdateFn.mutate({
+            supplierUpdateFn.mutate({
               id: updateItem?.id,
               data: values,
             })
@@ -163,4 +173,4 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   );
 };
 
-export default RolesList;
+export default SuppliersList;

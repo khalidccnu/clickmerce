@@ -29,5 +29,12 @@ export const Paths = {
         toId: (id: TId) => `/admin/role-manager/roles/${id}`,
       },
     },
+    inventory: {
+      root: '/admin/inventory',
+      suppliers: {
+        root: '/admin/inventory/suppliers',
+        list: '/admin/inventory/suppliers/list',
+      },
+    },
   },
 };

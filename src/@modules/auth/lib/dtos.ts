@@ -3,7 +3,7 @@ import * as yup from 'yup';
 export const loginSchema = yup.object({
   phone: yup
     .string()
-    .matches(/^\d+$/, ({ path }) => `${path} must contain only numbers`)
+    .matches(/^\+\d+$/, ({ path }) => `${path} must start with + followed by numbers`)
     .required(),
   password: yup.string().min(8).max(20).required(),
 });

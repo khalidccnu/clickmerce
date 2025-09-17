@@ -1,6 +1,10 @@
 import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
+import { IRole } from '@modules/roles/lib/interfaces';
 
-export interface IUsersFilter extends IBaseFilter {}
+export interface IUsersFilter extends IBaseFilter {
+  blood_group?: string;
+  is_admin?: string;
+}
 
 export interface IUser extends IBaseEntity {
   name: string;
@@ -11,7 +15,7 @@ export interface IUser extends IBaseEntity {
     birthday: string;
     blood_group: string;
   };
-  user_roles: ({ role_id: TId; user_id: TId } & IBaseEntity)[];
+  user_roles: ({ role_id: TId; user_id: TId; role: IRole } & IBaseEntity)[];
 }
 
 export interface IUsersResponse extends IBaseResponse {

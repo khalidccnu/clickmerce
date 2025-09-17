@@ -3,23 +3,23 @@ import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
-import { IPermission, IPermissionCreate, IPermissionsFilter, IPermissionsResponse } from './interfaces';
+import { ISupplier, ISupplierCreate, ISuppliersFilter, ISuppliersResponse } from './interfaces';
 
-const END_POINT: string = Database.permissions;
+const END_POINT: string = Database.suppliers;
 
-export const PermissionsServices = {
+export const SuppliersServices = {
   NAME: END_POINT,
 
-  findById: async (id: TId): Promise<IBaseResponse<IPermission>> => {
+  findById: async (id: TId): Promise<IBaseResponse<ISupplier>> => {
     try {
-      const res = await SupabaseAdapter.findById<IPermission>(supabaseBrowserClient, END_POINT, id);
+      const res = await SupabaseAdapter.findById<ISupplier>(supabaseBrowserClient, END_POINT, id);
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
     }
   },
 
-  find: async (filters: IPermissionsFilter): Promise<IPermissionsResponse> => {
+  find: async (filters: ISuppliersFilter): Promise<ISuppliersResponse> => {
     const { start_date, end_date, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
 
@@ -32,27 +32,25 @@ export const PermissionsServices = {
     }
 
     try {
-      const res = await SupabaseAdapter.find<IPermission>(supabaseBrowserClient, END_POINT, newFilters, {
-        selection: '*, permission_type:permission_types!inner(*)',
-      });
+      const res = await SupabaseAdapter.find<ISupplier>(supabaseBrowserClient, END_POINT, newFilters);
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
     }
   },
 
-  create: async (payload: IPermissionCreate): Promise<IBaseResponse<IPermission>> => {
+  create: async (payload: ISupplierCreate): Promise<IBaseResponse<ISupplier>> => {
     try {
-      const res = await SupabaseAdapter.create<IPermission>(supabaseBrowserClient, END_POINT, payload);
+      const res = await SupabaseAdapter.create<ISupplier>(supabaseBrowserClient, END_POINT, payload);
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
     }
   },
 
-  update: async (payload: { id: TId; data: Partial<IPermissionCreate> }): Promise<IBaseResponse<IPermission>> => {
+  update: async (payload: { id: TId; data: Partial<ISupplierCreate> }): Promise<IBaseResponse<ISupplier>> => {
     try {
-      const res = await SupabaseAdapter.update<IPermission>(supabaseBrowserClient, END_POINT, payload.id, payload.data);
+      const res = await SupabaseAdapter.update<ISupplier>(supabaseBrowserClient, END_POINT, payload.id, payload.data);
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);

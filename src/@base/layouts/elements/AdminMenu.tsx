@@ -5,8 +5,9 @@ import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
 import { FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
 import { GrUserAdmin } from 'react-icons/gr';
-import { MdDashboard } from 'react-icons/md';
+import { MdDashboard, MdOutlineInventory2 } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
+import { TbTruckDelivery } from 'react-icons/tb';
 
 interface IProps {
   className?: string;
@@ -67,6 +68,22 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
               icon: <GrUserAdmin />,
               label: <CustomLink href={Toolbox.appendPagination(Paths.admin.roleManager.roles.list)}>Roles</CustomLink>,
               allowedPermissions: ['roles:read'],
+            },
+          ],
+        },
+        {
+          key: Paths.admin.inventory.root,
+          icon: <MdOutlineInventory2 />,
+          label: 'Inventory',
+          allowedPermissions: ['suppliers:read'],
+          children: [
+            {
+              key: Paths.admin.inventory.suppliers.list,
+              icon: <TbTruckDelivery />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.suppliers.list)}>Suppliers</CustomLink>
+              ),
+              allowedPermissions: ['suppliers:read'],
             },
           ],
         },

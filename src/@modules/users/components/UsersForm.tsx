@@ -140,17 +140,6 @@ const UsersForm: React.FC<IProps> = ({
                   required: true,
                   message: 'Phone is required!',
                 },
-                {
-                  validator: (_, value) => {
-                    if (!value) return Promise.resolve();
-
-                    if (!/^\d+$/.test(value)) {
-                      return Promise.reject(new Error('Phone must contain only numbers!'));
-                    }
-
-                    return Promise.resolve();
-                  },
-                },
               ]}
               className="!mb-0"
             >

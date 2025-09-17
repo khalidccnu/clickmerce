@@ -52,15 +52,21 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const filters = data;
+  const { blood_group, ...restFilters } = data;
+  const newFilters: any = { ...restFilters };
+
+  if (blood_group) {
+    if (!newFilters.textFilters) newFilters.textFilters = {};
+    newFilters.textFilters = { user_info: { blood_group: { eq: blood_group } } };
+  }
 
   try {
     const result = await SupabaseAdapter.find<IUser & { password: string }>(
       supabaseServiceClient,
       Database.users,
-      filters,
+      newFilters,
       {
-        selection: '*, user_info:users_info(*), user_roles(*)',
+        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
       },
     );
 
@@ -274,7 +280,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       Database.users,
       newUser.id,
       {
-        selection: '*, user_info:users_info(*), user_roles(*)',
+        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
       },
     );
 

@@ -78,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     {
       textFilters: { user_id: { eq: user.data.id as string } },
     },
-    { selection: '*, role:roles(*)' },
+    { selection: '*, role:roles!inner(*)' },
   );
 
   const roles = userRoles.data.map((ur) => ur.role.name);
@@ -92,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       {
         textFilters: { role_id: { in: roleIds } },
       },
-      { selection: '*, permission:permissions(*)' },
+      { selection: '*, permission:permissions!inner(*)' },
     );
 
     permissions = rolePermissions?.data?.map((rp) => rp?.permission?.name);

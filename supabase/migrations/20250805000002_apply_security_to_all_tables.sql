@@ -2,7 +2,7 @@
 -- This will complete the permission and RLS setup for all tables
 
 -- Apply security to users table (with user ownership based on id)
-SELECT setup_table_security('User Management', 'users', 'id');
+SELECT setup_table_security('User Management', 'users');
 
 -- Apply security to users_info table (with user ownership, inherits users:* permissions)
 SELECT setup_table_security('User Management', 'users_info', 'user_id', 'users');
@@ -21,3 +21,6 @@ SELECT setup_table_security('Role Management', 'role_permissions', null, 'roles'
 
 -- Apply security to user_roles table (with user ownership, inherits users:* permissions)
 SELECT setup_table_security('User Management', 'user_roles', 'user_id', 'users');
+
+-- Apply security to suppliers table (admin-only access)
+SELECT setup_table_security('Inventory Management', 'suppliers');

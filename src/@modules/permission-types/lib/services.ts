@@ -20,8 +20,19 @@ export const PermissionTypesServices = {
   },
 
   find: async (filters: IBaseFilter): Promise<IPermissionTypesResponse> => {
+    const { start_date, end_date, ...restFilters } = filters;
+    const newFilters: any = { ...restFilters };
+
+    if (start_date) {
+      newFilters.start_date = decodeURIComponent(start_date);
+    }
+
+    if (end_date) {
+      newFilters.end_date = decodeURIComponent(end_date);
+    }
+
     try {
-      const res = await SupabaseAdapter.find<IPermissionType>(supabaseBrowserClient, END_POINT, filters);
+      const res = await SupabaseAdapter.find<IPermissionType>(supabaseBrowserClient, END_POINT, newFilters);
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);

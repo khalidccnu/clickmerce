@@ -1,5 +1,10 @@
 import { IBaseResponse, TId } from '@base/interfaces';
-import { ISupabaseFilter, ISupabaseQueryOption } from '@lib/interfaces/supabase.interfaces';
+import {
+  ISupabaseFilter,
+  ISupabaseFilterCondition,
+  ISupabaseNestedFilter,
+  ISupabaseQueryOption,
+} from '@lib/interfaces/supabase.interfaces';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 export const SupabaseAdapter = {
@@ -161,6 +166,23 @@ export const SupabaseAdapter = {
     try {
       const { selection = '*', distinct = false, head = false, maybeSingle = false } = options;
 
+      const excludedKeys = [
+        'page',
+        'limit',
+        'search_term',
+        'search_field',
+        'search_fields',
+        'is_active',
+        'start_date',
+        'end_date',
+        'sort_by',
+        'sort_order',
+        'dateFilters',
+        'numericFilters',
+        'textFilters',
+        'customFilters',
+      ];
+
       let query = supabase.from(table).select(selection, {
         count: 'exact',
         head,
@@ -191,79 +213,10 @@ export const SupabaseAdapter = {
         }
       }
 
-      if (filters.dateFilters) {
-        Object.entries(filters.dateFilters).forEach(([field, conditions]) => {
-          if (conditions && typeof conditions === 'object') {
-            if ('gte' in conditions && conditions.gte) query = query.gte(field, conditions.gte);
-            if ('lte' in conditions && conditions.lte) query = query.lte(field, conditions.lte);
-            if ('gt' in conditions && conditions.gt) query = query.gt(field, conditions.gt);
-            if ('lt' in conditions && conditions.lt) query = query.lt(field, conditions.lt);
-          }
-        });
-      }
-
-      if (filters.numericFilters) {
-        Object.entries(filters.numericFilters).forEach(([field, conditions]) => {
-          if (conditions && typeof conditions === 'object') {
-            if ('gte' in conditions && conditions.gte !== undefined) query = query.gte(field, conditions.gte);
-            if ('lte' in conditions && conditions.lte !== undefined) query = query.lte(field, conditions.lte);
-            if ('gt' in conditions && conditions.gt !== undefined) query = query.gt(field, conditions.gt);
-            if ('lt' in conditions && conditions.lt !== undefined) query = query.lt(field, conditions.lt);
-            if ('eq' in conditions && conditions.eq !== undefined) query = query.eq(field, conditions.eq);
-          }
-        });
-      }
-
-      if (filters.textFilters) {
-        Object.entries(filters.textFilters).forEach(([field, conditions]) => {
-          if (conditions && typeof conditions === 'object') {
-            if ('ilike' in conditions && conditions.ilike) query = query.ilike(field, conditions.ilike);
-            if ('like' in conditions && conditions.like) query = query.like(field, conditions.like);
-            if ('eq' in conditions && conditions.eq) query = query.eq(field, conditions.eq);
-            if ('neq' in conditions && conditions.neq) query = query.neq(field, conditions.neq);
-            if ('in' in conditions && conditions.in) query = query.in(field, conditions.in);
-            if ('notin' in conditions && conditions.notin) {
-              query = query.not(field, 'in', `(${conditions.notin.join(',')})`);
-            }
-          }
-        });
-      }
-
       if (filters.is_active !== undefined) {
         const isActive = typeof filters.is_active === 'string' ? filters.is_active === 'true' : filters.is_active;
         query = query.eq('is_active', isActive);
       }
-
-      if (filters.customFilters) {
-        Object.entries(filters.customFilters).forEach(([field, value]) => {
-          if (value !== undefined && value !== null && value !== '') {
-            query = query.eq(field, value);
-          }
-        });
-      }
-
-      const excludedKeys = [
-        'page',
-        'limit',
-        'search_term',
-        'search_field',
-        'search_fields',
-        'is_active',
-        'start_date',
-        'end_date',
-        'sort_by',
-        'sort_order',
-        'dateFilters',
-        'numericFilters',
-        'textFilters',
-        'customFilters',
-      ];
-
-      Object.entries(filters).forEach(([key, value]) => {
-        if (!excludedKeys.includes(key) && value !== undefined && value !== null && value !== '') {
-          query = query.eq(key, value);
-        }
-      });
 
       const sortBy = filters.sort_by || 'created_at';
       const ascending = filters.sort_order ? filters.sort_order === 'ASC' : true;
@@ -275,6 +228,17 @@ export const SupabaseAdapter = {
         offset = (+filters.page - 1) * +filters.limit;
         query = query.range(offset, offset + +filters.limit - 1);
       }
+
+      Object.entries(filters).forEach(([key, value]) => {
+        if (!excludedKeys.includes(key) && value !== undefined) {
+          query = query.eq(key, value);
+        }
+      });
+
+      query = recursivelyTraverseFilterFn(query, filters.textFilters, 'textFilters');
+      query = recursivelyTraverseFilterFn(query, filters.numericFilters, 'numericFilters');
+      query = recursivelyTraverseFilterFn(query, filters.dateFilters, 'dateFilters');
+      query = recursivelyTraverseFilterFn(query, filters.customFilters, 'customFilters');
 
       const result = maybeSingle ? await query.maybeSingle() : await query;
 
@@ -625,7 +589,7 @@ export const SupabaseAdapter = {
         if (filter.type && filter.column) {
           if (Array.isArray(filter.value) && (filter.type === 'in' || filter.type === 'notin')) {
             if (filter.type === 'in') query = query.in(filter.column, filter.value);
-            if (filter.type === 'notin') query = query.not(filter.column, 'in', `(${filter.value.join(',')})`);
+            if (filter.type === 'notin') query = query.not(filter.column, 'in', filter.value);
           } else if (typeof query[filter.type] === 'function') {
             query = query[filter.type](filter.column, filter.value);
           }
@@ -680,4 +644,94 @@ export const SupabaseAdapter = {
       };
     }
   },
+};
+
+const recursivelyTraverseFilterFn = (
+  query,
+  filters: ISupabaseNestedFilter,
+  filterType: 'textFilters' | 'numericFilters' | 'dateFilters' | 'customFilters',
+  currentPath: string[] = [],
+) => {
+  if (!filters || typeof filters !== 'object') return query;
+
+  const validConditions = {
+    textFilters: ['ilike', 'like', 'eq', 'neq', 'in', 'notin'],
+    numericFilters: ['gte', 'lte', 'gt', 'lt', 'eq'],
+    dateFilters: ['gte', 'lte', 'gt', 'lt'],
+    customFilters: ['eq'],
+  };
+
+  const conditions = validConditions[filterType] || [];
+
+  const hasConditions = conditions.some((condition) => condition in filters);
+
+  if (hasConditions) {
+    const fieldName = currentPath.join('.');
+    query = applyConditionsToQueryFn(query, fieldName, filters, filterType);
+  } else {
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && typeof value === 'object') {
+        const newPath = [...currentPath, key];
+        query = recursivelyTraverseFilterFn(query, value as ISupabaseNestedFilter, filterType, newPath);
+      } else if (filterType === 'customFilters') {
+        const fieldName = [...currentPath, key].join('.');
+        if (value !== undefined) {
+          query = query.eq(fieldName, value);
+        }
+      }
+    });
+  }
+
+  return query;
+};
+
+const applyConditionsToQueryFn = (
+  query,
+  fieldName: string,
+  conditions: ISupabaseFilterCondition,
+  filterType: 'textFilters' | 'numericFilters' | 'dateFilters' | 'customFilters',
+) => {
+  if (filterType === 'textFilters') {
+    if ('ilike' in conditions && conditions.ilike !== undefined) {
+      query = query.ilike(fieldName, conditions.ilike);
+    }
+
+    if ('like' in conditions && conditions.like !== undefined) {
+      query = query.like(fieldName, conditions.like);
+    }
+
+    if ('in' in conditions && conditions.in !== undefined && Array.isArray(conditions.in)) {
+      query = query.in(fieldName, conditions.in);
+    }
+
+    if ('notin' in conditions && conditions.notin !== undefined && Array.isArray(conditions.notin)) {
+      query = query.not(fieldName, 'in', conditions.notin);
+    }
+  }
+
+  if ('eq' in conditions && conditions.eq !== undefined) {
+    query = query.eq(fieldName, conditions.eq);
+  }
+
+  if ('neq' in conditions && conditions.neq !== undefined) {
+    query = query.neq(fieldName, conditions.neq);
+  }
+
+  if ('gte' in conditions && conditions.gte !== undefined) {
+    query = query.gte(fieldName, conditions.gte);
+  }
+
+  if ('lte' in conditions && conditions.lte !== undefined) {
+    query = query.lte(fieldName, conditions.lte);
+  }
+
+  if ('gt' in conditions && conditions.gt !== undefined) {
+    query = query.gt(fieldName, conditions.gt);
+  }
+
+  if ('lt' in conditions && conditions.lt !== undefined) {
+    query = query.lt(fieldName, conditions.lt);
+  }
+
+  return query;
 };

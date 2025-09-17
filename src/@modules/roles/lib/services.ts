@@ -21,8 +21,19 @@ export const RolesServices = {
   },
 
   find: async (filters: IBaseFilter): Promise<IRolesResponse> => {
+    const { start_date, end_date, ...restFilters } = filters;
+    const newFilters: any = { ...restFilters };
+
+    if (start_date) {
+      newFilters.start_date = decodeURIComponent(start_date);
+    }
+
+    if (end_date) {
+      newFilters.end_date = decodeURIComponent(end_date);
+    }
+
     try {
-      const res = await SupabaseAdapter.find<IRole>(supabaseBrowserClient, END_POINT, filters);
+      const res = await SupabaseAdapter.find<IRole>(supabaseBrowserClient, END_POINT, newFilters);
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -75,7 +86,7 @@ export const RolesServices = {
         Database.permissions,
         {},
         {
-          selection: '*, permission_type:permission_types(*)',
+          selection: '*, permission_type:permission_types!inner(*)',
         },
       );
 

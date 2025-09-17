@@ -5,14 +5,14 @@ import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IUser, IUserCreate, IUsersFilter, IUsersResponse } from './interfaces';
 
-const END_POINT: string = Database.users;
+const END_POINT: string = `/${Database.users}`;
 
 export const UsersServices = {
   NAME: END_POINT,
 
   findById: async (id: TId): Promise<IBaseResponse<IUser>> => {
     try {
-      const res = await AxiosSecureInstance.get(`/${END_POINT}/${id}`);
+      const res = await AxiosSecureInstance.get(`${END_POINT}/${id}`);
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -21,7 +21,7 @@ export const UsersServices = {
 
   find: async (filters: IUsersFilter): Promise<IUsersResponse> => {
     try {
-      const res = await AxiosSecureInstance.get(`/${END_POINT}?${Toolbox.queryNormalizer(filters)}`);
+      const res = await AxiosSecureInstance.get(`${END_POINT}?${Toolbox.queryNormalizer(filters)}`);
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -30,7 +30,7 @@ export const UsersServices = {
 
   create: async (payload: IUserCreate): Promise<IBaseResponse<IUser>> => {
     try {
-      const res = await AxiosSecureInstance.post(`/${END_POINT}`, Toolbox.toNullifyTraverse(payload));
+      const res = await AxiosSecureInstance.post(END_POINT, Toolbox.toNullifyTraverse(payload));
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -39,7 +39,7 @@ export const UsersServices = {
 
   update: async (payload: { id: TId; data: Partial<IUserCreate> }): Promise<IBaseResponse<IUser>> => {
     try {
-      const res = await AxiosSecureInstance.patch(`/${END_POINT}/${payload.id}`, payload.data);
+      const res = await AxiosSecureInstance.patch(`${END_POINT}/${payload.id}`, payload.data);
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);

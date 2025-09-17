@@ -24,4 +24,9 @@ export const Permissions = {
   ROLES_WRITE: 'roles:write',
   ROLES_UPDATE: 'roles:update',
   ROLES_DELETE: 'roles:delete',
+
+  SUPPLIERS_READ: 'suppliers:read',
+  SUPPLIERS_WRITE: 'suppliers:write',
+  SUPPLIERS_UPDATE: 'suppliers:update',
+  SUPPLIERS_DELETE: 'suppliers:delete',
 } as const;
