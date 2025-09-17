@@ -1,7 +1,7 @@
 -- Apply dynamic security to all existing core tables
 -- This will complete the permission and RLS setup for all tables
 
--- Apply security to users table (with user ownership based on id)
+-- Apply security to users table (admin-only access)
 SELECT setup_table_security('User Management', 'users');
 
 -- Apply security to users_info table (with user ownership, inherits users:* permissions)
