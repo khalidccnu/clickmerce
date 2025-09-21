@@ -31,6 +31,14 @@ export const Paths = {
     },
     inventory: {
       root: '/admin/inventory',
+      dosageForms: {
+        root: '/admin/inventory/dosage-forms',
+        list: '/admin/inventory/dosage-forms/list',
+      },
+      generics: {
+        root: '/admin/inventory/generics',
+        list: '/admin/inventory/generics/list',
+      },
       suppliers: {
         root: '/admin/inventory/suppliers',
         list: '/admin/inventory/suppliers/list',

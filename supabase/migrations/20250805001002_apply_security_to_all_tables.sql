@@ -22,5 +22,11 @@ SELECT setup_table_security('Role Management', 'role_permissions', null, 'roles'
 -- Apply security to user_roles table (with user ownership, inherits users:* permissions)
 SELECT setup_table_security('User Management', 'user_roles', 'user_id', 'users');
 
+-- Apply security to dosage_forms table (admin-only access)
+SELECT setup_table_security('Inventory Management', 'dosage_forms');
+
+-- Apply security to generics table (admin-only access)
+SELECT setup_table_security('Inventory Management', 'generics');
+
 -- Apply security to suppliers table (admin-only access)
 SELECT setup_table_security('Inventory Management', 'suppliers');

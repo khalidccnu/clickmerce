@@ -3,7 +3,9 @@ import { Paths } from '@lib/constant/paths';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
+import { BiCollection } from 'react-icons/bi';
 import { FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
+import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
 import { MdDashboard, MdOutlineInventory2 } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
@@ -75,8 +77,26 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.inventory.root,
           icon: <MdOutlineInventory2 />,
           label: 'Inventory',
-          allowedPermissions: ['suppliers:read'],
+          allowedPermissions: ['dosage_forms:read', 'generics:read', 'suppliers:read'],
           children: [
+            {
+              key: Paths.admin.inventory.dosageForms.list,
+              icon: <GiMedicines />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.dosageForms.list)}>
+                  Dosage Forms
+                </CustomLink>
+              ),
+              allowedPermissions: ['dosage_forms:read'],
+            },
+            {
+              key: Paths.admin.inventory.generics.list,
+              icon: <BiCollection />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.generics.list)}>Generics</CustomLink>
+              ),
+              allowedPermissions: ['generics:read'],
+            },
             {
               key: Paths.admin.inventory.suppliers.list,
               icon: <TbTruckDelivery />,

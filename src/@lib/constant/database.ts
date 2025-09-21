@@ -6,5 +6,7 @@ export const Database = {
   permissions: 'permissions',
   permissionTypes: 'permission_types',
   rolePermissions: 'role_permissions',
+  dosageForms: 'dosage_forms',
+  generics: 'generics',
   suppliers: 'suppliers',
 };
