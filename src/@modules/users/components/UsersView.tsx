@@ -1,3 +1,4 @@
+import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Descriptions, Tag } from 'antd';
 import dayjs from 'dayjs';
@@ -24,7 +25,7 @@ const UsersView: React.FC<IProps> = ({ data }) => {
       </Descriptions.Item>
       <Descriptions.Item label="Blood Group">{data?.user_info?.blood_group || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Birthday">
-        {data?.user_info?.birthday ? dayjs(data?.user_info?.birthday).format('YYYY-MM-DD') : 'N/A'}
+        {data?.user_info?.birthday ? dayjs(data?.user_info?.birthday).format(Dayjs.date) : 'N/A'}
       </Descriptions.Item>
       <Descriptions.Item label="Roles" span={2}>
         {Toolbox.isEmpty(data?.user_roles) ? 'N/A' : data?.user_roles?.map((ur) => ur?.role?.name).join(', ')}

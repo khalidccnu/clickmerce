@@ -1,5 +1,6 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
+import { Dayjs } from '@lib/constant/dayjs';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, Space, Table, message } from 'antd';
@@ -70,7 +71,7 @@ const SuppliersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       key: 'created_at',
       dataIndex: 'created_at',
       title: 'Created At',
-      render: (created_at) => dayjs(created_at).format('DD-MM-YYYY hh:mm:ss a'),
+      render: (created_at) => dayjs(created_at).format(Dayjs.dateTimeSecondsWithAmPm),
     },
     {
       key: 'is_active',

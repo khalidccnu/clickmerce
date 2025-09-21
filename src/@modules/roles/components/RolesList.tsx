@@ -1,4 +1,5 @@
 import CustomSwitch from '@base/components/CustomSwitch';
+import { Dayjs } from '@lib/constant/dayjs';
 import { Paths } from '@lib/constant/paths';
 import { Roles } from '@lib/constant/roles';
 import { getAccess } from '@modules/auth/lib/utils/client';
@@ -56,7 +57,7 @@ const RolesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       key: 'created_at',
       dataIndex: 'created_at',
       title: 'Created At',
-      render: (created_at) => <p className="min-w-24">{dayjs(created_at).format('DD-MM-YYYY')}</p>,
+      render: (created_at) => <p className="min-w-24">{dayjs(created_at).format(Dayjs.date)}</p>,
     },
     {
       key: 'is_active',

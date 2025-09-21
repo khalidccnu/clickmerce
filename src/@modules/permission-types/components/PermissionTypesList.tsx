@@ -1,4 +1,5 @@
 import CustomSwitch from '@base/components/CustomSwitch';
+import { Dayjs } from '@lib/constant/dayjs';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, message, Table } from 'antd';
@@ -52,7 +53,7 @@ const PermissionTypesList: React.FC<IProps> = ({ isLoading, data, pagination }) 
       key: 'created_at',
       dataIndex: 'created_at',
       title: 'Created At',
-      render: (created_at) => <p className="min-w-24">{dayjs(created_at).format('DD-MM-YYYY')}</p>,
+      render: (created_at) => <p className="min-w-24">{dayjs(created_at).format(Dayjs.date)}</p>,
     },
     {
       key: 'is_active',
