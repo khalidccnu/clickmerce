@@ -121,6 +121,129 @@ export type Database = {
           },
         ];
       };
+      product_variations: {
+        Row: {
+          cost_price: number;
+          created_at: string;
+          exp: string | null;
+          id: string;
+          is_active: boolean;
+          mfg: string | null;
+          product_id: string;
+          quantity: number;
+          sale_price: number;
+          updated_at: string;
+        };
+        Insert: {
+          cost_price?: number;
+          created_at?: string;
+          exp?: string | null;
+          id?: string;
+          is_active?: boolean;
+          mfg?: string | null;
+          product_id: string;
+          quantity: number;
+          sale_price?: number;
+          updated_at?: string;
+        };
+        Update: {
+          cost_price?: number;
+          created_at?: string;
+          exp?: string | null;
+          id?: string;
+          is_active?: boolean;
+          mfg?: string | null;
+          product_id?: string;
+          quantity?: number;
+          sale_price?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'product_variations_product_id_fkey';
+            columns: ['product_id'];
+            isOneToOne: false;
+            referencedRelation: 'products';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
+      products: {
+        Row: {
+          created_at: string;
+          dosage_form_id: string | null;
+          durability: string;
+          generic_id: string | null;
+          id: string;
+          is_active: boolean;
+          medicine_type: string | null;
+          name: string;
+          quantity: number;
+          rack: string | null;
+          slug: string;
+          strength: string | null;
+          supplier_id: string | null;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          dosage_form_id?: string | null;
+          durability: string;
+          generic_id?: string | null;
+          id?: string;
+          is_active?: boolean;
+          medicine_type?: string | null;
+          name: string;
+          quantity?: number;
+          rack?: string | null;
+          slug: string;
+          strength?: string | null;
+          supplier_id?: string | null;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          dosage_form_id?: string | null;
+          durability?: string;
+          generic_id?: string | null;
+          id?: string;
+          is_active?: boolean;
+          medicine_type?: string | null;
+          name?: string;
+          quantity?: number;
+          rack?: string | null;
+          slug?: string;
+          strength?: string | null;
+          supplier_id?: string | null;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'products_dosage_form_id_fkey';
+            columns: ['dosage_form_id'];
+            isOneToOne: false;
+            referencedRelation: 'dosage_forms';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'products_generic_id_fkey';
+            columns: ['generic_id'];
+            isOneToOne: false;
+            referencedRelation: 'generics';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'products_supplier_id_fkey';
+            columns: ['supplier_id'];
+            isOneToOne: false;
+            referencedRelation: 'suppliers';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       role_permissions: {
         Row: {
           created_at: string;

@@ -7,6 +7,7 @@ import { BiCollection } from 'react-icons/bi';
 import { FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
 import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
+import { IoCubeOutline } from 'react-icons/io5';
 import { MdDashboard, MdOutlineInventory2 } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
@@ -77,8 +78,16 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.inventory.root,
           icon: <MdOutlineInventory2 />,
           label: 'Inventory',
-          allowedPermissions: ['dosage_forms:read', 'generics:read', 'suppliers:read'],
+          allowedPermissions: ['products:read', 'dosage_forms:read', 'generics:read', 'suppliers:read'],
           children: [
+            {
+              key: Paths.admin.inventory.products.list,
+              icon: <IoCubeOutline />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.products.list)}>Products</CustomLink>
+              ),
+              allowedPermissions: ['products:read'],
+            },
             {
               key: Paths.admin.inventory.dosageForms.list,
               icon: <GiMedicines />,

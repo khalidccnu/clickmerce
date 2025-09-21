@@ -422,6 +422,83 @@ export const SupabaseAdapter = {
     }
   },
 
+  async batchUpdate<T = any>(
+    supabase: SupabaseClient,
+    table: string,
+    updates: { id: TId; payload: Record<string, any> }[],
+    options: { selection?: string; returning?: boolean; chunkSize?: number } = {},
+  ): Promise<IBaseResponse<T[]>> {
+    try {
+      const { selection = '*', returning = true, chunkSize = 100 } = options;
+
+      if (!Array.isArray(updates) || !updates.length) {
+        return {
+          success: false,
+          statusCode: 400,
+          message: 'Updates must be a non-empty array',
+          data: [],
+          meta: null,
+        };
+      }
+
+      for (const update of updates) {
+        if (!update.id || !update.payload) {
+          return {
+            success: false,
+            statusCode: 400,
+            message: 'Each update must have id and payload properties',
+            data: [],
+            meta: null,
+          };
+        }
+      }
+
+      const chunks: { id: TId; payload: Record<string, any> }[][] = [];
+
+      for (let i = 0; i < updates.length; i += chunkSize) {
+        chunks.push(updates.slice(i, i + chunkSize));
+      }
+
+      const purifiedResult: T[] = [];
+
+      for (const chunk of chunks) {
+        for (const update of chunk) {
+          const result = returning
+            ? await supabase.from(table).update(update.payload).eq('id', update.id).select(selection).single()
+            : await supabase.from(table).update(update.payload).eq('id', update.id);
+
+          if (result?.error) {
+            throw new Error(`Batch update failed for ID ${update.id}: ${result.error.message}`);
+          }
+
+          if (returning && result.data) {
+            purifiedResult.push(result.data as T);
+          } else if (!returning) {
+            purifiedResult.push({ id: update.id, ...update.payload } as T);
+          }
+        }
+      }
+
+      return {
+        success: true,
+        statusCode: 200,
+        message: `${updates.length} records updated successfully`,
+        data: purifiedResult,
+        meta: null,
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      return {
+        success: false,
+        statusCode: 500,
+        message: `Batch update operation failed: ${errorMessage}`,
+        data: [],
+        meta: null,
+      };
+    }
+  },
+
   async upsert<T = any>(
     supabase: SupabaseClient,
     table: string,
@@ -529,6 +606,94 @@ export const SupabaseAdapter = {
         statusCode: 500,
         message: `Delete operation failed: ${errorMessage}`,
         data: null,
+        meta: null,
+      };
+    }
+  },
+
+  async batchDelete<T = any>(
+    supabase: SupabaseClient,
+    table: string,
+    ids: TId[],
+    options: {
+      selection?: string;
+      returning?: boolean;
+      chunkSize?: number;
+      softDelete?: boolean;
+      softDeleteField?: string;
+    } = {},
+  ): Promise<IBaseResponse<T[]>> {
+    try {
+      const {
+        selection = '*',
+        returning = true,
+        chunkSize = 100,
+        softDelete = false,
+        softDeleteField = 'is_active',
+      } = options;
+
+      if (!Array.isArray(ids) || !ids.length) {
+        return {
+          success: false,
+          statusCode: 400,
+          message: 'IDs must be a non-empty array',
+          data: [],
+          meta: null,
+        };
+      }
+
+      const chunks: TId[][] = [];
+
+      for (let i = 0; i < ids.length; i += chunkSize) {
+        chunks.push(ids.slice(i, i + chunkSize));
+      }
+
+      const purifiedResult: T[] = [];
+
+      for (const chunk of chunks) {
+        let query;
+
+        if (softDelete) {
+          query = supabase
+            .from(table)
+            .update({ [softDeleteField]: false })
+            .in('id', chunk);
+        } else {
+          query = supabase.from(table).delete().in('id', chunk);
+        }
+
+        if (returning) {
+          query = query.select(selection);
+        }
+
+        const result = await query;
+
+        if (result?.error) {
+          throw new Error(`Batch delete failed: ${result.error.message}`);
+        }
+
+        if (returning && result.data) {
+          purifiedResult.push(...(result.data as T[]));
+        } else if (!returning) {
+          purifiedResult.push(...chunk.map((id) => ({ id }) as T));
+        }
+      }
+
+      return {
+        success: true,
+        statusCode: 200,
+        message: `${ids.length} records ${softDelete ? 'soft deleted' : 'deleted'} successfully`,
+        data: purifiedResult,
+        meta: null,
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      return {
+        success: false,
+        statusCode: 500,
+        message: `Batch delete operation failed: ${errorMessage}`,
+        data: [],
         meta: null,
       };
     }
