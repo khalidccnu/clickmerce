@@ -1,8 +1,6 @@
 import { Env } from '.environments';
-import AdminLayout from '@base/layouts/AdminLayout';
-import { AuthPaths } from '@lib/constant/authPaths';
+import WithLayout from '@base/layouts/WithLayout';
 import { Providers } from '@lib/context';
-import { Toolbox } from '@lib/utils/toolbox';
 import '@styles/index.scss';
 import type { AppProps } from 'next/app';
 import { NextFontWithVariable } from 'next/dist/compiled/@next/font';
@@ -30,13 +28,9 @@ const App = ({ router, Component, pageProps }: AppProps) => {
         <title>{Env.webTitle}</title>
         <meta name="description" content={Env.webDescription} />
       </Head>
-      {Toolbox.isDynamicPath(AuthPaths, router.pathname) ? (
-        <AdminLayout>
-          <Component {...pageProps} />
-        </AdminLayout>
-      ) : (
+      <WithLayout pathname={router.pathname}>
         <Component {...pageProps} />
-      )}
+      </WithLayout>
     </Providers>
   );
 };

@@ -9,6 +9,7 @@ export const Paths = {
   },
   admin: {
     root: '/admin',
+    pos: '/admin/pos',
     users: {
       root: '/admin/users',
       list: '/admin/users/list',

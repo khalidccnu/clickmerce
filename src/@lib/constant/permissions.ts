@@ -3,6 +3,8 @@ export type TPermission = (typeof Permissions)[keyof typeof Permissions];
 export const Permissions = {
   FORBIDDEN: 'FORBIDDEN',
 
+  POS_READ: 'pos:read',
+
   DASHBOARD_ADVANCE_READ: 'dashboard-advance:read',
 
   USERS_READ: 'users:read',
