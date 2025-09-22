@@ -81,3 +81,9 @@ export interface ISupabaseQueryOption {
   head?: boolean;
   maybeSingle?: boolean;
 }
+
+export interface ISupabaseSelectionOption {
+  table: string;
+  columns?: string[];
+  nested?: Record<string, ISupabaseSelectionOption>;
+}

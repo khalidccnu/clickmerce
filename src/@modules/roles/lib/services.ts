@@ -2,7 +2,7 @@ import { IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
-import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { IPermission, IPermissionsResponse } from '../../permissions/lib/interfaces';
 import { IRole, IRoleCreate, IRolesResponse } from './interfaces';
 
@@ -86,7 +86,7 @@ export const RolesServices = {
         Database.permissions,
         {},
         {
-          selection: '*, permission_type:permission_types!inner(*)',
+          selection: buildSelectionFn({ relations: { permissionType: { table: 'permission_types' } } }),
         },
       );
 

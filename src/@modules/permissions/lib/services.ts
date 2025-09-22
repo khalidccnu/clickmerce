@@ -2,7 +2,7 @@ import { IBaseResponse, TId } from '@base/interfaces';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
-import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { IPermission, IPermissionCreate, IPermissionsFilter, IPermissionsResponse } from './interfaces';
 
 const END_POINT: string = Database.permissions;
@@ -33,7 +33,7 @@ export const PermissionsServices = {
 
     try {
       const res = await SupabaseAdapter.find<IPermission>(supabaseBrowserClient, END_POINT, newFilters, {
-        selection: '*, permission_type:permission_types!inner(*)',
+        selection: buildSelectionFn({ relations: { permissionType: { table: 'permission_types' } } }),
       });
       return Promise.resolve(res);
     } catch (error) {

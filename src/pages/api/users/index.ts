@@ -2,7 +2,7 @@ import { IBaseResponse, TId } from '@base/interfaces';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { Roles } from '@lib/constant/roles';
-import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
@@ -66,7 +66,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       Database.users,
       newFilters,
       {
-        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
+        selection: buildSelectionFn({
+          relations: {
+            user_info: { table: 'users_info' },
+            user_roles: { table: 'user_roles', nested: { role: { table: 'roles' } } },
+          },
+          filters: newFilters,
+        }),
       },
     );
 
@@ -280,7 +286,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       Database.users,
       newUser.id,
       {
-        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
+        selection: '*, user_info:users_info(*), user_roles(*, role:roles(*))',
       },
     );
 

@@ -1,5 +1,5 @@
 import { IBaseResponse, TId } from '@base/interfaces';
-import { ISupabaseFilter, ISupabaseQueryOption } from '@lib/interfaces/supabase.interfaces';
+import { ISupabaseFilter, ISupabaseQueryOption, ISupabaseSelectionOption } from '@lib/interfaces/supabase.interfaces';
 import { SupabaseClient } from '@supabase/supabase-js';
 
 export const SupabaseAdapter = {
@@ -915,4 +915,47 @@ const applyConditionsToQueryFn = (query, fieldName, conditions, filterType) => {
   }
 
   return query;
+};
+
+export const buildSelectionFn = ({
+  baseColumns = ['*'],
+  relations = {},
+  filters = {},
+}: {
+  relations?: Record<string, ISupabaseSelectionOption>;
+  filters?: Record<string, any>;
+  baseColumns?: string[];
+}): string => {
+  const base = baseColumns.join(', ');
+
+  const hasFilterForRelationFn = (alias: string, filters: Record<string, any>): boolean => {
+    if (!filters) return false;
+
+    if (alias in filters) return true;
+
+    return Object.values(filters).some((value) => {
+      return value && typeof value === 'object' && hasFilterForRelationFn(alias, value);
+    });
+  };
+
+  const buildRelationFn = (alias: string, rc: ISupabaseSelectionOption): string => {
+    const { table, columns = ['*'], nested } = rc;
+
+    const shouldInner = hasFilterForRelationFn(alias, filters);
+    const relationKey = alias === table ? table : `${alias}:${table}`;
+
+    if (nested && Object.keys(nested).length) {
+      const nestedSelections = Object.entries(nested).map(([childAlias, childRc]) =>
+        buildRelationFn(childAlias, childRc),
+      );
+
+      return `${relationKey}${shouldInner ? '!inner' : ''}(${columns.join(', ')}, ${nestedSelections.join(', ')})`;
+    }
+
+    return `${relationKey}${shouldInner ? '!inner' : ''}(${columns.join(', ')})`;
+  };
+
+  const relationSelections = Object.entries(relations).map(([alias, rc]) => buildRelationFn(alias, rc));
+
+  return [base, ...relationSelections].join(', ');
 };

@@ -2,7 +2,7 @@ import { IBaseResponse, TId } from '@base/interfaces';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
-import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IProduct, IProductCreate, IProductsFilter, IProductsResponse, IProductVariation } from './interfaces';
 
@@ -15,7 +15,7 @@ export const ProductsServices = {
     try {
       const res = await SupabaseAdapter.findById<IProduct>(supabaseBrowserClient, END_POINT, id, {
         selection:
-          '*, dosage_form:dosage_forms!inner(*), generic:generics!inner(*), supplier:suppliers!inner(*), variations:product_variations!inner(*)',
+          '*, dosage_form:dosage_forms(*), generic:generics(*), supplier:suppliers(*), variations:product_variations(*)',
       });
       return Promise.resolve(res);
     } catch (error) {
@@ -24,6 +24,13 @@ export const ProductsServices = {
   },
 
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
+    const relations = {
+      dosage_form: { table: 'dosage_forms' },
+      generic: { table: 'generics' },
+      supplier: { table: 'suppliers' },
+      variations: { table: 'product_variations' },
+    };
+
     const { start_date, end_date, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
 
@@ -37,8 +44,7 @@ export const ProductsServices = {
 
     try {
       const res = await SupabaseAdapter.find<IProduct>(supabaseBrowserClient, END_POINT, newFilters, {
-        selection:
-          '*, dosage_form:dosage_forms!inner(*), generic:generics!inner(*), supplier:suppliers!inner(*), variations:product_variations!inner(*)',
+        selection: buildSelectionFn({ relations, filters: newFilters }),
       });
       return Promise.resolve(res);
     } catch (error) {
@@ -62,7 +68,7 @@ export const ProductsServices = {
 
       const res = await SupabaseAdapter.findById<IProduct>(supabaseBrowserClient, END_POINT, data?.id, {
         selection:
-          '*, dosage_form:dosage_forms!inner(*), generic:generics!inner(*), supplier:suppliers!inner(*), variations:product_variations!inner(*)',
+          '*, dosage_form:dosage_forms(*), generic:generics(*), supplier:suppliers(*), variations:product_variations(*)',
       });
       return Promise.resolve(res);
     } catch (error) {
@@ -113,7 +119,7 @@ export const ProductsServices = {
 
       const res = await SupabaseAdapter.findById<IProduct>(supabaseBrowserClient, END_POINT, payload.id, {
         selection:
-          '*, dosage_form:dosage_forms!inner(*), generic:generics!inner(*), supplier:suppliers!inner(*), variations:product_variations!inner(*)',
+          '*, dosage_form:dosage_forms(*), generic:generics(*), supplier:suppliers(*), variations:product_variations(*)',
       });
       return Promise.resolve(res);
     } catch (error) {

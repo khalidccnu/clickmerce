@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       Database.users,
       payload.user.id,
       {
-        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
+        selection: '*, user_info:users_info(*), user_roles(*, role:roles(*))',
       },
     );
 

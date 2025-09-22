@@ -68,7 +68,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       Database.users,
       id,
       {
-        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
+        selection: '*, user_info:users_info(*), user_roles(*, role:roles(*))',
       },
     );
 
@@ -297,7 +297,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       Database.users,
       id,
       {
-        selection: '*, user_info:users_info!inner(*), user_roles!inner(*, role:roles!inner(*))',
+        selection: '*, user_info:users_info(*), user_roles(*, role:roles(*))',
       },
     );
 

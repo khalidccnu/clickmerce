@@ -3,7 +3,7 @@ import { IBaseResponse } from '@base/interfaces';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { TPermission } from '@lib/constant/permissions';
-import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { validate } from '@lib/utils/yup';
 import { loginSchema, TLoginDto } from '@modules/auth/lib/dtos';
 import { IUser } from '@modules/users/lib/interfaces';
@@ -78,7 +78,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     {
       textFilters: { user_id: { eq: user.data.id as string } },
     },
-    { selection: '*, role:roles!inner(*)' },
+    { selection: buildSelectionFn({ relations: { role: { table: 'roles' } } }) },
   );
 
   const roles = userRoles.data.map((ur) => ur.role.name);
@@ -92,7 +92,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       {
         textFilters: { role_id: { in: roleIds } },
       },
-      { selection: '*, permission:permissions!inner(*)' },
+      { selection: buildSelectionFn({ relations: { permission: { table: 'permissions' } } }) },
     );
 
     permissions = rolePermissions?.data?.map((rp) => rp?.permission?.name);
