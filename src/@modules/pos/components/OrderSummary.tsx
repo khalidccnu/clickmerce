@@ -1,0 +1,107 @@
+import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
+import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import { cn } from '@lib/utils/cn';
+import { Toolbox } from '@lib/utils/toolbox';
+import UsersForm from '@modules/users/components/UsersForm';
+import { UsersHooks } from '@modules/users/lib/hooks';
+import { IUser } from '@modules/users/lib/interfaces';
+import { Button, Col, Form, message, Row, Space, Tag } from 'antd';
+import React, { useMemo, useState } from 'react';
+import { FaTrash, FaUserPlus } from 'react-icons/fa';
+
+interface IProps {
+  className?: string;
+}
+
+const OrderSummary: React.FC<IProps> = ({ className }) => {
+  const [messageApi, messageHolder] = message.useMessage();
+  const [userFormInstance] = Form.useForm();
+  const [usersSearchTerm, setUsersSearchTerm] = useState(null);
+  const [isUserModalOpen, setUserModalOpen] = useState(false);
+
+  const trxId = useMemo(() => {
+    return Toolbox.generateKey({ prefix: 'INV', type: 'upper' });
+  }, []);
+
+  const userCreateFn = UsersHooks.useCreate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        setUserModalOpen(false);
+        userFormInstance.resetFields();
+        messageApi.success(res.message);
+      },
+    },
+  });
+
+  const usersQuery = UsersHooks.useFindInfinite({
+    options: {
+      limit: '20',
+      search_term: usersSearchTerm,
+      is_active: 'true',
+      search_fields: ['name', 'phone', 'email'],
+    },
+  });
+
+  return (
+    <React.Fragment>
+      {messageHolder}
+      <div className={cn('order_summary', className)}>
+        <div className="order_summary_header space-y-4 border-b border-gray-300 border-dotted pb-4 mb-4">
+          <p className="font-semibold dark:text-white">Order Summary</p>
+          <div className="flex items-center gap-2 justify-between">
+            <Tag color="green">{trxId}</Tag>
+            <Button size="small" type="dashed" danger>
+              <FaTrash />
+            </Button>
+          </div>
+        </div>
+        <div className="order_summary_wrapper">
+          <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <Space.Compact style={{ width: '100%' }} size="large">
+                <InfiniteScrollSelect<IUser>
+                  showSearch
+                  virtual={false}
+                  placeholder="Customer"
+                  option={({ item: user }) => ({
+                    key: user?.id,
+                    label: user?.name,
+                    value: user?.id,
+                  })}
+                  onChangeSearchTerm={setUsersSearchTerm}
+                  query={usersQuery}
+                  style={{ width: '100%' }}
+                />
+                <Button type="primary" onClick={() => setUserModalOpen(true)}>
+                  <FaUserPlus />
+                </Button>
+              </Space.Compact>
+            </Col>
+          </Row>
+        </div>
+      </div>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title="Create a new customer"
+        footer={null}
+        open={isUserModalOpen}
+        onCancel={() => setUserModalOpen(false)}
+      >
+        <UsersForm
+          form={userFormInstance}
+          initialValues={{ is_admin: 'false', is_active: 'true' }}
+          isLoading={userCreateFn.isPending}
+          onFinish={(values) => userCreateFn.mutate(values)}
+        />
+      </BaseModalWithoutClicker>
+    </React.Fragment>
+  );
+};
+
+export default OrderSummary;

@@ -1,17 +1,19 @@
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
+import RealTimeClock from '@base/components/RealTimeClock';
 import { Paths } from '@lib/constant/paths';
 import { useClickOutside } from '@lib/hooks/useClickOutside';
 import useFullScreen from '@lib/hooks/useFullScreen';
-import useRealTimeClock from '@lib/hooks/useRealTimeClock';
 import useResize from '@lib/hooks/useResize';
 import useTheme from '@lib/hooks/useTheme';
-import { Button, FloatButton, Grid, Layout, Tag } from 'antd';
+import { Button, FloatButton, Grid, Layout } from 'antd';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import React, { type PropsWithChildren, useRef, useState } from 'react';
-import { FaClock } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { MdDashboard, MdFullscreen, MdFullscreenExit, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
+
+const OrderSummary = dynamic(() => import('@modules/pos/components/OrderSummary'), { ssr: false });
 
 interface IProps extends PropsWithChildren {}
 
@@ -23,9 +25,8 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
   const siderFloatButtonRef = useRef(null);
   const { isLight } = useTheme();
   const { isFullScreen, toggleFullScreenFn } = useFullScreen();
-  const { time } = useRealTimeClock({ format: '12h', includeSeconds: true });
 
-  useClickOutside([siderRef, siderFloatButtonRef], () => (screens.md ? null : setCollapsed(true)));
+  useClickOutside([siderRef, siderFloatButtonRef], () => (screens.xl ? null : setCollapsed(true)));
 
   const styles: any = {
     sider: {
@@ -33,7 +34,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
       top: 0,
       right: isCollapsed ? '-100%' : 0,
       height: '100vh',
-      borderLeft: screens.md ? 'none' : '1px solid var(--color-gray-200)',
+      borderLeft: screens.xl ? 'none' : '1px solid var(--color-gray-700)',
       background: isLight ? 'var(--color-white)' : 'var(--color-rich-black)',
       boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
       zIndex: 100,
@@ -46,7 +47,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
       overflowY: 'auto',
     },
     layout: {
-      paddingRight: !screens.md || isCollapsed ? 0 : siderWidth,
+      paddingRight: !screens.xl || isCollapsed ? 0 : siderWidth,
       background: 'transparent',
     },
     header: {
@@ -72,7 +73,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
         collapsible
         trigger={null}
         collapsed={isCollapsed}
-        width={280}
+        width={screens.md ? 540 : 375}
         style={styles.sider}
         breakpoint="md"
         theme="light"
@@ -80,21 +81,19 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
           if (broken) setCollapsed(true);
         }}
         onClick={(e) => {
-          if (!screens.md && (e.target as HTMLAnchorElement).href) setCollapsed(true);
+          if (!screens.xl && (e.target as HTMLAnchorElement).href) setCollapsed(true);
         }}
       >
-        <div style={styles.siderWrapper} className="designed_scrollbar overscroll-contain"></div>
+        <div style={styles.siderWrapper} className="designed_scrollbar overscroll-contain">
+          <OrderSummary className="p-4" />
+        </div>
       </Layout.Sider>
       <Layout style={styles.layout}>
         <Layout.Header style={styles.header}>
           <CustomLink href={Paths.root}>
             <BrandLogo width={screens.md ? 220 : 160} />
           </CustomLink>
-          {screens.lg && (
-            <Tag color="purple">
-              <FaClock className="inline-block -mt-0.5" /> {time}
-            </Tag>
-          )}
+          {screens.lg && <RealTimeClock color="purple" />}
           <Button
             className="ml-auto"
             type="primary"
@@ -120,7 +119,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
       <FloatButton
         ref={siderFloatButtonRef}
         style={{
-          display: screens.md || isCollapsed ? 'none' : 'block',
+          display: screens.xl || isCollapsed ? 'none' : 'block',
           left: 16,
         }}
         icon={<IoClose />}

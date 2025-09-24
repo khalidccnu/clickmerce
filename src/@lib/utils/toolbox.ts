@@ -144,7 +144,15 @@ export const Toolbox = {
     };
   },
 
-  generateKey: function (length: number, type?: 'lower' | 'upper' | 'numeric' | 'key'): string {
+  generateKey: function ({
+    prefix = '',
+    length = 8,
+    type = 'key',
+  }: {
+    prefix?: string;
+    length?: number;
+    type?: 'lower' | 'upper' | 'numeric' | 'key';
+  } = {}): string {
     let result = '';
     const characters =
       type === 'lower'
@@ -160,7 +168,7 @@ export const Toolbox = {
 
     for (let i = 0; i < length; i++) result += characters.charAt(Math.floor(Math.random() * charactersLength));
 
-    return result;
+    return (prefix ? prefix + '-' : '') + result;
   },
 
   toQueryString: function (params: any): string {
