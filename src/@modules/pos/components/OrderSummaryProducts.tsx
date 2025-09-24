@@ -28,7 +28,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
   });
 
   useEffect(() => {
-    if (cart) productsBulkQuery.mutate(cart.map((elem) => elem.id));
+    if (cart) productsBulkQuery.mutate(cart.map((elem) => elem.productId));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cart?.length]);
 
@@ -55,21 +55,31 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
             <Spin />
           </div>
         ) : productsBulkQuery.data?.data?.length ? (
-          [...productsBulkQuery.data?.data]
-            ?.sort((firstElem, lastElem) => {
-              return (
-                cart?.find((cart) => cart.id === lastElem.id)?.priority -
-                cart?.find((cart) => cart.id === firstElem.id)?.priority
+          [...cart]
+            ?.sort((a, b) => b.priority - a.priority)
+            .map((cartItem, idx) => {
+              const product = productsBulkQuery.data?.data?.find((product) => product?.id === cartItem?.productId);
+              const variation = product?.variations?.find(
+                (variation) => variation?.id === cartItem?.productVariationId,
               );
-            })
-            .map((elem, idx) => {
+
+              if (!product || !variation) return null;
+
               const purifiedElem = {
-                ...elem,
-                selectedQuantity: cart.find((cart) => cart?.id === elem?.id)?.selectedQuantity,
+                ...product,
+                selectedQuantity: cartItem.selectedQuantity,
+                selectedVariation: variation,
               };
 
-              return <OrderSummaryProduct key={elem?.id} idx={idx} product={purifiedElem} />;
+              return (
+                <OrderSummaryProduct
+                  key={`${cartItem.productId}-${cartItem.productVariationId}`}
+                  idx={idx}
+                  product={purifiedElem}
+                />
+              );
             })
+            .filter(Boolean)
         ) : (
           <Empty description="No products added!" />
         )}

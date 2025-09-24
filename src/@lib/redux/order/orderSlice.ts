@@ -3,8 +3,9 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
 
 interface ICartItem {
-  id: TId;
-  selectedQuantity: number;
+  productId: TId;
+  productVariationId: TId;
+  selectedQuantity?: number;
   priority?: number;
 }
 
@@ -29,9 +30,12 @@ const orderSlice = createSlice({
     addToCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
       const { item } = action.payload;
 
-      const itemIdx = state.cart.findIndex((cartItem) => cartItem.id === item.id);
+      const itemIdx = state.cart.findIndex(
+        (cartItem) =>
+          cartItem?.productId === item?.productId && cartItem?.productVariationId === item?.productVariationId,
+      );
       const lastPriority = state.cart.length
-        ? state.cart.reduce((max, cartItem) => Math.max(max, cartItem.priority), 0)
+        ? state.cart.reduce((max, cartItem) => Math.max(max, cartItem.priority || 0), 0)
         : 0;
       const priority = lastPriority + 1;
 
@@ -43,20 +47,27 @@ const orderSlice = createSlice({
       }
     },
 
-    updateCartFn: (state, action: PayloadAction<{ id: TId; selectedQuantity: number }>) => {
-      const { id, selectedQuantity } = action.payload;
+    updateCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
+      const { item } = action.payload;
 
-      const itemIdx = state.cart.findIndex((cartItem) => cartItem.id === id);
+      const itemIdx = state.cart.findIndex(
+        (cartItem) => cartItem.productId === item.productId && cartItem.productVariationId === item.productVariationId,
+      );
 
       if (itemIdx === -1) {
         message.error('Not found in the cart!');
       } else {
-        state.cart[itemIdx].selectedQuantity = selectedQuantity;
+        state.cart[itemIdx].selectedQuantity = item.selectedQuantity;
       }
     },
 
-    removeFromCartFn: (state, action: PayloadAction<{ id: TId }>) => {
-      state.cart = state.cart.filter((item) => item.id !== action.payload.id);
+    removeFromCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
+      const { item } = action.payload;
+
+      state.cart = state.cart.filter(
+        (cartItem) =>
+          !(cartItem.productId === item.productId && cartItem.productVariationId === item.productVariationId),
+      );
       message.info('Successfully removed from the cart!');
     },
 

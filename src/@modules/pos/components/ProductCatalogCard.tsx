@@ -1,6 +1,4 @@
 import { ImagePaths } from '@lib/constant/imagePaths';
-import { useAppDispatch } from '@lib/redux/hooks';
-import { addToCartFn } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IProduct } from '@modules/products/lib/interfaces';
@@ -12,14 +10,21 @@ import { FaCheck } from 'react-icons/fa';
 interface IProps {
   className?: string;
   isFocused: boolean;
-  isInCart: boolean;
+  hasInCart: boolean;
   isOutOfStock: boolean;
   product: IProduct;
+  onAddToCart: (product: IProduct) => void;
 }
 
-const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, isInCart, isOutOfStock, product }) => {
+const ProductCatalogCard: React.FC<IProps> = ({
+  className,
+  isFocused,
+  hasInCart,
+  isOutOfStock,
+  product,
+  onAddToCart,
+}) => {
   // const { invId } = usePosInv();
-  const dispatch = useAppDispatch();
 
   const handlePriceShowFn = () => {
     if (!product?.variations || !product?.variations?.length) {
@@ -46,7 +51,7 @@ const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, isInCart, 
       )}
     >
       <div className="relative image_wrapper rounded-xl bg-gray-100 dark:bg-[var(--color-dark-gray)]">
-        {isInCart && (
+        {hasInCart && (
           <div className="z-10 absolute top-4 left-4 flex items-center justify-center p-1 bg-green-900 rounded-full text-green-300">
             <FaCheck size={12} />
           </div>
@@ -72,14 +77,8 @@ const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, isInCart, 
           <Button
             type="primary"
             shape="circle"
-            disabled={isInCart || isOutOfStock}
-            onClick={() =>
-              dispatch(
-                addToCartFn({
-                  item: { id: product.id, selectedQuantity: 1 },
-                }),
-              )
-            }
+            disabled={(hasInCart && product?.variations?.length === 1) || isOutOfStock}
+            onClick={() => onAddToCart(product)}
             ghost
           >
             <BiCartAdd />

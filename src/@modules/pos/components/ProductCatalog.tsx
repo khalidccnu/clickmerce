@@ -1,3 +1,4 @@
+import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import BaseStateSearch from '@base/components/BaseStateSearch';
 import InfiniteScroll from '@base/components/InfiniteScroll';
 import { Dayjs } from '@lib/constant/dayjs';
@@ -6,6 +7,7 @@ import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { addToCartFn } from '@lib/redux/order/orderSlice';
+import { hasProductInCartFn, hasProductVariationInCartFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
@@ -16,6 +18,7 @@ import dayjs from 'dayjs';
 import React, { useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import ProductCatalogCard from './ProductCatalogCard';
+import ProductCatalogVariations from './ProductCatalogVariations';
 
 interface IProps {
   className?: string;
@@ -30,6 +33,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
   const [productsSearchTerm, setProductsSearchTerm] = useState<string>(null);
   const [focusedProductIdx, setFocusedProductIdx] = useState<number>(null);
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [product, setProduct] = useState<IProduct>(null);
   const { cart } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
 
@@ -57,23 +61,70 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
       case 'Enter':
         if (focusedProductIdx !== null) {
           const product = products[focusedProductIdx];
-          const quantity = product?.quantity;
-          const isInCart = !!cart.find((cartItem) => cartItem.id === product.id);
-
-          if (isInCart) {
-            messageApi.warning('Already in the cart!');
-            return;
-          }
-
-          if (quantity) {
-            dispatch(addToCartFn({ item: { id: product.id, selectedQuantity: 1 } }));
-            productsSearchRef.current.clearSearch();
-          }
+          handleAddToCartFn(product, true);
         }
         break;
       default:
         break;
     }
+  };
+
+  const handleAddToCartFn = (product: IProduct, clearSearch: boolean = false) => {
+    const hasInCart = hasProductInCartFn(product.id, cart);
+
+    if (hasInCart && product?.variations?.length === 1) {
+      messageApi.warning(` ${product?.name} is already in the cart!`);
+      return;
+    }
+
+    if (!product?.quantity) {
+      messageApi.warning(`${product?.name} is out of stock!`);
+      return;
+    }
+
+    if (product?.variations?.length === 1) {
+      const variation = product.variations[0];
+
+      dispatch(
+        addToCartFn({
+          item: {
+            productId: product.id,
+            productVariationId: variation.id,
+            selectedQuantity: 1,
+          },
+        }),
+      );
+
+      if (clearSearch) productsSearchRef.current.clearSearch();
+    } else {
+      setProduct(product);
+    }
+  };
+
+  const handleAddToCartWithVariationFn = (product: IProduct, productVariation: IProduct['variations'][number]) => {
+    const hasInCart = hasProductVariationInCartFn(productVariation.id, cart);
+
+    if (hasInCart) {
+      messageApi.warning(` ${product?.name} is already in the cart!`);
+      return;
+    }
+
+    if (!productVariation?.quantity) {
+      messageApi.warning(`${product?.name} is out of stock!`);
+      return;
+    }
+
+    dispatch(
+      addToCartFn({
+        item: {
+          productId: product.id,
+          productVariationId: productVariation.id,
+          selectedQuantity: 1,
+        },
+      }),
+    );
+
+    setProduct(null);
   };
 
   const profileQuery = AuthHooks.useProfile({
@@ -127,22 +178,33 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
           >
             {({ idx, item: product }) => {
               const isFocused = focusedProductIdx === idx;
-              const isInCart = !!cart.find((cartItem) => cartItem.id === product.id);
+              const hasInCart = hasProductInCartFn(product.id, cart);
               const isOutOfStock = !product.quantity;
 
               return (
                 <ProductCatalogCard
                   isFocused={isFocused}
-                  isInCart={isInCart}
+                  hasInCart={hasInCart}
                   isOutOfStock={isOutOfStock}
                   product={product}
                   className="h-full"
+                  onAddToCart={handleAddToCartFn}
                 />
               );
             }}
           </InfiniteScroll>
         </div>
       </div>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title={`Variations (${product?.name})`}
+        footer={null}
+        open={!!product}
+        onCancel={() => setProduct(null)}
+      >
+        <ProductCatalogVariations product={product} onAddToCart={handleAddToCartWithVariationFn} />
+      </BaseModalWithoutClicker>
     </React.Fragment>
   );
 };

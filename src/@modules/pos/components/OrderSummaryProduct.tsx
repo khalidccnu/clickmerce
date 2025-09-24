@@ -10,7 +10,10 @@ import { FaTrash } from 'react-icons/fa';
 interface IProps {
   className?: string;
   idx: number;
-  product: IProduct & { selectedQuantity: number };
+  product: IProduct & {
+    selectedQuantity: number;
+    selectedVariation: IProduct['variations'][number];
+  };
 }
 
 const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
@@ -25,11 +28,20 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
     >
       <div className="col-span-full md:col-span-4">
         <div className="space-x-1 line-clamp-1">
-          <p className="font-medium">
+          <p className="font-medium dark:text-white">
             <FaTrash
               size={12}
               className="inline-block mr-0.5 -mt-0.5 cursor-pointer text-red-500 hover:text-red-700"
-              onClick={() => dispatch(removeFromCartFn({ id: product?.id }))}
+              onClick={() =>
+                dispatch(
+                  removeFromCartFn({
+                    item: {
+                      productId: product?.id,
+                      productVariationId: product?.selectedVariation?.id,
+                    },
+                  }),
+                )
+              }
             />
             {product?.name}
           </p>
@@ -51,16 +63,24 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
           )}
         </div>
       </div>
-      <p className="col-span-2">{Toolbox.withCurrency(0)}</p>
+      <p className="col-span-2 dark:text-white">{Toolbox.withCurrency(0)}</p>
       <InputNumber
         className="col-span-2 w-full"
         autoFocus={idx === 0}
         size="small"
         min={1}
-        max={product?.quantity}
+        max={product?.selectedVariation?.quantity}
         defaultValue={product?.selectedQuantity}
         onChange={(value) => {
-          dispatch(updateCartFn({ id: product?.id, selectedQuantity: value }));
+          dispatch(
+            updateCartFn({
+              item: {
+                productId: product?.id,
+                productVariationId: product?.selectedVariation?.id,
+                selectedQuantity: value,
+              },
+            }),
+          );
         }}
       />
     </div>

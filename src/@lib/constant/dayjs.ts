@@ -9,4 +9,5 @@ export const Dayjs = {
   dateTimeSeconds: 'DD.MM.YYYY HH:mm:ss',
   dateTimeSecondsWithAmPm: 'DD.MM.YYYY hh:mm:ss A',
   monthDateYear: 'MMMM D, YYYY',
+  monthYear: 'MM.YYYY',
 };

@@ -7,7 +7,7 @@ import { cn } from '@lib/utils/cn';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
-import { Button, Col, Form, message, Row, Space, Tag } from 'antd';
+import { Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
 import React, { useState } from 'react';
 import { FaTrash, FaUserPlus } from 'react-icons/fa';
 import OrderSummaryProducts from './OrderSummaryProducts';
@@ -24,6 +24,20 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   const [isUserModalOpen, setUserModalOpen] = useState(false);
   const { customer } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
+
+  const handleClearOrderFn = () => {
+    Modal.confirm({
+      title: 'Clear Order',
+      content: 'Are you sure you want to clear this order? This action cannot be undone.',
+      okText: 'Yes, Clear',
+      cancelText: 'Cancel',
+      okType: 'danger',
+      onOk: () => {
+        dispatch(clearOrderFn());
+        messageApi.success('Order cleared successfully');
+      },
+    });
+  };
 
   const userCreateFn = UsersHooks.useCreate({
     config: {
@@ -66,7 +80,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
           <p className="font-semibold dark:text-white">Order Summary</p>
           <div className="flex items-center gap-2 justify-between">
             <Tag color="green">{invId}</Tag>
-            <Button size="small" type="dashed" danger onClick={() => dispatch(clearOrderFn())}>
+            <Button size="small" type="dashed" danger onClick={handleClearOrderFn}>
               <FaTrash />
             </Button>
           </div>
