@@ -63,7 +63,7 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
           )}
         </div>
       </div>
-      <p className="col-span-2 dark:text-white">{Toolbox.withCurrency(0)}</p>
+      <p className="col-span-2 dark:text-white">{Toolbox.withCurrency(product?.selectedVariation?.sale_price)}</p>
       <InputNumber
         className="col-span-2 w-full"
         autoFocus={idx === 0}

@@ -53,10 +53,13 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
           return (
             <div
               key={variation.id}
-              className={cn('rounded-lg p-2 border space-y-2', {
-                'border-green-300 bg-green-50 dark:bg-green-900/20': hasInCart,
-                'border-red-200 bg-red-50 dark:bg-red-900/20': isOutOfStock || isExpired,
-              })}
+              className={cn(
+                'rounded-lg p-2 border space-y-2 border-gray-300 dark:border-gray-700/20 bg-gray-50 dark:bg-gray-700/20',
+                {
+                  'border-green-300 dark:border-green-700/20 bg-green-50 dark:bg-green-700/20': hasInCart,
+                  'border-red-300 dark:border-red-700/20 bg-red-50 dark:bg-red-700/20': isOutOfStock || isExpired,
+                },
+              )}
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-4 text-sm">
@@ -110,10 +113,10 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
                   <Button
                     type="primary"
                     shape="circle"
-                    size="middle"
                     icon={<BiCartAdd size={16} />}
                     disabled={isOutOfStock || hasInCart || isExpired}
                     onClick={() => onAddToCart(product, variation)}
+                    ghost
                   />
                 </div>
               </div>

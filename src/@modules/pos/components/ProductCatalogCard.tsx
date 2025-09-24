@@ -77,12 +77,11 @@ const ProductCatalogCard: React.FC<IProps> = ({
           <Button
             type="primary"
             shape="circle"
+            icon={<BiCartAdd size={16} />}
             disabled={(hasInCart && product?.variations?.length === 1) || isOutOfStock}
             onClick={() => onAddToCart(product)}
             ghost
-          >
-            <BiCartAdd />
-          </Button>
+          />
         </div>
       </div>
     </div>
