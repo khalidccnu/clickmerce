@@ -10,15 +10,11 @@ interface IProps extends PropsWithChildren {
 }
 
 const WithLayout: React.FC<IProps> = ({ pathname, children }) => {
-  return Toolbox.isDynamicPath(AuthPaths, pathname) ? (
-    pathname === Paths.admin.pos ? (
-      <PosLayout>{children}</PosLayout>
-    ) : (
-      <AdminLayout>{children}</AdminLayout>
-    )
-  ) : (
-    children
-  );
+  if (pathname === Paths.admin.pos) {
+    return <PosLayout>{children}</PosLayout>;
+  }
+
+  return Toolbox.isDynamicPath(AuthPaths, pathname) ? <AdminLayout>{children}</AdminLayout> : children;
 };
 
 export default WithLayout;

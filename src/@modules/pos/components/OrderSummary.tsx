@@ -1,27 +1,28 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import { TId } from '@base/interfaces';
+import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
+import { setCustomer } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
-import { Toolbox } from '@lib/utils/toolbox';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
 import { Button, Col, Form, message, Row, Space, Tag } from 'antd';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { FaTrash, FaUserPlus } from 'react-icons/fa';
 
 interface IProps {
   className?: string;
+  invId: TId;
 }
 
-const OrderSummary: React.FC<IProps> = ({ className }) => {
+const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const [userFormInstance] = Form.useForm();
   const [usersSearchTerm, setUsersSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
-
-  const trxId = useMemo(() => {
-    return Toolbox.generateKey({ prefix: 'INV', type: 'upper' });
-  }, []);
+  const { customer } = useAppSelector((store) => store.orderSlice);
+  const dispatch = useAppDispatch();
 
   const userCreateFn = UsersHooks.useCreate({
     config: {
@@ -31,10 +32,19 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
           return;
         }
 
+        dispatch(setCustomer(res?.data?.id));
         setUserModalOpen(false);
         userFormInstance.resetFields();
         messageApi.success(res.message);
       },
+    },
+  });
+
+  const userQuery = UsersHooks.useFindById({
+    id: customer,
+    config: {
+      queryKey: [],
+      enabled: !!customer,
     },
   });
 
@@ -54,7 +64,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
         <div className="order_summary_header space-y-4 border-b border-gray-300 border-dotted pb-4 mb-4">
           <p className="font-semibold dark:text-white">Order Summary</p>
           <div className="flex items-center gap-2 justify-between">
-            <Tag color="green">{trxId}</Tag>
+            <Tag color="green">{invId}</Tag>
             <Button size="small" type="dashed" danger>
               <FaTrash />
             </Button>
@@ -68,6 +78,11 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                   showSearch
                   virtual={false}
                   placeholder="Customer"
+                  onChange={(value) => {
+                    dispatch(setCustomer(value));
+                  }}
+                  value={customer ? [customer] : []}
+                  initialOptions={userQuery.data?.data?.id ? [userQuery.data?.data] : []}
                   option={({ item: user }) => ({
                     key: user?.id,
                     label: user?.name,

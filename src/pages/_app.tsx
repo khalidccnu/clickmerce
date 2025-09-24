@@ -1,6 +1,6 @@
 import { Env } from '.environments';
 import WithLayout from '@base/layouts/WithLayout';
-import { Providers } from '@lib/context';
+import { Providers } from '@lib/providers';
 import '@styles/index.scss';
 import type { AppProps } from 'next/app';
 import { NextFontWithVariable } from 'next/dist/compiled/@next/font';

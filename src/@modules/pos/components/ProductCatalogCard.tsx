@@ -1,18 +1,26 @@
 import { ImagePaths } from '@lib/constant/imagePaths';
+import { useAppDispatch } from '@lib/redux/hooks';
+import { addToCartFn } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IProduct } from '@modules/products/lib/interfaces';
-import { Badge, Image } from 'antd';
+import { Badge, Button, Image } from 'antd';
 import React from 'react';
 import { BiCartAdd } from 'react-icons/bi';
+import { FaCheck } from 'react-icons/fa';
 
 interface IProps {
   className?: string;
-  isFocused?: boolean;
+  isFocused: boolean;
+  isInCart: boolean;
+  isOutOfStock: boolean;
   product: IProduct;
 }
 
-const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, product }) => {
+const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, isInCart, isOutOfStock, product }) => {
+  // const { invId } = usePosInv();
+  const dispatch = useAppDispatch();
+
   const handlePriceShowFn = () => {
     if (!product?.variations || !product?.variations?.length) {
       return 'Price not available';
@@ -37,7 +45,12 @@ const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, product })
         className,
       )}
     >
-      <div className="image_wrapper rounded-xl bg-gray-100 dark:bg-[var(--color-dark-gray)]">
+      <div className="relative image_wrapper rounded-xl bg-gray-100 dark:bg-[var(--color-dark-gray)]">
+        {isInCart && (
+          <div className="z-10 absolute top-4 left-4 flex items-center justify-center p-1 bg-green-900 rounded-full text-green-300">
+            <FaCheck size={12} />
+          </div>
+        )}
         <Badge.Ribbon text={product?.quantity} color="var(--color-primary)">
           <Image
             src={ImagePaths.notFound}
@@ -56,9 +69,21 @@ const ProductCatalogCard: React.FC<IProps> = ({ className, isFocused, product })
         </p>
         <div className="border-t border-dotted border-gray-300 mt-4 pt-4 flex items-center justify-between gap-4">
           <p className="font-semibold text-sm dark:text-white">{handlePriceShowFn()}</p>
-          <div className="flex items-center justify-center p-2 bg-gray-200 dark:bg-[var(--color-dark-gray)] rounded-full cursor-pointer hover:bg-[var(--color-primary)] dark:hover:bg-[var(--color-primary)] hover:text-white transition-colors duration-500">
+          <Button
+            type="primary"
+            shape="circle"
+            disabled={isInCart || isOutOfStock}
+            onClick={() =>
+              dispatch(
+                addToCartFn({
+                  item: { id: product.id, selectedQuantity: 1 },
+                }),
+              )
+            }
+            ghost
+          >
             <BiCartAdd />
-          </div>
+          </Button>
         </div>
       </div>
     </div>

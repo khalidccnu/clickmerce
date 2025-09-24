@@ -4,13 +4,16 @@ import { Dayjs } from '@lib/constant/dayjs';
 import { States } from '@lib/constant/states';
 import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
+import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
+import { addToCartFn } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { IProduct } from '@modules/products/lib/interfaces';
+import { message } from 'antd';
 import dayjs from 'dayjs';
-import { useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import ProductCatalogCard from './ProductCatalogCard';
 
@@ -19,15 +22,18 @@ interface IProps {
 }
 
 const ProductCatalog: React.FC<IProps> = ({ className }) => {
+  const [messageApi, messageHolder] = message.useMessage();
   const { isAuthenticate } = useAuthSession();
   const [headerHeight] = useSessionState(States.headerHeight);
   const { elemRef: productCatalogHeaderRef, height: productCatalogHeaderHeight } = useResize<HTMLDivElement>();
   const productsSearchRef = useRef(null);
-  const [productsSearchTerm, setProductsSearchTerm] = useState(null);
-  const [focusedProductIdx, setFocusedProductIdx] = useState(null);
-  const [products, setProducts] = useState([]);
+  const [productsSearchTerm, setProductsSearchTerm] = useState<string>(null);
+  const [focusedProductIdx, setFocusedProductIdx] = useState<number>(null);
+  const [products, setProducts] = useState<IProduct[]>([]);
+  const { cart } = useAppSelector((store) => store.orderSlice);
+  const dispatch = useAppDispatch();
 
-  const handleProductNavigation = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleProductNavigationFn = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!products.length || !productsSearchRef.current) return;
 
     const isTyping = event.key.length === 1;
@@ -52,8 +58,15 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
         if (focusedProductIdx !== null) {
           const product = products[focusedProductIdx];
           const quantity = product?.quantity;
+          const isInCart = !!cart.find((cartItem) => cartItem.id === product.id);
+
+          if (isInCart) {
+            messageApi.warning('Already in the cart!');
+            return;
+          }
 
           if (quantity) {
+            dispatch(addToCartFn({ item: { id: product.id, selectedQuantity: 1 } }));
             productsSearchRef.current.clearSearch();
           }
         }
@@ -80,42 +93,57 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
   });
 
   return (
-    <div className={cn('product_catalog space-y-8', className)}>
-      <div
-        className="product_catalog_header flex flex-col md:flex-row md:items-center justify-between gap-4"
-        ref={productCatalogHeaderRef}
-      >
-        <div className="space-y-1">
-          <p className="text-lg font-semibold dark:text-white">Welcome, {profileQuery.data?.data?.name}</p>
-          <p className="text-gray-500 dark:text-gray-200">{dayjs().format(Dayjs.monthDateYear)}</p>
-        </div>
-        <BaseStateSearch
-          allowClear
-          autoComplete="off"
-          ref={productsSearchRef}
-          onSearch={setProductsSearchTerm}
-          addonBefore={<FaSearch size={16} />}
-          onKeyDown={handleProductNavigation}
-        />
-      </div>
-      <div
-        className="product_catalog_wrapper"
-        style={{ height: `calc(100vh - ${productCatalogHeaderHeight + headerHeight + 64}px)` }}
-      >
-        <InfiniteScroll<IProduct>
-          query={productsQuery}
-          onChangeItems={(products) => setProducts(products)}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 pr-4"
-          emptyItemsPlaceholder="No products available"
+    <React.Fragment>
+      {messageHolder}
+      <div className={cn('product_catalog space-y-8', className)}>
+        <div
+          className="product_catalog_header flex flex-col md:flex-row md:items-center justify-between gap-4"
+          ref={productCatalogHeaderRef}
         >
-          {({ idx, item: product }) => {
-            const isFocused = focusedProductIdx === idx;
+          <div className="space-y-1">
+            <p className="text-lg font-semibold dark:text-white">Welcome, {profileQuery.data?.data?.name}</p>
+            <p className="text-gray-500 dark:text-gray-200">{dayjs().format(Dayjs.monthDateYear)}</p>
+          </div>
+          <BaseStateSearch
+            allowClear
+            autoComplete="off"
+            size="large"
+            ref={productsSearchRef}
+            onSearch={setProductsSearchTerm}
+            addonBefore={<FaSearch size={16} />}
+            onKeyDown={handleProductNavigationFn}
+            style={{ width: 340 }}
+          />
+        </div>
+        <div
+          className="product_catalog_wrapper"
+          style={{ height: `calc(100vh - ${productCatalogHeaderHeight + headerHeight + 64}px)` }}
+        >
+          <InfiniteScroll<IProduct>
+            query={productsQuery}
+            onChangeItems={(products) => setProducts(products)}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 pr-4"
+            emptyItemsPlaceholder="No products available"
+          >
+            {({ idx, item: product }) => {
+              const isFocused = focusedProductIdx === idx;
+              const isInCart = !!cart.find((cartItem) => cartItem.id === product.id);
+              const isOutOfStock = !product.quantity;
 
-            return <ProductCatalogCard isFocused={isFocused} product={product} className="h-full" />;
-          }}
-        </InfiniteScroll>
+              return (
+                <ProductCatalogCard
+                  isFocused={isFocused}
+                  isInCart={isInCart}
+                  isOutOfStock={isOutOfStock}
+                  product={product}
+                  className="h-full"
+                />
+              );
+            }}
+          </InfiniteScroll>
+        </div>
       </div>
-    </div>
+    </React.Fragment>
   );
 };
 
