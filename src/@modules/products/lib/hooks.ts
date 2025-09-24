@@ -15,6 +15,16 @@ export const ProductsHooks = {
     });
   },
 
+  useFindBulk: ({ config }: { config?: MutationConfig<typeof ProductsServices.findBulk> } = {}) => {
+    return useMutation({
+      mutationFn: ProductsServices.findBulk,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
+      ...config,
+    });
+  },
+
   useFind: ({ options, config }: { options: IProductsFilter; config?: QueryConfig<typeof ProductsServices.find> }) => {
     const { queryKey, ...rest } = config ?? {};
 

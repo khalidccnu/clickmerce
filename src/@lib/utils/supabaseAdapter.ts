@@ -57,11 +57,11 @@ export const SupabaseAdapter = {
     try {
       const { selection = '*' } = options;
 
-      if (!Array.isArray(ids) || !ids.length) {
+      if (!Array.isArray(ids)) {
         return {
           success: false,
           statusCode: 400,
-          message: 'IDs must be a non-empty array',
+          message: 'IDs must be a array',
           data: [],
           meta: null,
         };

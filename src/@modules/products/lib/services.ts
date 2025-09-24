@@ -23,6 +23,18 @@ export const ProductsServices = {
     }
   },
 
+  findBulk: async (payload: TId[]): Promise<IProductsResponse> => {
+    try {
+      const res = await SupabaseAdapter.findByIds<IProduct>(supabaseBrowserClient, END_POINT, payload, {
+        selection:
+          '*, dosage_form:dosage_forms(*), generic:generics(*), supplier:suppliers(*), variations:product_variations(*)',
+      });
+      return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
     const relations = {
       dosage_form: { table: 'dosage_forms' },

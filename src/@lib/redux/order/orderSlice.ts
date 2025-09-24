@@ -42,8 +42,33 @@ const orderSlice = createSlice({
         state.cart[itemIdx].selectedQuantity += item.selectedQuantity;
       }
     },
+
+    updateCartFn: (state, action: PayloadAction<{ id: TId; selectedQuantity: number }>) => {
+      const { id, selectedQuantity } = action.payload;
+
+      const itemIdx = state.cart.findIndex((cartItem) => cartItem.id === id);
+
+      if (itemIdx === -1) {
+        message.error('Not found in the cart!');
+      } else {
+        state.cart[itemIdx].selectedQuantity = selectedQuantity;
+      }
+    },
+
+    removeFromCartFn: (state, action: PayloadAction<{ id: TId }>) => {
+      state.cart = state.cart.filter((item) => item.id !== action.payload.id);
+      message.info('Successfully removed from the cart!');
+    },
+
+    clearCartFn: (state) => {
+      state.cart = [];
+      message.info('Cart cleared!');
+    },
+
+    clearOrderFn: () => initialState,
   },
 });
 
-export const { setCustomer, addToCartFn } = orderSlice.actions;
+export const { setCustomer, addToCartFn, updateCartFn, removeFromCartFn, clearCartFn, clearOrderFn } =
+  orderSlice.actions;
 export default orderSlice.reducer;

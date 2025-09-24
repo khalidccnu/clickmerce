@@ -2,7 +2,7 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { TId } from '@base/interfaces';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { setCustomer } from '@lib/redux/order/orderSlice';
+import { clearOrderFn, setCustomer } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
@@ -10,6 +10,7 @@ import { IUser } from '@modules/users/lib/interfaces';
 import { Button, Col, Form, message, Row, Space, Tag } from 'antd';
 import React, { useState } from 'react';
 import { FaTrash, FaUserPlus } from 'react-icons/fa';
+import OrderSummaryProducts from './OrderSummaryProducts';
 
 interface IProps {
   className?: string;
@@ -65,7 +66,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
           <p className="font-semibold dark:text-white">Order Summary</p>
           <div className="flex items-center gap-2 justify-between">
             <Tag color="green">{invId}</Tag>
-            <Button size="small" type="dashed" danger>
+            <Button size="small" type="dashed" danger onClick={() => dispatch(clearOrderFn())}>
               <FaTrash />
             </Button>
           </div>
@@ -96,6 +97,9 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
                   <FaUserPlus />
                 </Button>
               </Space.Compact>
+            </Col>
+            <Col xs={24}>
+              <OrderSummaryProducts className="border-y border-gray-300 border-dotted py-4 mb-4" />
             </Col>
           </Row>
         </div>

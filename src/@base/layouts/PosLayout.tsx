@@ -3,7 +3,6 @@ import CustomLink from '@base/components/CustomLink';
 import RealTimeClock from '@base/components/RealTimeClock';
 import { Paths } from '@lib/constant/paths';
 import PosInvContext from '@lib/context/PosInvContext';
-import { useClickOutside } from '@lib/hooks/useClickOutside';
 import useFullScreen from '@lib/hooks/useFullScreen';
 import useResize from '@lib/hooks/useResize';
 import useTheme from '@lib/hooks/useTheme';
@@ -28,8 +27,6 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
   const { isLight } = useTheme();
   const { isFullScreen, toggleFullScreenFn } = useFullScreen();
 
-  useClickOutside([siderRef, siderFloatButtonRef], () => (screens.xl ? null : setCollapsed(true)));
-
   const invId = useMemo(() => {
     return Toolbox.generateKey({ prefix: 'INV', type: 'upper' });
   }, []);
@@ -40,7 +37,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
       top: 0,
       right: isCollapsed ? '-100%' : 0,
       height: '100vh',
-      borderLeft: screens.xl ? 'none' : '1px solid var(--color-gray-700)',
+      borderLeft: screens.xl ? 'none' : isLight ? '1px solid var(--color-gray-300)' : '1px solid var(--color-gray-700)',
       background: isLight ? 'var(--color-white)' : 'var(--color-rich-black)',
       boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
       zIndex: 100,
@@ -85,9 +82,6 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
         theme="light"
         onBreakpoint={(broken) => {
           if (broken) setCollapsed(true);
-        }}
-        onClick={(e) => {
-          if (!screens.xl && (e.target as HTMLAnchorElement).href) setCollapsed(true);
         }}
       >
         <div style={styles.siderWrapper} className="designed_scrollbar overscroll-contain">
