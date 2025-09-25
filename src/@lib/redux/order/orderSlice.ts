@@ -9,22 +9,35 @@ interface ICartItem {
   priority?: number;
 }
 
+interface ICartProduct {
+  productId: TId;
+  productVariationId: TId;
+  selectedQuantity: number;
+  price: number;
+}
+
 export interface IOrderState {
-  customer: TId;
+  customerId: TId;
   cart: ICartItem[];
+  cartProducts: ICartProduct[];
+  discountType: 'fixed' | 'percentage';
+  discount: number;
 }
 
 const initialState: IOrderState = {
-  customer: null,
+  customerId: null,
   cart: [],
+  cartProducts: [],
+  discountType: 'fixed',
+  discount: 0,
 };
 
 const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    setCustomer: (state, action: PayloadAction<TId>) => {
-      state.customer = action.payload;
+    setCustomerId: (state, action: PayloadAction<TId>) => {
+      state.customerId = action.payload;
     },
 
     addToCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
@@ -44,6 +57,7 @@ const orderSlice = createSlice({
         message.info('Successfully added to the cart!');
       } else {
         state.cart[itemIdx].selectedQuantity += item.selectedQuantity;
+        state.cartProducts[itemIdx].selectedQuantity += item.selectedQuantity;
       }
     },
 
@@ -58,6 +72,7 @@ const orderSlice = createSlice({
         message.error('Not found in the cart!');
       } else {
         state.cart[itemIdx].selectedQuantity = item.selectedQuantity;
+        state.cartProducts[itemIdx].selectedQuantity = item.selectedQuantity;
       }
     },
 
@@ -77,9 +92,28 @@ const orderSlice = createSlice({
     },
 
     clearOrderFn: () => initialState,
+
+    setCartProducts: (state, action: PayloadAction<ICartProduct[]>) => {
+      state.cartProducts = action.payload;
+    },
+
+    setDiscount: (state, action: PayloadAction<{ type: 'fixed' | 'percentage'; amount: number }>) => {
+      const { type, amount } = action.payload;
+
+      state.discountType = type;
+      state.discount = amount;
+    },
   },
 });
 
-export const { setCustomer, addToCartFn, updateCartFn, removeFromCartFn, clearCartFn, clearOrderFn } =
-  orderSlice.actions;
+export const {
+  setCustomerId,
+  addToCartFn,
+  updateCartFn,
+  removeFromCartFn,
+  clearCartFn,
+  clearOrderFn,
+  setCartProducts,
+  setDiscount,
+} = orderSlice.actions;
 export default orderSlice.reducer;

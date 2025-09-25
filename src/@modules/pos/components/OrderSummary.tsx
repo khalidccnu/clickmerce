@@ -2,7 +2,7 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { TId } from '@base/interfaces';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { clearOrderFn, setCustomer } from '@lib/redux/order/orderSlice';
+import { clearOrderFn, setCustomerId } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
@@ -22,7 +22,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   const [userFormInstance] = Form.useForm();
   const [usersSearchTerm, setUsersSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
-  const { customer } = useAppSelector((store) => store.orderSlice);
+  const { customerId } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
 
   const handleClearOrderFn = () => {
@@ -47,7 +47,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
           return;
         }
 
-        dispatch(setCustomer(res?.data?.id));
+        dispatch(setCustomerId(res?.data?.id));
         setUserModalOpen(false);
         userFormInstance.resetFields();
         messageApi.success(res.message);
@@ -56,10 +56,10 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   });
 
   const userQuery = UsersHooks.useFindById({
-    id: customer,
+    id: customerId,
     config: {
       queryKey: [],
-      enabled: !!customer,
+      enabled: !!customerId,
     },
   });
 
@@ -94,9 +94,9 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
                   virtual={false}
                   placeholder="Customer"
                   onChange={(value) => {
-                    dispatch(setCustomer(value));
+                    dispatch(setCustomerId(value));
                   }}
-                  value={customer ? [customer] : []}
+                  value={customerId ? [customerId] : []}
                   initialOptions={userQuery.data?.data?.id ? [userQuery.data?.data] : []}
                   option={({ item: user }) => ({
                     key: user?.id,

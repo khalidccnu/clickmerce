@@ -20,7 +20,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
   return (
     <div className="space-y-4">
       <Alert message="Please select a variation to add to cart!" type="info" showIcon />
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700 space-y-2">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 border border-gray-300 dark:border-gray-700 space-y-2">
         <p className="font-semibold text-lg text-gray-900 dark:text-white">{product?.name}</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-300">
           <div className="col-span-full">
@@ -87,7 +87,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
                           <div>
                             <span className="text-gray-500 dark:text-gray-300">MFG:</span>
                             <span className="ml-1 text-gray-700 dark:text-gray-300">
-                              {dayjs(variation.mfg).format(Dayjs.monthYear)}
+                              {dayjs(variation.mfg).format(Dayjs.date)}
                             </span>
                           </div>
                         )}
@@ -101,7 +101,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
                                 'text-gray-700 dark:text-gray-500': !isExpired && !isExpiringSoon,
                               })}
                             >
-                              {dayjs(variation.exp).format(Dayjs.monthYear)}
+                              {dayjs(variation.exp).format(Dayjs.date)}
                             </span>
                           </div>
                         )}

@@ -1,5 +1,6 @@
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { clearCartFn } from '@lib/redux/order/orderSlice';
+import { orderCartSubtotalSnap } from '@lib/redux/order/orderSelector';
+import { clearCartFn, setCartProducts } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { ProductsHooks } from '@modules/products/lib/hooks';
@@ -14,6 +15,7 @@ interface IProps {
 const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const { cart } = useAppSelector((store) => store.orderSlice);
+  const orderCartSubtotal = useAppSelector(orderCartSubtotalSnap);
   const dispatch = useAppDispatch();
 
   const productsBulkQuery = ProductsHooks.useFindBulk({
@@ -23,6 +25,25 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
           messageApi.error(res.message);
           return;
         }
+
+        const cartProducts =
+          cart
+            ?.map((cartItem) => {
+              const product = res.data?.find((product) => product.id === cartItem.productId);
+              const variation = product?.variations?.find((variation) => variation.id === cartItem.productVariationId);
+
+              if (!product || !variation) return null;
+
+              return {
+                productId: cartItem.productId,
+                productVariationId: cartItem.productVariationId,
+                selectedQuantity: cartItem.selectedQuantity,
+                price: variation.sale_price,
+              };
+            })
+            .filter(Boolean) || [];
+
+        dispatch(setCartProducts(cartProducts));
       },
     },
   });
@@ -43,7 +64,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
           Preview
         </Button>
         <Tag color="var(--color-primary)" className="!ml-auto !me-0">
-          Total Price: {Toolbox.withCurrency(0)}
+          Total Price: {Toolbox.withCurrency(orderCartSubtotal)}
         </Tag>
         <Button danger size="small" onClick={() => dispatch(clearCartFn())} disabled={!cart?.length}>
           Clear

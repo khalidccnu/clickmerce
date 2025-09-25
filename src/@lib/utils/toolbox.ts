@@ -3,8 +3,13 @@ import dayjs from 'dayjs';
 import { Storage } from './storage';
 
 export const Toolbox = {
-  withCurrency: function (amount: number | string, symbol: string = Storage.getData(CURRENCY_KEY) || '৳'): string {
-    return symbol + '' + this.toSafeNumber(amount);
+  withCurrency: function (
+    amount: number | string,
+    truncate: boolean = true,
+    symbol: string = Storage.getData(CURRENCY_KEY) || '৳',
+  ): string {
+    const truncatedAmount = truncate ? this.truncateNumber(amount) : amount;
+    return symbol + '' + this.toSafeNumber(truncatedAmount);
   },
 
   truncateNumber: (value: number, scale: number = 2) => {

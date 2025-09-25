@@ -56,7 +56,7 @@ const ProductCatalogCard: React.FC<IProps> = ({
             <FaCheck size={12} />
           </div>
         )}
-        <Badge.Ribbon text={product?.quantity} color="var(--color-primary)">
+        <Badge.Ribbon text={product?.quantity ? product?.quantity : 'Out of Stock'} color="var(--color-primary)">
           <Image
             src={ImagePaths.notFound}
             alt={product.name}
