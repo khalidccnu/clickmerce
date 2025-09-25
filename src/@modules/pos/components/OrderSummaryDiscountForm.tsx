@@ -1,4 +1,4 @@
-import FloatInput from '@base/antd/components/FloatInput';
+import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
@@ -75,7 +75,7 @@ const OrderSummaryDiscountForm: React.FC<IProps> = ({
             ]}
             className="!mb-0"
           >
-            <FloatInput placeholder="Amount" />
+            <FloatInputNumber placeholder="Amount" className="w-full" />
           </Form.Item>
         </Col>
         <Col xs={24}>

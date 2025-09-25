@@ -1,10 +1,10 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import {
-  orderCartSubtotalSnap,
   orderDiscountSnap,
   orderGrandTotalSnap,
   orderRoundOffSnap,
+  orderSubtotalSnap,
 } from '@lib/redux/order/orderSelector';
 import { setDiscount, setRoundOff } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
@@ -22,7 +22,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
   const [discountFormInstance] = Form.useForm();
   const [isDiscountModalOpen, setDiscountModalOpen] = useState(false);
   const orderDiscount = useAppSelector(orderDiscountSnap);
-  const orderCartSubtotal = useAppSelector(orderCartSubtotalSnap);
+  const orderSubtotal = useAppSelector(orderSubtotalSnap);
   const orderRoundOff = useAppSelector(orderRoundOffSnap);
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
   const { discountType, discount, isRoundOff } = useAppSelector((store) => store.orderSlice);
@@ -30,7 +30,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
 
   return (
     <React.Fragment>
-      <div className={cn('order_summary_price text-gray-700 space-y-2 text-sm', className)}>
+      <div className={cn('order_summary_price text-gray-700 dark:text-gray-300 space-y-2 text-sm', className)}>
         <div className="flex items-center justify-between gap-2">
           <p className="space-x-1">
             <span>Coupon</span>
@@ -50,7 +50,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
         </div>
         <div className="flex items-center justify-between gap-2">
           <p>Subtotal</p>
-          <p className="font-semibold">{Toolbox.withCurrency(orderCartSubtotal)}</p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderSubtotal)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
           <Switch
@@ -63,7 +63,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
           />
           <p className="font-semibold">{Toolbox.withCurrency(orderRoundOff)}</p>
         </div>
-        <div className="flex items-center justify-between gap-2 border-t border-gray-300 border-dotted pt-4 text-black text-base">
+        <div className="flex items-center justify-between gap-2 border-t border-gray-300 border-dotted pt-4 text-black dark:text-white text-base">
           <p>Payable</p>
           <p className="font-semibold">{Toolbox.withCurrency(orderGrandTotal.totalWithRoundOff)}</p>
         </div>

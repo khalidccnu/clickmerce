@@ -1,15 +1,17 @@
+import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { TId } from '@base/interfaces';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { clearOrderFn, setCustomerId } from '@lib/redux/order/orderSlice';
+import { orderChangeAmountSnap } from '@lib/redux/order/orderSelector';
+import { clearOrderFn, setCustomerId, setPayableAmount } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
 import { Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
 import React, { useState } from 'react';
-import { FaTrash, FaUserPlus } from 'react-icons/fa';
+import { FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
 import OrderSummaryPrice from './OrderSummaryPrice';
 import OrderSummaryProducts from './OrderSummaryProducts';
 
@@ -23,7 +25,8 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   const [userFormInstance] = Form.useForm();
   const [usersSearchTerm, setUsersSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
-  const { customerId } = useAppSelector((store) => store.orderSlice);
+  const { customerId, cart, payableAmount } = useAppSelector((store) => store.orderSlice);
+  const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const dispatch = useAppDispatch();
 
   const handleClearOrderFn = () => {
@@ -118,6 +121,38 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
             </Col>
             <Col xs={24}>
               <OrderSummaryPrice className="border-b border-gray-300 border-dotted pb-4" />
+            </Col>
+            <Col xs={24} md={12}>
+              <FloatInputNumber
+                size="large"
+                placeholder="Payable Amount"
+                min={0}
+                value={payableAmount}
+                className="w-full"
+                onChange={(value: number) => {
+                  dispatch(setPayableAmount({ amount: value || 0 }));
+                }}
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <FloatInputNumber
+                size="large"
+                placeholder="Change Amount"
+                value={orderChangeAmount}
+                className="w-full"
+                readOnly
+              />
+            </Col>
+            <Col xs={24}>
+              <Button
+                type="primary"
+                size="large"
+                block
+                disabled={!invId || !customerId || !cart?.length}
+                icon={<FaShoppingBag />}
+              >
+                Place Order
+              </Button>
             </Col>
           </Row>
         </div>

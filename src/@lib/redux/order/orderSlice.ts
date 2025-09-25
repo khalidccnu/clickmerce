@@ -24,6 +24,7 @@ export interface IOrderState {
   discountType: TPosDiscountType;
   discount: number;
   isRoundOff: boolean;
+  payableAmount: number;
 }
 
 const initialState: IOrderState = {
@@ -32,7 +33,8 @@ const initialState: IOrderState = {
   cartProducts: [],
   discountType: ENUM_POS_DISCOUNT_TYPES.FIXED,
   discount: 0,
-  isRoundOff: false,
+  isRoundOff: true,
+  payableAmount: 0,
 };
 
 const orderSlice = createSlice({
@@ -109,8 +111,12 @@ const orderSlice = createSlice({
 
     setRoundOff: (state, action: PayloadAction<{ isRoundOff: boolean }>) => {
       const { isRoundOff } = action.payload;
-
       state.isRoundOff = isRoundOff;
+    },
+
+    setPayableAmount: (state, action: PayloadAction<{ amount: number }>) => {
+      const { amount } = action.payload;
+      state.payableAmount = amount;
     },
   },
 });
@@ -125,5 +131,6 @@ export const {
   setCartProducts,
   setDiscount,
   setRoundOff,
+  setPayableAmount,
 } = orderSlice.actions;
 export default orderSlice.reducer;

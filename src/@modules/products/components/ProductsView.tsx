@@ -27,7 +27,7 @@ const ProductsView: React.FC<IProps> = ({ data }) => {
       <Descriptions.Item label="Quantity">{data?.quantity}</Descriptions.Item>
       <Descriptions.Item label="Meta" span={2}>
         <Tag color="blue">{Toolbox.toPrettyText(data?.type)}</Tag>
-        <Tag color="green">{Toolbox.toPrettyText(data?.medicine_type)}</Tag>
+        {data?.medicine_type && <Tag color="green">{Toolbox.toPrettyText(data?.medicine_type)}</Tag>}
         <Tag color="purple">{Toolbox.toPrettyText(data?.durability)}</Tag>
       </Descriptions.Item>
     </Descriptions>

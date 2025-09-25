@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { orderCartSubtotalSnap } from '@lib/redux/order/orderSelector';
+import { orderGrandTotalSnap } from '@lib/redux/order/orderSelector';
 import { clearCartFn, setCartProducts } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -15,7 +15,7 @@ interface IProps {
 const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const { cart } = useAppSelector((store) => store.orderSlice);
-  const orderCartSubtotal = useAppSelector(orderCartSubtotalSnap);
+  const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
   const dispatch = useAppDispatch();
 
   const productsBulkQuery = ProductsHooks.useFindBulk({
@@ -64,13 +64,13 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
           Preview
         </Button>
         <Tag color="var(--color-primary)" className="!ml-auto !me-0">
-          Total Price: {Toolbox.withCurrency(orderCartSubtotal)}
+          Total Price: {Toolbox.withCurrency(orderGrandTotal.totalWithRoundOff)}
         </Tag>
         <Button danger size="small" onClick={() => dispatch(clearCartFn())} disabled={!cart?.length}>
           Clear
         </Button>
       </div>
-      <div className="space-y-4 max-h-96 overflow-y-auto hidden_scrollbar">
+      <div className="space-y-4 max-h-[720px] overflow-y-auto hidden_scrollbar">
         {productsBulkQuery.isPending ? (
           <div className="text-center">
             <Spin />

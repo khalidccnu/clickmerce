@@ -29,9 +29,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
           </div>
           {product?.strength && (
             <p className={cn('col-span-2 font-medium', { 'col-span-full': !product?.rack })}>
-              {product?.dosage_form?.name
-                ? `${product?.dosage_form?.name} (${product?.strength})`
-                : `${product?.strength}`}
+              {product?.dosage_form?.name ? `${product?.dosage_form?.name} (${product?.strength})` : product?.strength}
             </p>
           )}
           {product?.rack && (
@@ -54,7 +52,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
             <div
               key={variation.id}
               className={cn(
-                'rounded-lg p-2 border space-y-2 border-gray-300 dark:border-gray-700/20 bg-gray-50 dark:bg-gray-700/20',
+                'rounded-lg p-2 border space-y-2 border-gray-300 dark:border-gray-500/20 bg-gray-50 dark:bg-gray-500/20',
                 {
                   'border-green-300 dark:border-green-700/20 bg-green-50 dark:bg-green-700/20': hasInCart,
                   'border-red-300 dark:border-red-700/20 bg-red-50 dark:bg-red-700/20': isOutOfStock || isExpired,

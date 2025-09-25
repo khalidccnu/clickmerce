@@ -57,7 +57,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const [dfFormInstance] = Form.useForm();
   const [suppliersFormInstance] = Form.useForm();
   const [genericsFormInstance] = Form.useForm();
-  const [durability, setDurability] = useState(initialValues?.durability || ENUM_PRODUCTS_DURABILITIES.PERISHABLE);
+  const [durability, setDurability] = useState(initialValues?.durability || ENUM_PRODUCTS_DURABILITIES.NON_PERISHABLE);
   const [isDFModalOpen, setDFModalOpen] = useState(false);
   const [isGenericsModalOpen, setGenericsModalOpen] = useState(false);
   const [isSuppliersModalOpen, setSuppliersModalOpen] = useState(false);
