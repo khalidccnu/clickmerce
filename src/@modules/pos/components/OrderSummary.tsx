@@ -10,6 +10,7 @@ import { IUser } from '@modules/users/lib/interfaces';
 import { Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
 import React, { useState } from 'react';
 import { FaTrash, FaUserPlus } from 'react-icons/fa';
+import OrderSummaryPrice from './OrderSummaryPrice';
 import OrderSummaryProducts from './OrderSummaryProducts';
 
 interface IProps {
@@ -113,7 +114,10 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
               </Space.Compact>
             </Col>
             <Col xs={24}>
-              <OrderSummaryProducts className="border-y border-gray-300 border-dotted py-4 mb-4" />
+              <OrderSummaryProducts className="border-y border-gray-300 border-dotted py-4" />
+            </Col>
+            <Col xs={24}>
+              <OrderSummaryPrice className="border-b border-gray-300 border-dotted pb-4" />
             </Col>
           </Row>
         </div>

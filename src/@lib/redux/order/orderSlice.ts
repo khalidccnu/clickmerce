@@ -1,4 +1,5 @@
 import { TId } from '@base/interfaces';
+import { ENUM_POS_DISCOUNT_TYPES, TPosDiscountType } from '@modules/pos/lib/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
 
@@ -20,16 +21,18 @@ export interface IOrderState {
   customerId: TId;
   cart: ICartItem[];
   cartProducts: ICartProduct[];
-  discountType: 'fixed' | 'percentage';
+  discountType: TPosDiscountType;
   discount: number;
+  isRoundOff: boolean;
 }
 
 const initialState: IOrderState = {
   customerId: null,
   cart: [],
   cartProducts: [],
-  discountType: 'fixed',
+  discountType: ENUM_POS_DISCOUNT_TYPES.FIXED,
   discount: 0,
+  isRoundOff: false,
 };
 
 const orderSlice = createSlice({
@@ -97,11 +100,17 @@ const orderSlice = createSlice({
       state.cartProducts = action.payload;
     },
 
-    setDiscount: (state, action: PayloadAction<{ type: 'fixed' | 'percentage'; amount: number }>) => {
+    setDiscount: (state, action: PayloadAction<{ type: TPosDiscountType; amount: number }>) => {
       const { type, amount } = action.payload;
 
       state.discountType = type;
       state.discount = amount;
+    },
+
+    setRoundOff: (state, action: PayloadAction<{ isRoundOff: boolean }>) => {
+      const { isRoundOff } = action.payload;
+
+      state.isRoundOff = isRoundOff;
     },
   },
 });
@@ -115,5 +124,6 @@ export const {
   clearOrderFn,
   setCartProducts,
   setDiscount,
+  setRoundOff,
 } = orderSlice.actions;
 export default orderSlice.reducer;
