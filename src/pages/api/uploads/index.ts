@@ -10,6 +10,7 @@ import { ISettings } from '@modules/settings/lib/interfaces';
 import formidable from 'formidable';
 import fs from 'fs/promises';
 import { NextApiRequest, NextApiResponse } from 'next';
+import os from 'os';
 import { TUploadDto, uploadSchema } from '../lib/dtos';
 import { optimizeImageFn } from '../lib/utils';
 
@@ -53,7 +54,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
-  const form = formidable({ multiples: true });
+  const form = formidable({
+    multiples: true,
+    uploadDir: os.tmpdir(),
+    keepExtensions: true,
+  });
   const [fields, files] = await form.parse(req);
 
   const { make_public } = fields;
