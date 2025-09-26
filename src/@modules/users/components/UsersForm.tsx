@@ -18,7 +18,6 @@ import { IoCalendar } from 'react-icons/io5';
 import { IUserCreate } from '../lib/interfaces';
 
 interface IProps {
-  isInitiate?: boolean;
   isLoading: boolean;
   form: FormInstance;
   formType?: 'create' | 'update';
@@ -26,14 +25,7 @@ interface IProps {
   onFinish: (values: IUserCreate) => void;
 }
 
-const UsersForm: React.FC<IProps> = ({
-  isInitiate = false,
-  isLoading,
-  form,
-  formType = 'create',
-  initialValues,
-  onFinish,
-}) => {
+const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', initialValues, onFinish }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const formValues = Form.useWatch([], form);
   const [roleSearchTerm, setRoleSearchTerm] = useState(null);
@@ -52,7 +44,7 @@ const UsersForm: React.FC<IProps> = ({
   const rolesQuery = RolesHooks.useFindInfinite({
     config: {
       queryKey: [],
-      enabled: !isInitiate && hasAccess({ allowedPermissions: ['roles:read'] }),
+      enabled: hasAccess({ allowedPermissions: ['roles:read'] }),
     },
     options: {
       limit: '20',
@@ -64,7 +56,7 @@ const UsersForm: React.FC<IProps> = ({
   const handleFinishFn = (values) => {
     let sanitizedRoles = [];
 
-    if (!isInitiate && hasAccess({ allowedPermissions: ['roles:read'] })) {
+    if (hasAccess({ allowedPermissions: ['roles:read'] })) {
       const currentSanitizedRoles = values?.roles?.map((role: TId) => ({ id: role }));
       sanitizedRoles = Toolbox.computeArrayDiffs(initialValues?.roles, currentSanitizedRoles, 'id');
     }
@@ -75,7 +67,7 @@ const UsersForm: React.FC<IProps> = ({
   useEffect(() => {
     form.resetFields();
 
-    if (formType === 'update' && !isInitiate && hasAccess({ allowedPermissions: ['roles:read'] })) {
+    if (formType === 'update' && hasAccess({ allowedPermissions: ['roles:read'] })) {
       if (Toolbox.isNotEmpty(initialValues?.roles)) {
         const roles = initialValues?.roles?.map((role) => role?.id);
         rolesSpecificQuery.mutate(roles);
@@ -119,7 +111,7 @@ const UsersForm: React.FC<IProps> = ({
               name="password"
               rules={[
                 {
-                  required: isInitiate || (formType === 'create' && Toolbox.toBool(formValues?.is_admin)),
+                  required: formType === 'create' && Toolbox.toBool(formValues?.is_admin),
                   message: 'Password is required!',
                 },
                 {
@@ -154,10 +146,6 @@ const UsersForm: React.FC<IProps> = ({
                   type: 'email',
                   message: 'Email is not valid!',
                 },
-                {
-                  required: isInitiate,
-                  message: 'Email is required!',
-                },
               ]}
               className="!mb-0"
             >
@@ -165,16 +153,7 @@ const UsersForm: React.FC<IProps> = ({
             </Form.Item>
           </Col>
           <Col xs={24}>
-            <Form.Item
-              name="blood_group"
-              rules={[
-                {
-                  required: isInitiate,
-                  message: 'Blood group is required!',
-                },
-              ]}
-              className="!mb-0"
-            >
+            <Form.Item name="blood_group" className="!mb-0">
               <FloatSelect
                 allowClear
                 showSearch
@@ -190,16 +169,7 @@ const UsersForm: React.FC<IProps> = ({
             </Form.Item>
           </Col>
           <Col xs={24}>
-            <Form.Item
-              name="birthday"
-              rules={[
-                {
-                  required: isInitiate,
-                  message: 'Birthday is required!',
-                },
-              ]}
-              className="!mb-0"
-            >
+            <Form.Item name="birthday" className="!mb-0">
               <FloatDatePicker
                 placeholder="Birthday"
                 format="YYYY-MM-DD"
@@ -212,56 +182,52 @@ const UsersForm: React.FC<IProps> = ({
               />
             </Form.Item>
           </Col>
-          {isInitiate || (
-            <React.Fragment>
-              <Authorization allowedPermissions={['roles:read']}>
-                <Col xs={24} md={24}>
-                  <Form.Item className="!mb-0" name="roles">
-                    <InfiniteScrollSelect<IRole>
-                      isFloat
-                      allowClear
-                      showSearch
-                      mode="multiple"
-                      virtual={false}
-                      placeholder="Roles"
-                      initialOptions={rolesSpecificQuery.data?.data}
-                      option={({ item: role }) => ({
-                        key: role?.id,
-                        label: role?.name,
-                        value: role?.id,
-                      })}
-                      onChangeSearchTerm={(searchTerm) => setRoleSearchTerm(searchTerm)}
-                      query={rolesQuery}
-                    />
-                  </Form.Item>
-                </Col>
-              </Authorization>
-              <Col xs={24}>
-                <Form.Item name="is_admin" className="!mb-0">
-                  <Radio.Group buttonStyle="solid" className="w-full text-center">
-                    <Radio.Button className="w-1/2" value="true">
-                      Admin
-                    </Radio.Button>
-                    <Radio.Button className="w-1/2" value="false">
-                      Customer
-                    </Radio.Button>
-                  </Radio.Group>
-                </Form.Item>
-              </Col>
-              <Col xs={24}>
-                <Form.Item name="is_active" className="!mb-0">
-                  <Radio.Group buttonStyle="solid" className="w-full text-center">
-                    <Radio.Button className="w-1/2" value="true">
-                      Active
-                    </Radio.Button>
-                    <Radio.Button className="w-1/2" value="false">
-                      Inactive
-                    </Radio.Button>
-                  </Radio.Group>
-                </Form.Item>
-              </Col>
-            </React.Fragment>
-          )}
+          <Authorization allowedPermissions={['roles:read']}>
+            <Col xs={24} md={24}>
+              <Form.Item className="!mb-0" name="roles">
+                <InfiniteScrollSelect<IRole>
+                  isFloat
+                  allowClear
+                  showSearch
+                  mode="multiple"
+                  virtual={false}
+                  placeholder="Roles"
+                  initialOptions={rolesSpecificQuery.data?.data}
+                  option={({ item: role }) => ({
+                    key: role?.id,
+                    label: role?.name,
+                    value: role?.id,
+                  })}
+                  onChangeSearchTerm={(searchTerm) => setRoleSearchTerm(searchTerm)}
+                  query={rolesQuery}
+                />
+              </Form.Item>
+            </Col>
+          </Authorization>
+          <Col xs={24}>
+            <Form.Item name="is_admin" className="!mb-0">
+              <Radio.Group buttonStyle="solid" className="w-full text-center">
+                <Radio.Button className="w-1/2" value="true">
+                  Admin
+                </Radio.Button>
+                <Radio.Button className="w-1/2" value="false">
+                  Customer
+                </Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <Form.Item name="is_active" className="!mb-0">
+              <Radio.Group buttonStyle="solid" className="w-full text-center">
+                <Radio.Button className="w-1/2" value="true">
+                  Active
+                </Radio.Button>
+                <Radio.Button className="w-1/2" value="false">
+                  Inactive
+                </Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
           <Col xs={24}>
             <Form.Item className="text-right !mb-0">
               <Button loading={isLoading} type="primary" htmlType="submit">

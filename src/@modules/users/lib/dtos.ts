@@ -27,7 +27,7 @@ export const userCreateSchema = yup.object({
   is_active: yup.string().optional(),
 });
 
-export const userUpdateSchema = PartialType(OmitType(userCreateSchema, ['roles'])).concat(
+export const userUpdateSchema = PartialType(OmitType(userCreateSchema, ['roles']), true).concat(
   yup.object({
     roles: yup.array().of(userRoleUpdateSchema).optional().nullable(),
   }),

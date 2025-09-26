@@ -13,9 +13,3 @@ CREATE TABLE IF NOT EXISTS generics (
 CREATE INDEX IF NOT EXISTS idx_generics_name ON generics(name);
 CREATE INDEX IF NOT EXISTS idx_generics_slug ON generics(slug);
 CREATE INDEX IF NOT EXISTS idx_generics_is_active ON generics(is_active);
-
--- Create updated_at trigger
-CREATE TRIGGER update_generics_updated_at 
-    BEFORE UPDATE ON generics 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column();

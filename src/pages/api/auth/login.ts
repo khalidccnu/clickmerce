@@ -9,7 +9,7 @@ import { loginSchema, TLoginDto } from '@modules/auth/lib/dtos';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { jwtSign } from '../utils/jwt';
+import { jwtSign } from '../lib/jwt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {

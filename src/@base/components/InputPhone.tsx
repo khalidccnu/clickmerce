@@ -1,6 +1,6 @@
 import { theme } from 'antd';
 import React, { useMemo, useState } from 'react';
-import PhoneInput, { PhoneInputProps } from 'react-phone-input-2';
+import PhoneInput, { CountryData, PhoneInputProps } from 'react-phone-input-2';
 
 interface IProps extends PhoneInputProps {
   size?: 'small' | 'middle' | 'large';
@@ -32,7 +32,7 @@ const InputPhone: React.FC<IProps> = ({
 
   const handleChangeFn = (
     value: string,
-    country: { countryCode: string; dialCode: string; format: string; name: string },
+    country: CountryData,
     event: React.ChangeEvent<HTMLInputElement>,
     formattedValue: string,
   ) => {

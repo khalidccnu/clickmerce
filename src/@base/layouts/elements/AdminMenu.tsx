@@ -4,7 +4,7 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
 import { BiCollection } from 'react-icons/bi';
-import { FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
+import { FaTools, FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
 import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline } from 'react-icons/io5';
@@ -115,6 +115,12 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
               allowedPermissions: ['suppliers:read'],
             },
           ],
+        },
+        {
+          key: Paths.admin.settings.root,
+          icon: <FaTools />,
+          label: <CustomLink href={Paths.admin.settings.root}>Settings</CustomLink>,
+          allowedPermissions: ['settings:read'],
         },
       ])}
     />

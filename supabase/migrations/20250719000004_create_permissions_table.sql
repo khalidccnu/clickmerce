@@ -12,9 +12,3 @@ CREATE TABLE IF NOT EXISTS permissions (
 CREATE INDEX IF NOT EXISTS idx_permissions_name ON permissions(name);
 CREATE INDEX IF NOT EXISTS idx_permissions_permission_type_id ON permissions(permission_type_id);
 CREATE INDEX IF NOT EXISTS idx_permissions_is_active ON permissions(is_active);
-
--- Create updated_at trigger
-CREATE TRIGGER update_permissions_updated_at 
-    BEFORE UPDATE ON permissions 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column();

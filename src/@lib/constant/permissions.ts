@@ -7,6 +7,8 @@ export const Permissions = {
 
   DASHBOARD_ADVANCE_READ: 'dashboard-advance:read',
 
+  SETTINGS_READ: 'settings:read',
+
   USERS_READ: 'users:read',
   USERS_WRITE: 'users:write',
   USERS_UPDATE: 'users:update',

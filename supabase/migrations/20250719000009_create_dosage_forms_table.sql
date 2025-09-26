@@ -13,9 +13,3 @@ CREATE TABLE IF NOT EXISTS dosage_forms (
 CREATE INDEX IF NOT EXISTS idx_dosage_forms_name ON dosage_forms(name);
 CREATE INDEX IF NOT EXISTS idx_dosage_forms_slug ON dosage_forms(slug);
 CREATE INDEX IF NOT EXISTS idx_dosage_forms_is_active ON dosage_forms(is_active);
-
--- Create updated_at trigger
-CREATE TRIGGER update_dosage_forms_updated_at 
-    BEFORE UPDATE ON dosage_forms 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column();

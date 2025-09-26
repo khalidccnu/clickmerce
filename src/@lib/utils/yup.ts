@@ -1,7 +1,7 @@
 import { IBaseResponse } from '@base/interfaces';
 import * as yup from 'yup';
 
-export const PartialType = <T extends yup.AnyObjectSchema>(schema: T) => {
+export const PartialType = <T extends yup.AnyObjectSchema>(schema: T, deep: boolean = false) => {
   const fields = schema.fields;
   const newFields: Record<string, yup.AnySchema> = {};
 
@@ -9,7 +9,11 @@ export const PartialType = <T extends yup.AnyObjectSchema>(schema: T) => {
     const field = fields[key];
 
     if (yup.isSchema(field)) {
-      newFields[key] = (field as yup.AnySchema).notRequired();
+      if (deep && field instanceof yup.ObjectSchema) {
+        newFields[key] = PartialType(field as yup.AnyObjectSchema, true).notRequired();
+      } else {
+        newFields[key] = (field as yup.AnySchema).notRequired();
+      }
     }
   }
 
@@ -74,10 +78,12 @@ export const validate = async <T>(
     };
   } catch (error) {
     if (error instanceof yup.ValidationError) {
+      const errorMessages = error.errors.length ? error.errors : [error.message];
+
       return {
         success: false,
         statusCode: 400,
-        message: error.message,
+        message: errorMessages.join('; '),
         data: null,
         meta: null,
       };

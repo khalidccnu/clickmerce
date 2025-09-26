@@ -146,3 +146,42 @@ BEGIN
     RAISE NOTICE 'Security setup completed for table: % with permission type: % and prefix: %', table_name, permission_type_name, actual_prefix;
 END;
 $$;
+
+-- Create helper function for updating updated_at column
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create helper function for updating product quantity
+CREATE OR REPLACE FUNCTION update_product_quantity()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+        UPDATE products
+        SET quantity = (
+            SELECT COALESCE(SUM(quantity), 0) 
+            FROM product_variations 
+            WHERE product_id = NEW.product_id
+        )
+        WHERE id = NEW.product_id;
+        
+        RETURN NEW;
+    ELSIF TG_OP = 'DELETE' THEN
+        UPDATE products
+        SET quantity = (
+            SELECT COALESCE(SUM(quantity), 0) 
+            FROM product_variations 
+            WHERE product_id = OLD.product_id
+        )
+        WHERE id = OLD.product_id;
+        
+        RETURN OLD;
+    END IF;
+    
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;

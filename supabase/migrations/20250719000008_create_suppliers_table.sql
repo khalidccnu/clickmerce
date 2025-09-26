@@ -16,9 +16,3 @@ CREATE INDEX IF NOT EXISTS idx_suppliers_name ON suppliers(name);
 CREATE INDEX IF NOT EXISTS idx_suppliers_phone ON suppliers(phone);
 CREATE INDEX IF NOT EXISTS idx_suppliers_email ON suppliers(email);
 CREATE INDEX IF NOT EXISTS idx_suppliers_is_active ON suppliers(is_active);
-
--- Create updated_at trigger
-CREATE TRIGGER update_suppliers_updated_at 
-    BEFORE UPDATE ON suppliers 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column();

@@ -5,7 +5,7 @@ import { Roles } from '@lib/constant/roles';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
-import { initiateSchema, TInitiateDto } from '@modules/initiate/lib/dtos';
+import { initiateCreateSchema, TInitiateCreateDto } from '@modules/initiate/lib/dtos';
 import { IRole } from '@modules/roles/lib/interfaces';
 import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
@@ -48,13 +48,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
-  const { success, data, ...restProps } = await validate<TInitiateDto>(initiateSchema, req.body, {
+  const { success, data, ...restProps } = await validate<TInitiateCreateDto>(initiateCreateSchema, req.body, {
     stripUnknown: true,
   });
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { type: _, user } = data;
+  const { type: _, user, settings } = data;
   const { name, phone, email, password, ...rest } = user;
 
   try {
@@ -165,6 +165,51 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         success: false,
         statusCode: 500,
         message: userRoleResult.message || 'Failed to assign default role',
+        data: null,
+        meta: null,
+      };
+
+      return res.status(500).json(response);
+    }
+
+    const { identity, s3 } = settings;
+
+    const purifiedSettingsS3 = {
+      access_key_id: s3?.access_key_id || null,
+      secret_access_key: s3?.secret_access_key || null,
+      endpoint: s3?.endpoint || null,
+      r2_worker_endpoint: s3?.r2_worker_endpoint || null,
+      region: s3?.region || null,
+      bucket: s3?.bucket || null,
+    };
+
+    const settingsResult = await SupabaseAdapter.create(supabaseServiceClient, Database.settings, {
+      identity,
+      s3: purifiedSettingsS3,
+    });
+
+    if (!settingsResult.success) {
+      await SupabaseAdapter.delete(supabaseServiceClient, Database.users, newUser.id);
+      await SupabaseAdapter.rawQuery(supabaseServiceClient, Database.usersInfo, {
+        method: 'delete',
+        filters: [{ type: 'eq', column: 'user_id', value: newUser.id }],
+      });
+      await SupabaseAdapter.rawQuery(supabaseServiceClient, Database.roles, {
+        method: 'delete',
+        filters: [{ type: 'eq', column: 'name', value: Roles.SUPER_ADMIN }],
+      });
+      await SupabaseAdapter.rawQuery(supabaseServiceClient, Database.userRoles, {
+        method: 'delete',
+        filters: [
+          { type: 'eq', column: 'user_id', value: newUser.id },
+          { type: 'eq', column: 'role_id', value: roleResult.data.id },
+        ],
+      });
+
+      const response: IBaseResponse = {
+        success: false,
+        statusCode: 500,
+        message: settingsResult.message || 'Failed to create settings',
         data: null,
         meta: null,
       };

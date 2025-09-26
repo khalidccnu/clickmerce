@@ -5,7 +5,7 @@ import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { IUser } from '@modules/users/lib/interfaces';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { jwtVerify } from '../utils/jwt';
+import { jwtVerify } from '../lib/jwt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {

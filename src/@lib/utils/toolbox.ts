@@ -80,6 +80,17 @@ export const Toolbox = {
     return this.toSafeObject(obj);
   },
 
+  hasAllPropsInObject: function (
+    obj: { [key: string]: any },
+    requiredProps?: string[],
+    optionalProps?: string[],
+  ): boolean {
+    if (!this.isValidObject(obj)) return false;
+
+    const propsToCheck = requiredProps || Object.keys(obj);
+    return propsToCheck.every((prop) => this.isNotEmpty(obj[prop]) || (optionalProps && optionalProps.includes(prop)));
+  },
+
   toCleanArray: function <T = any>(array: T[]): T[] {
     return array.filter((x) => this.isNotEmpty(x));
   },

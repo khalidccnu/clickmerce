@@ -16,9 +16,3 @@ CREATE TABLE IF NOT EXISTS user_roles (
 CREATE INDEX IF NOT EXISTS idx_user_roles_role_id ON user_roles(role_id);
 CREATE INDEX IF NOT EXISTS idx_user_roles_user_id ON user_roles(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_roles_is_active ON user_roles(is_active);
-
--- Create updated_at trigger
-CREATE TRIGGER update_user_roles_updated_at 
-    BEFORE UPDATE ON user_roles 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column();

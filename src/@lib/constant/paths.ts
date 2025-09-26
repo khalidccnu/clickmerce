@@ -49,5 +49,8 @@ export const Paths = {
         list: '/admin/inventory/suppliers/list',
       },
     },
+    settings: {
+      root: '/admin/settings',
+    },
   },
 };

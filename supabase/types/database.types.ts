@@ -310,6 +310,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      settings: {
+        Row: {
+          created_at: string;
+          id: string;
+          identity: Json | null;
+          is_active: boolean;
+          s3: Json | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          identity?: Json | null;
+          is_active?: boolean;
+          s3?: Json | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          identity?: Json | null;
+          is_active?: boolean;
+          s3?: Json | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       suppliers: {
         Row: {
           address: string | null;

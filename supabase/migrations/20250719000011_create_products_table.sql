@@ -28,9 +28,3 @@ CREATE INDEX IF NOT EXISTS idx_products_dosage_form_id ON products(dosage_form_i
 CREATE INDEX IF NOT EXISTS idx_products_generic_id ON products(generic_id);
 CREATE INDEX IF NOT EXISTS idx_products_supplier_id ON products(supplier_id);
 CREATE INDEX IF NOT EXISTS idx_products_is_active ON products(is_active);
-
--- Create updated_at trigger
-CREATE TRIGGER update_products_updated_at 
-    BEFORE UPDATE ON products 
-    FOR EACH ROW 
-    EXECUTE FUNCTION update_updated_at_column();

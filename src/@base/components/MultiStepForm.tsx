@@ -158,7 +158,7 @@ const MultiStepForm = <D = any,>({
         onFinish={handleFinishFn}
       >
         <div>{steps[currentStep].content}</div>
-        <div className="mt-4 flex justify-between border-t pt-4">
+        <div className="mt-4 flex justify-between border-t dark:border-gray-700 pt-4">
           <Button onClick={handlePrevFn} disabled={isFirstStep}>
             Back
           </Button>
