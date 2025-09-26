@@ -10,21 +10,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
-  const { token } = getServerAuthSession(req);
-
-  if (!token) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 401,
-      message: 'Unauthorized',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(401).json(response);
-  }
-
   switch (method) {
+    case 'OPTIONS':
+      return res.status(200).end();
     case 'GET':
       return handleGet(req, res);
     default:
@@ -41,6 +29,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
   try {

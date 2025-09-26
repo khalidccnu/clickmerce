@@ -15,21 +15,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
-  const { token } = getServerAuthSession(req);
-
-  if (!token) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 401,
-      message: 'Unauthorized',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(401).json(response);
-  }
-
   switch (method) {
+    case 'OPTIONS':
+      return res.status(200).end();
     case 'GET':
       return handleGet(req, res);
     case 'POST':
@@ -48,6 +36,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
   const { success, data, ...restProps } = await validate<TUserFilterDto>(userFilterSchema, req.query);
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
@@ -116,6 +118,20 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
   const { success, data, ...restProps } = await validate<TUserCreateDto>(userCreateSchema, req.body);
 
   if (!success) return res.status(400).json({ success, data, ...restProps });

@@ -12,18 +12,27 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { jwtSign } from '../lib/jwt';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 405,
-      message: 'Method not allowed',
-      data: null,
-      meta: null,
-    };
+  const { method } = req;
 
-    return res.status(405).json(response);
+  switch (method) {
+    case 'OPTIONS':
+      return res.status(200).end();
+    case 'POST':
+      return handleLogin(req, res);
+    default:
+      const response: IBaseResponse = {
+        success: false,
+        statusCode: 405,
+        message: 'Method not allowed',
+        data: null,
+        meta: null,
+      };
+
+      return res.status(405).json(response);
   }
+}
 
+async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
   const { success, data, ...restProps } = await validate<TLoginDto>(loginSchema, req.body);
 
   if (!success) return res.status(400).json({ success, data, ...restProps });

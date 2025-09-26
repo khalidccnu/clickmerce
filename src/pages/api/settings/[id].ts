@@ -12,21 +12,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
-  const { token } = getServerAuthSession(req);
-
-  if (!token) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 401,
-      message: 'Unauthorized',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(401).json(response);
-  }
-
   switch (method) {
+    case 'OPTIONS':
+      return res.status(200).end();
     case 'PATCH':
       return handleUpdate(req, res);
     default:
@@ -55,6 +43,20 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
     };
 
     return res.status(400).json(response);
+  }
+
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
   }
 
   const { success, data, ...restProps } = await validate<TSettingsUpdateDto>(settingsUpdateSchema, req.body);

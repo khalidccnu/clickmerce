@@ -13,27 +13,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
 
-  const { token } = getServerAuthSession(req);
-
-  if (!token) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 401,
-      message: 'Unauthorized',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(401).json(response);
-  }
-
   switch (method) {
+    case 'OPTIONS':
+      return res.status(200).end();
     case 'GET':
       return handleGet(req, res);
-    case 'PUT':
     case 'PATCH':
       return handleUpdate(req, res);
-    case 'DELETE':
     default:
       const response: IBaseResponse = {
         success: false,
@@ -60,6 +46,20 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     };
 
     return res.status(400).json(response);
+  }
+
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
   }
 
   try {
@@ -121,6 +121,20 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
     };
 
     return res.status(400).json(response);
+  }
+
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
   }
 
   const { success, data, ...restProps } = await validate<TUserUpdateDto>(userUpdateSchema, req.body);

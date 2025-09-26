@@ -15,6 +15,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { method } = req;
 
   switch (method) {
+    case 'OPTIONS':
+      return res.status(200).end();
     case 'GET':
       return handleGet(req, res);
     case 'POST':
