@@ -1,16 +1,21 @@
 import { fileTypeFromBuffer } from 'file-type';
-import sharp from 'sharp';
+import { Jimp, JimpMime } from 'jimp';
 
-export const optimizeImageFn = async (file: Buffer, width = 1200, quality = 65) => {
+export const optimizeImageFn = async (file: Buffer, width = 1200, quality = 65): Promise<Buffer> => {
   const type = await fileTypeFromBuffer(file);
 
   if (type?.mime?.startsWith('image/')) {
-    const format = type.mime.split('/')[1];
+    const image = await Jimp.read(file);
 
-    return await sharp(file)
-      .resize({ width, withoutEnlargement: true })
-      .toFormat(format as keyof sharp.FormatEnum, { quality })
-      .toBuffer();
+    if (image.width > width) {
+      image.resize({ w: width });
+    }
+
+    if (type.mime === JimpMime.png) {
+      return await image.getBuffer(JimpMime.png);
+    } else {
+      return await image.getBuffer(JimpMime.jpeg, { quality });
+    }
   }
 
   return file;

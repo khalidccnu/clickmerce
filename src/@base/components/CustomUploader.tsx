@@ -158,10 +158,14 @@ const CustomUploader: React.FC<TProps> = ({
         aspectSlider
         quality={1}
         maxZoom={5}
+        modalOk="Upload"
+        modalCancel="Upload Original"
         beforeCrop={(file) => {
           if (!isCrop || maxCount > 1) return false;
           return imgCropBeforeUploadFn(file);
         }}
+        onModalCancel={(resolve) => resolve(true)}
+        modalProps={{ centered: true }}
       >
         <Upload
           name="files"
