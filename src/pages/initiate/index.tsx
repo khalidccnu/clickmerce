@@ -45,6 +45,7 @@ const InitiatePage = () => {
           <div className="max-w-2xl mx-auto mt-8 space-y-12">
             <MultiStepForm<IInitiate>
               form={form}
+              formProps={{ autoComplete: 'off' }}
               showStepCount={false}
               steps={[
                 {

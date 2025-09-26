@@ -2,6 +2,7 @@ import { File } from 'formidable';
 import * as yup from 'yup';
 
 export const uploadSchema = yup.object({
+  make_public: yup.string().optional(),
   files: yup
     .array()
     .of(

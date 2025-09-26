@@ -175,6 +175,7 @@ export type Database = {
           durability: string;
           generic_id: string | null;
           id: string;
+          images: Json | null;
           is_active: boolean;
           medicine_type: string | null;
           name: string;
@@ -192,6 +193,7 @@ export type Database = {
           durability: string;
           generic_id?: string | null;
           id?: string;
+          images?: Json | null;
           is_active?: boolean;
           medicine_type?: string | null;
           name: string;
@@ -209,6 +211,7 @@ export type Database = {
           durability?: string;
           generic_id?: string | null;
           id?: string;
+          images?: Json | null;
           is_active?: boolean;
           medicine_type?: string | null;
           name?: string;

@@ -19,6 +19,7 @@ interface IBaseProps {
   initialValues?: string[];
   onChange?: (urls: string[]) => void;
   actionPath?: string;
+  makePublic?: boolean;
 }
 
 interface IBasePropsWithIC extends IBaseProps {
@@ -45,6 +46,7 @@ const CustomUploader: React.FC<TProps> = ({
   innerContent,
   onChange,
   actionPath,
+  makePublic = false,
 }) => {
   const [isPreviewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>(null);
@@ -164,6 +166,7 @@ const CustomUploader: React.FC<TProps> = ({
         <Upload
           name="files"
           headers={{ Authorization: `Bearer ${getAuthToken()}` }}
+          data={{ make_public: makePublic }}
           accept={acceptedTypes.map((acceptedType) => `.${acceptedType}`).join(',')}
           fileList={fileList}
           listType={listType === 'button' ? 'text' : listType}

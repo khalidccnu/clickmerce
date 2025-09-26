@@ -4,6 +4,7 @@ import FloatInput from '@base/antd/components/FloatInput';
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
+import CustomUploader from '@base/components/CustomUploader';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { Messages } from '@lib/constant/messages';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -226,6 +227,89 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                 ))}
               </Radio.Group>
             </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <FloatFormList name="images">
+              {(fields, { add, remove }) => {
+                return (
+                  <React.Fragment>
+                    {fields.map(({ key, name, ...rest }) => (
+                      <div
+                        key={key}
+                        className="relative p-4 border border-dashed border-[var(--color-primary)] rounded-md pt-8"
+                      >
+                        <Row gutter={[16, 16]}>
+                          <p className="absolute top-0 left-4 -translate-y-1/2 bg-[var(--color-primary)] px-1.5 py-0.5 text-xs text-white rounded-md">
+                            Image {fields.length > 1 ? name + 1 : ''}
+                          </p>
+                          <Col xs={24}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'url']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Image URL is required!',
+                                },
+                              ]}
+                              className="!mb-0"
+                            >
+                              <CustomUploader
+                                isCrop
+                                listType="picture-card"
+                                initialValues={[formValues?.images?.[name]?.url]}
+                                onChange={(urls) => form.setFieldValue(['images', name, 'url'], urls[0])}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'is_featured']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Featured is required!',
+                                },
+                              ]}
+                              className="!mb-0"
+                            >
+                              <Radio.Group buttonStyle="solid" className="w-full text-center">
+                                <Radio.Button className="w-1/2" value={true}>
+                                  Featured
+                                </Radio.Button>
+                                <Radio.Button className="w-1/2" value={false}>
+                                  Not Featured
+                                </Radio.Button>
+                              </Radio.Group>
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <div className="flex justify-center gap-4 mt-8">
+                          <Button
+                            size="small"
+                            type="primary"
+                            ghost
+                            onClick={() => add({ is_featured: false })}
+                            disabled={name + 1 !== fields.length}
+                          >
+                            Add More
+                          </Button>
+                          <Button size="small" type="dashed" onClick={() => remove(name)}>
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                    {!fields.length && (
+                      <Button type="dashed" loading={isLoading} onClick={() => add({ is_featured: false })} block>
+                        Add Image
+                      </Button>
+                    )}
+                  </React.Fragment>
+                );
+              }}
+            </FloatFormList>
           </Col>
           <Col xs={24}>
             <Form.Item

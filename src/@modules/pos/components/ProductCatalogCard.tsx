@@ -25,6 +25,9 @@ const ProductCatalogCard: React.FC<IProps> = ({
   onAddToCart,
 }) => {
   // const { invId } = usePosInv();
+  const featuredImage = Toolbox.isNotEmpty(product?.images)
+    ? product.images.find((image) => image.is_featured) || product.images[0]
+    : null;
 
   const handlePriceShowFn = () => {
     if (!product?.variations || !product?.variations?.length) {
@@ -58,7 +61,7 @@ const ProductCatalogCard: React.FC<IProps> = ({
         )}
         <Badge.Ribbon text={product?.quantity ? product?.quantity : 'Out of Stock'} color="var(--color-primary)">
           <Image
-            src={ImagePaths.notFound}
+            src={featuredImage?.url || ImagePaths.notFound}
             alt={product.name}
             className="rounded-xl"
             wrapperClassName="[&_.ant-image-mask]:rounded-xl"

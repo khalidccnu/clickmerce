@@ -11,6 +11,11 @@ export interface IProductsFilter extends IBaseFilter {
   supplier_id?: TId;
 }
 
+export interface IProductImage {
+  url: string;
+  is_featured: boolean;
+}
+
 export interface IProductVariation {
   cost_price: number;
   sale_price: number;
@@ -21,6 +26,7 @@ export interface IProductVariation {
 
 export interface IProduct extends IBaseEntity {
   type: TProductsType;
+  images: IProductImage[];
   name: string;
   slug: string;
   strength: string;
@@ -40,6 +46,7 @@ export interface IProductsResponse extends IBaseResponse {
 
 export interface IProductCreate {
   type: TProductsType;
+  images: IProductImage[];
   name: string;
   slug: string;
   strength: string;

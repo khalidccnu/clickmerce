@@ -54,10 +54,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
   const form = formidable({ multiples: true });
-  const [_, files] = await form.parse(req);
+  const [fields, files] = await form.parse(req);
+
+  const { make_public } = fields;
+  const purifiedMakePublic = make_public?.[0] || 'false';
   const purifiedFiles = Array.isArray(files.files) ? files.files : ([files.files].filter(Boolean) as formidable.File[]);
 
-  const { success, data, ...restProps } = await validate<TUploadDto>(uploadSchema, { files: purifiedFiles });
+  const { success, data, ...restProps } = await validate<TUploadDto>(uploadSchema, {
+    make_public: purifiedMakePublic,
+    files: purifiedFiles,
+  });
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
@@ -80,7 +86,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const settings = result.data?.[0];
-    const isS3Configured = Toolbox.hasAllPropsInObject(s3, null, ['r2_worker_endpoint']);
+    const isS3Configured = Toolbox.hasAllPropsInObject(settings.s3, null, ['r2_worker_endpoint']);
 
     if (!isS3Configured) {
       const response: IBaseResponse = {
@@ -109,6 +115,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
           file: optimizedFileBuffer,
           fileName,
           contentType: sanitizedFile.mimetype,
+          makePublic: purifiedMakePublic === 'true',
           bucket,
           endpoint,
           r2WorkerEndpoint: r2_worker_endpoint,
