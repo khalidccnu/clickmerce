@@ -33,7 +33,6 @@ const InitiatePage = () => {
 
   useEffect(() => {
     form.resetFields();
-    form.setFieldValue(['identity', 'phone_code'], Env.webPhoneCode);
   }, [form]);
 
   return (
@@ -77,6 +76,7 @@ const InitiatePage = () => {
                 },
               ]}
               isLoading={initiateFn.isPending}
+              initialValues={{ identity: { phone_code: Env.webPhoneCode, currency: Env.webCurrency } }}
               onSubmit={(values) => {
                 {
                   const { user, identity, s3 } = values;

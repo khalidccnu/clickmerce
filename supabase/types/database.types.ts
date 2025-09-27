@@ -8,6 +8,54 @@ export type Database = {
   };
   public: {
     Tables: {
+      coupons: {
+        Row: {
+          amount: number;
+          code: string;
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          max_redeemable_amount: number | null;
+          min_purchase_amount: number;
+          type: string;
+          updated_at: string;
+          usage_count: number;
+          usage_limit: number;
+          valid_from: string;
+          valid_until: string;
+        };
+        Insert: {
+          amount: number;
+          code: string;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          max_redeemable_amount?: number | null;
+          min_purchase_amount?: number;
+          type: string;
+          updated_at?: string;
+          usage_count?: number;
+          usage_limit?: number;
+          valid_from: string;
+          valid_until: string;
+        };
+        Update: {
+          amount?: number;
+          code?: string;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          max_redeemable_amount?: number | null;
+          min_purchase_amount?: number;
+          type?: string;
+          updated_at?: string;
+          usage_count?: number;
+          usage_limit?: number;
+          valid_from?: string;
+          valid_until?: string;
+        };
+        Relationships: [];
+      };
       delivery_service_types: {
         Row: {
           amount: number;
@@ -120,6 +168,42 @@ export type Database = {
           is_active?: boolean;
           name?: string;
           slug?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      payment_methods: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          image: string;
+          is_active: boolean;
+          name: string;
+          reference_type: string;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          image: string;
+          is_active?: boolean;
+          name: string;
+          reference_type: string;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          image?: string;
+          is_active?: boolean;
+          name?: string;
+          reference_type?: string;
+          type?: string;
           updated_at?: string;
         };
         Relationships: [];

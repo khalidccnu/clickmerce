@@ -5,11 +5,11 @@ import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
 import { BiCollection } from 'react-icons/bi';
 import { BsBoxSeam } from 'react-icons/bs';
-import { FaTools, FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
+import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons/fa';
 import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline } from 'react-icons/io5';
-import { MdDashboard, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
+import { MdDashboard, MdLocalOffer, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
 
@@ -140,6 +140,20 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
               allowedPermissions: ['delivery_zones:read'],
             },
           ],
+        },
+        {
+          key: Paths.admin.coupons.list,
+          icon: <MdLocalOffer />,
+          label: <CustomLink href={Toolbox.appendPagination(Paths.admin.coupons.list)}>Coupons</CustomLink>,
+          allowedPermissions: ['coupons:read'],
+        },
+        {
+          key: Paths.admin.paymentMethods.list,
+          icon: <FaWallet />,
+          label: (
+            <CustomLink href={Toolbox.appendPagination(Paths.admin.paymentMethods.list)}>Payment Methods</CustomLink>
+          ),
+          allowedPermissions: ['payment_methods:read'],
         },
         {
           key: Paths.admin.settings.root,

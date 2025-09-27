@@ -1,5 +1,5 @@
 import * as yup from 'yup';
-import { ENUM_SORT_ORDER_TYPE, TSortOrderType } from './enums';
+import { ENUM_SORT_ORDER_TYPES, TSortOrderType } from './enums';
 
 export const baseFilterSchema = yup.object({
   page: yup.string().matches(/^\d+$/, 'Must be a numeric string').optional().default('1'),
@@ -10,7 +10,7 @@ export const baseFilterSchema = yup.object({
   start_date: yup.string().optional(),
   end_date: yup.string().optional(),
   sort_by: yup.string().optional(),
-  sort_order: yup.mixed<TSortOrderType>().oneOf(Object.values(ENUM_SORT_ORDER_TYPE)).optional(),
+  sort_order: yup.mixed<TSortOrderType>().oneOf(Object.values(ENUM_SORT_ORDER_TYPES)).optional(),
   is_active: yup.string().oneOf(['true', 'false']).optional(),
 });
 

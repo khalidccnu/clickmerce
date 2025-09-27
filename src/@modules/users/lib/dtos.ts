@@ -1,5 +1,5 @@
 import { baseFilterSchema } from '@base/dtos';
-import { ENUM_BLOOD_GROUP_TYPE, TBloodGroupType } from '@base/enums';
+import { ENUM_BLOOD_GROUP_TYPES, TBloodGroupType } from '@base/enums';
 import { OmitType, PartialType, PickType } from '@lib/utils/yup';
 import * as yup from 'yup';
 
@@ -21,7 +21,7 @@ export const userCreateSchema = yup.object({
   email: yup.string().email().optional().nullable(),
   password: yup.string().min(8).max(20).optional().nullable(),
   birthday: yup.string().optional().nullable(),
-  blood_group: yup.mixed<TBloodGroupType>().oneOf(Object.values(ENUM_BLOOD_GROUP_TYPE)).optional().nullable(),
+  blood_group: yup.mixed<TBloodGroupType>().oneOf(Object.values(ENUM_BLOOD_GROUP_TYPES)).optional().nullable(),
   roles: yup.array().of(userRoleCreateSchema).optional().nullable(),
   is_admin: yup.string().optional(),
   is_active: yup.string().optional(),

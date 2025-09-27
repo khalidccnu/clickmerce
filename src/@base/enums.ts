@@ -1,11 +1,11 @@
-export enum ENUM_SORT_ORDER_TYPE {
+export enum ENUM_SORT_ORDER_TYPES {
   ASC = 'ASC',
   DESC = 'DESC',
 }
 
-export type TSortOrderType = keyof typeof ENUM_SORT_ORDER_TYPE;
+export type TSortOrderType = keyof typeof ENUM_SORT_ORDER_TYPES;
 
-export enum ENUM_BLOOD_GROUP_TYPE {
+export enum ENUM_BLOOD_GROUP_TYPES {
   'A+' = 'A+',
   'A-' = 'A-',
   'B+' = 'B+',
@@ -16,4 +16,4 @@ export enum ENUM_BLOOD_GROUP_TYPE {
   'O-' = 'O-',
 }
 
-export type TBloodGroupType = keyof typeof ENUM_BLOOD_GROUP_TYPE;
+export type TBloodGroupType = keyof typeof ENUM_BLOOD_GROUP_TYPES;

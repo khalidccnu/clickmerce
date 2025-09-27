@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
 import { MdClear } from 'react-icons/md';
-import { productsTypes } from '../lib/enums';
+import { productTypes } from '../lib/enums';
 import { IProductsFilter } from '../lib/interfaces';
 
 interface IProps {
@@ -136,7 +136,7 @@ const ProductsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
               <Radio.Button key={0} className="w-1/3" value="">
                 All
               </Radio.Button>
-              {...productsTypes.map((elem, idx) => (
+              {...productTypes.map((elem, idx) => (
                 <Radio.Button key={idx} className="w-1/3" value={elem}>
                   {Toolbox.toPrettyText(elem)}
                 </Radio.Button>

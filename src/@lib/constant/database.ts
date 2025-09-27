@@ -13,5 +13,7 @@ export const Database = {
   suppliers: 'suppliers',
   deliveryServiceTypes: 'delivery_service_types',
   deliveryZones: 'delivery_zones',
+  coupons: 'coupons',
+  paymentMethods: 'payment_methods',
   settings: 'settings',
 };

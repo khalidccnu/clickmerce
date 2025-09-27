@@ -58,4 +58,14 @@ export const Permissions = {
   DELIVERY_ZONES_WRITE: 'delivery_zones:write',
   DELIVERY_ZONES_UPDATE: 'delivery_zones:update',
   DELIVERY_ZONES_DELETE: 'delivery_zones:delete',
+
+  COUPONS_READ: 'coupons:read',
+  COUPONS_WRITE: 'coupons:write',
+  COUPONS_UPDATE: 'coupons:update',
+  COUPONS_DELETE: 'coupons:delete',
+
+  PAYMENT_METHODS_READ: 'payment_methods:read',
+  PAYMENT_METHODS_WRITE: 'payment_methods:write',
+  PAYMENT_METHODS_UPDATE: 'payment_methods:update',
+  PAYMENT_METHODS_DELETE: 'payment_methods:delete',
 } as const;

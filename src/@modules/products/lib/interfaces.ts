@@ -2,10 +2,10 @@ import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
 import { IDosageForm } from '@modules/dosage-forms/lib/interfaces';
 import { IGeneric } from '@modules/generics/lib/interfaces';
 import { ISupplier } from '@modules/suppliers/lib/interfaces';
-import { TProductsDurability, TProductsMedicinesType, TProductsType } from './enums';
+import { TProductDurabilityType, TProductMedicineType, TProductType } from './enums';
 
 export interface IProductsFilter extends IBaseFilter {
-  type?: TProductsType;
+  type?: TProductType;
   dosage_form_id?: TId;
   generic_id?: TId;
   supplier_id?: TId;
@@ -25,18 +25,18 @@ export interface IProductVariation {
 }
 
 export interface IProduct extends IBaseEntity {
-  type: TProductsType;
+  type: TProductType;
   images: IProductImage[];
   name: string;
   slug: string;
   strength: string;
-  medicine_type: TProductsMedicinesType;
+  medicine_type: TProductMedicineType;
   rack: string;
   quantity: number;
   dosage_form: IDosageForm;
   generic: IGeneric;
   supplier: ISupplier;
-  durability: TProductsDurability;
+  durability: TProductDurabilityType;
   variations: (IProductVariation & IBaseEntity)[];
 }
 
@@ -45,17 +45,17 @@ export interface IProductsResponse extends IBaseResponse {
 }
 
 export interface IProductCreate {
-  type: TProductsType;
+  type: TProductType;
   images: IProductImage[];
   name: string;
   slug: string;
   strength: string;
-  medicine_type: TProductsMedicinesType;
+  medicine_type: TProductMedicineType;
   rack: string;
   dosage_form_id: TId;
   generic_id: TId;
   supplier_id: TId;
-  durability: TProductsDurability;
+  durability: TProductDurabilityType;
   variations: (IProductVariation & { id?: TId; is_deleted?: boolean })[];
   is_active: string;
 }

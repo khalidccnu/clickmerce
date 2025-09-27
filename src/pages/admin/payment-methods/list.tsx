@@ -4,24 +4,24 @@ import PageWrapper from '@base/container/PageWrapper';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
 import WithAuthorization from '@modules/auth/components/WithAuthorization';
-import ProductsFilter from '@modules/products/components/ProductsFilter';
-import ProductsForm from '@modules/products/components/ProductsForm';
-import ProductsList from '@modules/products/components/ProductsList';
-import { ENUM_PRODUCT_TYPES } from '@modules/products/lib/enums';
-import { ProductsHooks } from '@modules/products/lib/hooks';
-import { IProductsFilter } from '@modules/products/lib/interfaces';
+import PaymentMethodsFilter from '@modules/payment-methods/components/PaymentMethodsFilter';
+import PaymentMethodsForm from '@modules/payment-methods/components/PaymentMethodsForm';
+import PaymentMethodsList from '@modules/payment-methods/components/PaymentMethodsList';
+import { ENUM_PAYMENT_METHOD_TYPES } from '@modules/payment-methods/lib/enums';
+import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
+import { IPaymentMethodsFilter } from '@modules/payment-methods/lib/interfaces';
 import { Button, Drawer, Form, message, Tag } from 'antd';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const ProductsPage = () => {
+const PaymentMethodsPage = () => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IProductsFilter>(router.asPath);
+  const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IPaymentMethodsFilter>(router.asPath);
 
-  const productsQuery = ProductsHooks.useFind({
+  const paymentMethodsQuery = PaymentMethodsHooks.useFind({
     options: {
       ...rest,
       page,
@@ -30,7 +30,7 @@ const ProductsPage = () => {
     },
   });
 
-  const productCreateFn = ProductsHooks.useCreate({
+  const paymentMethodCreateFn = PaymentMethodsHooks.useCreate({
     config: {
       onSuccess: (res) => {
         if (!res.success) {
@@ -49,18 +49,18 @@ const ProductsPage = () => {
     <PageWrapper>
       {messageHolder}
       <PageHeader
-        title="Products"
+        title="Payment Methods"
         subTitle={<BaseSearch />}
-        tags={[<Tag key={1}>Total: {productsQuery.data?.meta?.total || 0}</Tag>]}
+        tags={[<Tag key={1}>Total: {paymentMethodsQuery.data?.meta?.total || 0}</Tag>]}
         extra={
-          <Authorization allowedPermissions={['products:write']}>
+          <Authorization allowedPermissions={['payment_methods:write']}>
             <Button type="primary" onClick={() => setDrawerOpen(true)}>
               Create
             </Button>
           </Authorization>
         }
       />
-      <ProductsFilter
+      <PaymentMethodsFilter
         initialValues={Toolbox.toCleanObject(router.query)}
         onChange={(values) => {
           router.push({
@@ -68,29 +68,29 @@ const ProductsPage = () => {
           });
         }}
       />
-      <ProductsList
-        isLoading={productsQuery.isLoading}
-        data={productsQuery.data?.data}
+      <PaymentMethodsList
+        isLoading={paymentMethodsQuery.isLoading}
+        data={paymentMethodsQuery.data?.data}
         pagination={{
           current: +page,
           pageSize: +limit,
-          total: productsQuery.data?.meta?.total,
+          total: paymentMethodsQuery.data?.meta?.total,
           onChange: (page, limit) =>
             router.push({
               query: Toolbox.toCleanObject({ ...router.query, page, limit }),
             }),
         }}
       />
-      <Drawer width={640} title="Create a new product" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
-        <ProductsForm
+      <Drawer width={640} title="Create a new payment Method" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
+        <PaymentMethodsForm
           form={formInstance}
-          initialValues={{ type: ENUM_PRODUCT_TYPES.GENERAL, is_active: 'true' }}
-          isLoading={productCreateFn.isPending}
-          onFinish={(values) => productCreateFn.mutate(values)}
+          initialValues={{ type: ENUM_PAYMENT_METHOD_TYPES.AUTO, is_active: 'true' }}
+          isLoading={paymentMethodCreateFn.isPending}
+          onFinish={(values) => paymentMethodCreateFn.mutate(values)}
         />
       </Drawer>
     </PageWrapper>
   );
 };
 
-export default WithAuthorization(ProductsPage, { allowedPermissions: ['products:read'] });
+export default WithAuthorization(PaymentMethodsPage, { allowedPermissions: ['payment_methods:read'] });

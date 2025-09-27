@@ -60,6 +60,14 @@ export const Paths = {
         list: '/admin/delivery/zones/list',
       },
     },
+    coupons: {
+      root: '/admin/coupons',
+      list: '/admin/coupons/list',
+    },
+    paymentMethods: {
+      root: '/admin/payment-methods',
+      list: '/admin/payment-methods/list',
+    },
     settings: {
       root: '/admin/settings',
     },

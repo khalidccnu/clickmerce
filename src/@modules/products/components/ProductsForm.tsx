@@ -36,11 +36,11 @@ import React, { useEffect, useState } from 'react';
 import { FaMinusCircle, FaPlusCircle } from 'react-icons/fa';
 import { IoCalendar } from 'react-icons/io5';
 import {
-  ENUM_PRODUCTS_DURABILITIES,
-  ENUM_PRODUCTS_TYPES,
-  productsDurabilities,
-  productsMedicinesTypes,
-  productsTypes,
+  ENUM_PRODUCT_DURABILITY_TYPES,
+  ENUM_PRODUCT_TYPES,
+  productDurabilityTypes,
+  productMedicineTypes,
+  productTypes,
 } from '../lib/enums';
 import { IProductCreate } from '../lib/interfaces';
 
@@ -58,7 +58,9 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const [dfFormInstance] = Form.useForm();
   const [suppliersFormInstance] = Form.useForm();
   const [genericsFormInstance] = Form.useForm();
-  const [durability, setDurability] = useState(initialValues?.durability || ENUM_PRODUCTS_DURABILITIES.NON_PERISHABLE);
+  const [durability, setDurability] = useState(
+    initialValues?.durability || ENUM_PRODUCT_DURABILITY_TYPES.NON_PERISHABLE,
+  );
   const [isDFModalOpen, setDFModalOpen] = useState(false);
   const [isGenericsModalOpen, setGenericsModalOpen] = useState(false);
   const [isSuppliersModalOpen, setSuppliersModalOpen] = useState(false);
@@ -84,7 +86,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     const purifiedValues = {
       ...values,
       durability:
-        formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE ? ENUM_PRODUCTS_DURABILITIES.PERISHABLE : durability,
+        formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE ? ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE : durability,
       variations: sanitizedVariations,
     };
 
@@ -102,7 +104,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const dosageFormsQuery = DosageFormsHooks.useFindInfinite({
     config: {
       queryKey: [],
-      enabled: formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE,
+      enabled: formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
     },
     options: {
       limit: '20',
@@ -121,7 +123,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const genericsQuery = GenericsHooks.useFindInfinite({
     config: {
       queryKey: [],
-      enabled: formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE,
+      enabled: formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
     },
     options: {
       limit: '20',
@@ -220,9 +222,9 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           <Col xs={24}>
             <Form.Item name="type" className="!mb-0">
               <Radio.Group buttonStyle="solid" className="w-full text-center">
-                {productsTypes.map((productsType) => (
-                  <Radio.Button key={productsType} className="w-1/2" value={productsType}>
-                    {Toolbox.toPrettyText(productsType)}
+                {productTypes.map((productType) => (
+                  <Radio.Button key={productType} className="w-1/2" value={productType}>
+                    {Toolbox.toPrettyText(productType)}
                   </Radio.Button>
                 ))}
               </Radio.Group>
@@ -249,7 +251,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                               rules={[
                                 {
                                   required: true,
-                                  message: 'Image URL is required!',
+                                  message: 'Image is required!',
                                 },
                               ]}
                               className="!mb-0"
@@ -348,7 +350,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
               name="strength"
               rules={[
                 {
-                  required: formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE,
+                  required: formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
                   message: 'Strength is required!',
                 },
               ]}
@@ -357,7 +359,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
               <FloatInput placeholder="Strength" />
             </Form.Item>
           </Col>
-          {formValues?.type === ENUM_PRODUCTS_TYPES.GENERAL || (
+          {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL || (
             <Col xs={24}>
               <Form.Item
                 name="medicine_type"
@@ -377,7 +379,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                   filterOption={(input, option) =>
                     Toolbox.toLowerText(option?.title)?.includes(Toolbox.toLowerText(input))
                   }
-                  options={productsMedicinesTypes.map((type) => ({
+                  options={productMedicineTypes.map((type) => ({
                     title: Toolbox.toPrettyText(type),
                     label: Toolbox.toPrettyText(type),
                     value: type,
@@ -391,7 +393,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
               <FloatInput placeholder="Rack" />
             </Form.Item>
           </Col>
-          {formValues?.type === ENUM_PRODUCTS_TYPES.GENERAL || (
+          {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL || (
             <React.Fragment>
               <Col xs={24}>
                 <Form.Item
@@ -506,13 +508,13 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
               />
             </Form.Item>
           </Col>
-          {formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE || (
+          {formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE || (
             <Col xs={24} className="text-center">
               <Segmented
-                options={productsDurabilities.map((productsDurability) => ({
-                  key: productsDurability,
-                  label: Toolbox.toPrettyText(productsDurability),
-                  value: productsDurability,
+                options={productDurabilityTypes.map((durabilityType) => ({
+                  key: durabilityType,
+                  label: Toolbox.toPrettyText(durabilityType),
+                  value: durabilityType,
                 }))}
                 value={durability}
                 onChange={setDurability}
@@ -569,8 +571,8 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                             rules={[
                               {
                                 required:
-                                  durability === ENUM_PRODUCTS_DURABILITIES.PERISHABLE ||
-                                  formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE,
+                                  durability === ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE ||
+                                  formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
                                 message: 'Manufacturing date is required!',
                               },
                             ]}
@@ -592,8 +594,8 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                             rules={[
                               {
                                 required:
-                                  durability === ENUM_PRODUCTS_DURABILITIES.PERISHABLE ||
-                                  formValues?.type === ENUM_PRODUCTS_TYPES.MEDICINE,
+                                  durability === ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE ||
+                                  formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
                                 message: 'Expire date is required!',
                               },
                             ]}
