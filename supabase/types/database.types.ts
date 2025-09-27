@@ -8,6 +8,68 @@ export type Database = {
   };
   public: {
     Tables: {
+      delivery_service_types: {
+        Row: {
+          amount: number;
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          amount: number;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      delivery_zones: {
+        Row: {
+          created_at: string;
+          delivery_service_type_id: string;
+          id: string;
+          is_active: boolean;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          delivery_service_type_id: string;
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          delivery_service_type_id?: string;
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'delivery_zones_delivery_service_type_id_fkey';
+            columns: ['delivery_service_type_id'];
+            isOneToOne: false;
+            referencedRelation: 'delivery_service_types';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       dosage_forms: {
         Row: {
           created_at: string;

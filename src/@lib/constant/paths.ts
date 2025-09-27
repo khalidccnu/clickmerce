@@ -49,6 +49,17 @@ export const Paths = {
         list: '/admin/inventory/suppliers/list',
       },
     },
+    delivery: {
+      root: '/admin/delivery',
+      serviceTypes: {
+        root: '/admin/delivery/service-types',
+        list: '/admin/delivery/service-types/list',
+      },
+      zones: {
+        root: '/admin/delivery/zones',
+        list: '/admin/delivery/zones/list',
+      },
+    },
     settings: {
       root: '/admin/settings',
     },

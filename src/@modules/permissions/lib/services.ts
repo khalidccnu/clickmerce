@@ -33,7 +33,7 @@ export const PermissionsServices = {
 
     try {
       const res = await SupabaseAdapter.find<IPermission>(supabaseBrowserClient, END_POINT, newFilters, {
-        selection: buildSelectionFn({ relations: { permissionType: { table: 'permission_types' } } }),
+        selection: buildSelectionFn({ relations: { permission_type: { table: 'permission_types' } } }),
       });
       return Promise.resolve(res);
     } catch (error) {

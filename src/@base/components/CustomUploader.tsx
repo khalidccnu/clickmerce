@@ -1,4 +1,5 @@
 import { Env } from '.environments';
+import { IMAGE_ALLOW_LIST } from '@lib/constant/common';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAuthToken } from '@modules/auth/lib/utils/client';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
@@ -39,7 +40,7 @@ const CustomUploader: React.FC<TProps> = ({
   isDisable = false,
   isPreview = true,
   sizeLimit = 5,
-  acceptedTypes = ['jpg', 'jpeg', 'png'],
+  acceptedTypes = IMAGE_ALLOW_LIST,
   maxCount = 1,
   initialValues,
   listType = 'text',

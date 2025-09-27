@@ -48,4 +48,14 @@ export const Permissions = {
   SUPPLIERS_WRITE: 'suppliers:write',
   SUPPLIERS_UPDATE: 'suppliers:update',
   SUPPLIERS_DELETE: 'suppliers:delete',
+
+  DELIVERY_SERVICE_TYPES_READ: 'delivery_service_types:read',
+  DELIVERY_SERVICE_TYPES_WRITE: 'delivery_service_types:write',
+  DELIVERY_SERVICE_TYPES_UPDATE: 'delivery_service_types:update',
+  DELIVERY_SERVICE_TYPES_DELETE: 'delivery_service_types:delete',
+
+  DELIVERY_ZONES_READ: 'delivery_zones:read',
+  DELIVERY_ZONES_WRITE: 'delivery_zones:write',
+  DELIVERY_ZONES_UPDATE: 'delivery_zones:update',
+  DELIVERY_ZONES_DELETE: 'delivery_zones:delete',
 } as const;

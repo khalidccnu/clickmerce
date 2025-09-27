@@ -4,11 +4,12 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
 import { BiCollection } from 'react-icons/bi';
+import { BsBoxSeam } from 'react-icons/bs';
 import { FaTools, FaUsers, FaUserShield, FaUserTag } from 'react-icons/fa';
 import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline } from 'react-icons/io5';
-import { MdDashboard, MdOutlineInventory2 } from 'react-icons/md';
+import { MdDashboard, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
 
@@ -113,6 +114,30 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
                 <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.suppliers.list)}>Suppliers</CustomLink>
               ),
               allowedPermissions: ['suppliers:read'],
+            },
+          ],
+        },
+        {
+          key: Paths.admin.delivery.root,
+          icon: <BsBoxSeam />,
+          label: 'Delivery',
+          allowedPermissions: ['delivery_service_types:read', 'delivery_zones:read'],
+          children: [
+            {
+              key: Paths.admin.delivery.serviceTypes.list,
+              icon: <MdOutlineCategory />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.delivery.serviceTypes.list)}>
+                  Service Types
+                </CustomLink>
+              ),
+              allowedPermissions: ['delivery_service_types:read'],
+            },
+            {
+              key: Paths.admin.delivery.zones.list,
+              icon: <MdOutlineMap />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.delivery.zones.list)}>Zones</CustomLink>,
+              allowedPermissions: ['delivery_zones:read'],
             },
           ],
         },

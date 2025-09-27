@@ -62,9 +62,9 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const [isDFModalOpen, setDFModalOpen] = useState(false);
   const [isGenericsModalOpen, setGenericsModalOpen] = useState(false);
   const [isSuppliersModalOpen, setSuppliersModalOpen] = useState(false);
-  const [dosageFormSearchTerm, setDosageFormSearchTerm] = useState(null);
-  const [genericSearchTerm, setGenericSearchTerm] = useState(null);
-  const [supplierSearchTerm, setSupplierSearchTerm] = useState(null);
+  const [dosageFormsSearchTerm, setDosageFormsSearchTerm] = useState(null);
+  const [genericsSearchTerm, setGenericsSearchTerm] = useState(null);
+  const [suppliersSearchTerm, setSuppliersSearchTerm] = useState(null);
 
   const handleFinishFn = (values) => {
     const currentSanitizedVariations = values?.variations?.map((variation) => {
@@ -106,7 +106,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     },
     options: {
       limit: '20',
-      search_term: dosageFormSearchTerm,
+      search_term: dosageFormsSearchTerm,
     },
   });
 
@@ -125,7 +125,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     },
     options: {
       limit: '20',
-      search_term: genericSearchTerm,
+      search_term: genericsSearchTerm,
     },
   });
 
@@ -140,7 +140,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const suppliersQuery = SuppliersHooks.useFindInfinite({
     options: {
       limit: '20',
-      search_term: supplierSearchTerm,
+      search_term: suppliersSearchTerm,
     },
   });
 
@@ -256,6 +256,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                             >
                               <CustomUploader
                                 isCrop
+                                makePublic
                                 listType="picture-card"
                                 initialValues={[formValues?.images?.[name]?.url]}
                                 onChange={(urls) => form.setFieldValue(['images', name, 'url'], urls[0])}
@@ -415,7 +416,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                       label: dosageForm?.name,
                       value: dosageForm?.id,
                     })}
-                    onChangeSearchTerm={setDosageFormSearchTerm}
+                    onChangeSearchTerm={setDosageFormsSearchTerm}
                     query={dosageFormsQuery}
                     popupRender={(options) => (
                       <React.Fragment>
@@ -452,7 +453,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                       label: generic?.name,
                       value: generic?.id,
                     })}
-                    onChangeSearchTerm={setGenericSearchTerm}
+                    onChangeSearchTerm={setGenericsSearchTerm}
                     query={genericsQuery}
                     popupRender={(options) => (
                       <React.Fragment>
@@ -491,7 +492,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                   label: supplier?.name,
                   value: supplier?.id,
                 })}
-                onChangeSearchTerm={setSupplierSearchTerm}
+                onChangeSearchTerm={setSuppliersSearchTerm}
                 query={suppliersQuery}
                 popupRender={(options) => (
                   <React.Fragment>

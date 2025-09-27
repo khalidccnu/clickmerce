@@ -63,8 +63,8 @@ const ProductCatalogCard: React.FC<IProps> = ({
           <Image
             src={featuredImage?.url || ImagePaths.notFound}
             alt={product.name}
-            className="rounded-xl"
-            wrapperClassName="[&_.ant-image-mask]:rounded-xl"
+            className="rounded-xl max-h-72 h-full w-full object-cover"
+            wrapperClassName="[&_.ant-image-mask]:rounded-xl w-full"
           />
         </Badge.Ribbon>
       </div>

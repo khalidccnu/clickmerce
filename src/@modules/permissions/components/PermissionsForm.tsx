@@ -16,7 +16,7 @@ interface IProps {
 }
 
 const PermissionsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', initialValues, onFinish }) => {
-  const [permissionTypeSearchTerm, setPermissionTypeSearchTerm] = useState(null);
+  const [permissionTypesSearchTerm, setPermissionTypesSearchTerm] = useState(null);
 
   const permissionTypeQuery = PermissionTypesHooks.useFindById({
     id: initialValues?.permission_type_id,
@@ -29,7 +29,7 @@ const PermissionsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
   const permissionTypesQuery = PermissionTypesHooks.useFindInfinite({
     options: {
       limit: '20',
-      search_term: permissionTypeSearchTerm,
+      search_term: permissionTypesSearchTerm,
       search_field: 'name',
       is_active: 'true',
     },
@@ -111,7 +111,7 @@ const PermissionsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
                 label: permissionType?.name,
                 value: permissionType?.id,
               })}
-              onChangeSearchTerm={(searchTerm) => setPermissionTypeSearchTerm(searchTerm)}
+              onChangeSearchTerm={setPermissionTypesSearchTerm}
               query={permissionTypesQuery}
             />
           </Form.Item>

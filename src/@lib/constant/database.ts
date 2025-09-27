@@ -11,5 +11,7 @@ export const Database = {
   dosageForms: 'dosage_forms',
   generics: 'generics',
   suppliers: 'suppliers',
+  deliveryServiceTypes: 'delivery_service_types',
+  deliveryZones: 'delivery_zones',
   settings: 'settings',
 };
