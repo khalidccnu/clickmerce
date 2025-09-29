@@ -182,7 +182,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
           supabaseServiceClient,
           Database.users,
           {
-            textFilters: { phone: { eq: phone }, id: { neq: id as string } },
+            textFilters: { conditions: { phone: { eq: phone }, id: { neq: id as string } } },
           },
         );
 
@@ -203,7 +203,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
         const emailCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
           supabaseServiceClient,
           Database.users,
-          { textFilters: { email: { eq: email }, id: { neq: id as string } } },
+          { textFilters: { conditions: { email: { eq: email }, id: { neq: id as string } } } },
         );
 
         if (emailCheck.data) {

@@ -40,7 +40,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
   const { phone, password } = data;
 
   const user = await SupabaseAdapter.findOne<IUser & { password: string }>(supabaseServiceClient, Database.users, {
-    textFilters: { phone: { eq: phone } },
+    textFilters: { conditions: { phone: { eq: phone } } },
   });
 
   if (!user.success || !user.data) {
@@ -85,7 +85,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
     supabaseServiceClient,
     Database.userRoles,
     {
-      textFilters: { user_id: { eq: user.data.id as string } },
+      textFilters: { conditions: { user_id: { eq: user.data.id as string } } },
     },
     { selection: buildSelectionFn({ relations: { role: { table: 'roles' } } }) },
   );
@@ -99,7 +99,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
       supabaseServiceClient,
       Database.rolePermissions,
       {
-        textFilters: { role_id: { in: roleIds } },
+        textFilters: { conditions: { role_id: { in: roleIds } } },
       },
       { selection: buildSelectionFn({ relations: { permission: { table: 'permissions' } } }) },
     );

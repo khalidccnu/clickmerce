@@ -1,14 +1,13 @@
-import { Env } from '.environments';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IBaseResponse } from '@base/interfaces';
 import * as fs from 'fs';
 
-const formatS3FilePath = (fileName?: string, folderPath?: string): string => {
-  let path = Env.webIdentifier;
+const formatS3FilePath = (fileName: string, folderPath?: string): string => {
+  let path = '';
 
-  if (folderPath) path += `/${folderPath}`;
-  if (fileName) path += `/${fileName}`;
+  if (folderPath) path += `${folderPath}/`;
+  path += fileName;
 
   return path;
 };

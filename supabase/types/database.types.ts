@@ -269,6 +269,7 @@ export type Database = {
       };
       product_variations: {
         Row: {
+          color: string | null;
           cost_price: number;
           created_at: string;
           exp: string | null;
@@ -278,9 +279,11 @@ export type Database = {
           product_id: string;
           quantity: number;
           sale_price: number;
+          size: string | null;
           updated_at: string;
         };
         Insert: {
+          color?: string | null;
           cost_price?: number;
           created_at?: string;
           exp?: string | null;
@@ -290,9 +293,11 @@ export type Database = {
           product_id: string;
           quantity: number;
           sale_price?: number;
+          size?: string | null;
           updated_at?: string;
         };
         Update: {
+          color?: string | null;
           cost_price?: number;
           created_at?: string;
           exp?: string | null;
@@ -302,6 +307,7 @@ export type Database = {
           product_id?: string;
           quantity?: number;
           sale_price?: number;
+          size?: string | null;
           updated_at?: string;
         };
         Relationships: [
@@ -328,7 +334,7 @@ export type Database = {
           quantity: number;
           rack: string | null;
           slug: string;
-          strength: string | null;
+          specification: string | null;
           supplier_id: string | null;
           type: string;
           updated_at: string;
@@ -346,7 +352,7 @@ export type Database = {
           quantity?: number;
           rack?: string | null;
           slug: string;
-          strength?: string | null;
+          specification?: string | null;
           supplier_id?: string | null;
           type: string;
           updated_at?: string;
@@ -364,7 +370,7 @@ export type Database = {
           quantity?: number;
           rack?: string | null;
           slug?: string;
-          strength?: string | null;
+          specification?: string | null;
           supplier_id?: string | null;
           type?: string;
           updated_at?: string;

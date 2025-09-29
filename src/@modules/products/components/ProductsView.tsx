@@ -19,7 +19,7 @@ const ProductsView: React.FC<IProps> = ({ data }) => {
       <Descriptions.Item label="Name" span={2}>
         {data?.name}
       </Descriptions.Item>
-      <Descriptions.Item label="Strength">{data?.strength || 'N/A'}</Descriptions.Item>
+      <Descriptions.Item label="Specification">{data?.specification || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Rack">{data?.rack || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Dosage Form">{data?.dosage_form?.name || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Generic">{data?.generic?.name || 'N/A'}</Descriptions.Item>

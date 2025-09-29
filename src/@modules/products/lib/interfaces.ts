@@ -2,7 +2,7 @@ import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
 import { IDosageForm } from '@modules/dosage-forms/lib/interfaces';
 import { IGeneric } from '@modules/generics/lib/interfaces';
 import { ISupplier } from '@modules/suppliers/lib/interfaces';
-import { TProductDurabilityType, TProductMedicineType, TProductType } from './enums';
+import { TProductDurabilityType, TProductMedicineType, TProductSizeType, TProductType } from './enums';
 
 export interface IProductsFilter extends IBaseFilter {
   type?: TProductType;
@@ -19,9 +19,11 @@ export interface IProductImage {
 export interface IProductVariation {
   cost_price: number;
   sale_price: number;
-  quantity: number;
   mfg: string;
   exp: string;
+  color: string;
+  size: TProductSizeType;
+  quantity: number;
 }
 
 export interface IProduct extends IBaseEntity {
@@ -29,7 +31,7 @@ export interface IProduct extends IBaseEntity {
   images: IProductImage[];
   name: string;
   slug: string;
-  strength: string;
+  specification: string;
   medicine_type: TProductMedicineType;
   rack: string;
   quantity: number;
@@ -49,7 +51,7 @@ export interface IProductCreate {
   images: IProductImage[];
   name: string;
   slug: string;
-  strength: string;
+  specification: string;
   medicine_type: TProductMedicineType;
   rack: string;
   dosage_form_id: TId;

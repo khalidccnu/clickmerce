@@ -59,7 +59,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
   if (blood_group) {
     if (!newFilters.textFilters) newFilters.textFilters = {};
-    newFilters.textFilters = { user_info: { blood_group: { eq: blood_group } } };
+    newFilters.textFilters = { conditions: { user_info: { blood_group: { eq: blood_group } } } };
   }
 
   try {
@@ -142,7 +142,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     const phoneCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
       supabaseServiceClient,
       Database.users,
-      { textFilters: { phone: { eq: phone } } },
+      { textFilters: { conditions: { phone: { eq: phone } } } },
     );
 
     if (phoneCheck.data) {
@@ -161,7 +161,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       const emailCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
         supabaseServiceClient,
         Database.users,
-        { textFilters: { email: { eq: email } } },
+        { textFilters: { conditions: { email: { eq: email } } } },
       );
 
       if (emailCheck.data) {
@@ -231,7 +231,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
     if (Toolbox.isEmpty(roles)) {
       const customerRoleResult = await SupabaseAdapter.findOne<IRole>(supabaseServiceClient, Database.roles, {
-        textFilters: { name: { eq: Roles.CUSTOMER } },
+        textFilters: { conditions: { name: { eq: Roles.CUSTOMER } } },
       });
 
       let customerRoleId: TId;

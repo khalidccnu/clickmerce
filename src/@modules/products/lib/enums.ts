@@ -20,3 +20,15 @@ export enum ENUM_PRODUCT_DURABILITY_TYPES {
 
 export type TProductDurabilityType = `${ENUM_PRODUCT_DURABILITY_TYPES}`;
 export const productDurabilityTypes: TProductDurabilityType[] = Object.values(ENUM_PRODUCT_DURABILITY_TYPES);
+
+export enum ENUM_PRODUCT_SIZE_TYPES {
+  XS = 'XS',
+  S = 'S',
+  M = 'M',
+  L = 'L',
+  XL = 'XL',
+  XXL = 'XXL',
+}
+
+export type TProductSizeType = `${ENUM_PRODUCT_SIZE_TYPES}`;
+export const productSizeTypes: TProductSizeType[] = Object.values(ENUM_PRODUCT_SIZE_TYPES);

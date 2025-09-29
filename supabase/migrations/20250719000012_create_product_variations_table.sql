@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS product_variations (
     quantity INTEGER NOT NULL,
     mfg TIMESTAMPTZ,
     exp TIMESTAMPTZ,
+    color VARCHAR,
+    size VARCHAR,
     product_id UUID REFERENCES products(id) ON DELETE CASCADE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
@@ -17,6 +19,8 @@ CREATE TABLE IF NOT EXISTS product_variations (
 CREATE INDEX IF NOT EXISTS idx_product_variations_cost_price ON product_variations(cost_price);
 CREATE INDEX IF NOT EXISTS idx_product_variations_sale_price ON product_variations(sale_price);
 CREATE INDEX IF NOT EXISTS idx_product_variations_quantity ON product_variations(quantity);
+CREATE INDEX IF NOT EXISTS idx_product_variations_color ON product_variations(color);
+CREATE INDEX IF NOT EXISTS idx_product_variations_size ON product_variations(size);
 CREATE INDEX IF NOT EXISTS idx_product_variations_mfg ON product_variations(mfg);
 CREATE INDEX IF NOT EXISTS idx_product_variations_exp ON product_variations(exp);
 CREATE INDEX IF NOT EXISTS idx_product_variations_product_id ON product_variations(product_id);

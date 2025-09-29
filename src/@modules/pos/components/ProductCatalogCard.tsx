@@ -63,19 +63,22 @@ const ProductCatalogCard: React.FC<IProps> = ({
           <Image
             src={featuredImage?.url || ImagePaths.notFound}
             alt={product.name}
-            className="rounded-xl max-h-72 h-full w-full object-cover"
+            className="rounded-xl  object-cover"
             wrapperClassName="[&_.ant-image-mask]:rounded-xl w-full"
+            style={{ height: 288, width: '100%' }}
           />
         </Badge.Ribbon>
       </div>
-      <div className="content_wrapper">
-        <p className="font-semibold dark:text-white">{product.name}</p>
-        <p className="text-gray-700 dark:text-gray-300 text-sm">{product?.supplier?.name}</p>
-        <p className="space-x-1 text-gray-500 dark:text-gray-200 text-sm">
-          {!!product?.strength &&
-            `${product?.dosage_form?.name ? product.dosage_form.name + ' - ' : ''}${product.strength}`}
-        </p>
-        <div className="border-t border-dotted border-gray-300 mt-4 pt-4 flex items-center justify-between gap-4">
+      <div className="content_wrapper flex flex-col justify-between h-full">
+        <div className="mb-4">
+          <p className="font-semibold dark:text-white">{product.name}</p>
+          <p className="text-gray-700 dark:text-gray-300 text-sm">{product?.supplier?.name}</p>
+          <p className="space-x-1 text-gray-500 dark:text-gray-200 text-sm">
+            {!!product?.specification &&
+              `${product?.dosage_form?.name ? product.dosage_form.name + ' - ' : ''}${product.specification}`}
+          </p>
+        </div>
+        <div className="border-t border-dotted border-gray-300 pt-4 flex items-center justify-between gap-4">
           <p className="font-semibold text-sm dark:text-white">{handlePriceShowFn()}</p>
           <Button
             type="primary"

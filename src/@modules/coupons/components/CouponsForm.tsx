@@ -1,6 +1,7 @@
 import FloatDatePicker from '@base/antd/components/FloatDatePicker';
 import FloatInput from '@base/antd/components/FloatInput';
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
+import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Radio, Row } from 'antd';
 import dayjs from 'dayjs';
@@ -147,7 +148,7 @@ const CouponsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
           >
             <FloatDatePicker
               placeholder="Valid From"
-              format="YYYY-MM-DD"
+              format={Dayjs.date}
               suffixIcon={<IoCalendar />}
               disabledDate={(current) => current && current < dayjs().startOf('day')}
               defaultPickerValue={formValues?.valid_from ? dayjs(formValues?.valid_from) : dayjs().startOf('day')}
@@ -168,7 +169,7 @@ const CouponsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
           >
             <FloatDatePicker
               placeholder="Valid Until"
-              format="YYYY-MM-DD"
+              format={Dayjs.date}
               suffixIcon={<IoCalendar />}
               disabledDate={(current) => current && current < dayjs().startOf('day')}
               defaultPickerValue={formValues?.valid_until ? dayjs(formValues?.valid_until) : dayjs().startOf('day')}

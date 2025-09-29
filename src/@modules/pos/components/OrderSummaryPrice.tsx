@@ -1,17 +1,20 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import {
+  orderCouponSnap,
   orderDiscountSnap,
   orderGrandTotalSnap,
   orderRoundOffSnap,
   orderSubtotalSnap,
 } from '@lib/redux/order/orderSelector';
-import { setDiscount, setRoundOff } from '@lib/redux/order/orderSlice';
+import { setCoupon, setDiscount, setRoundOff } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
-import { Form, Switch } from 'antd';
+import { Form, Switch, Tag } from 'antd';
 import React, { useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
+import { IoClose } from 'react-icons/io5';
+import OrderSummaryCouponForm from './OrderSummaryCouponForm';
 import OrderSummaryDiscountForm from './OrderSummaryDiscountForm';
 
 interface IProps {
@@ -19,13 +22,16 @@ interface IProps {
 }
 
 const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
+  const [couponFormInstance] = Form.useForm();
   const [discountFormInstance] = Form.useForm();
+  const [isCouponModalOpen, setCouponModalOpen] = useState(false);
   const [isDiscountModalOpen, setDiscountModalOpen] = useState(false);
+  const orderCoupon = useAppSelector(orderCouponSnap);
   const orderDiscount = useAppSelector(orderDiscountSnap);
   const orderSubtotal = useAppSelector(orderSubtotalSnap);
   const orderRoundOff = useAppSelector(orderRoundOffSnap);
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
-  const { discountType, discount, isRoundOff } = useAppSelector((store) => store.orderSlice);
+  const { coupon, discountType, discount, isRoundOff } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
 
   return (
@@ -34,9 +40,21 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
         <div className="flex items-center justify-between gap-2">
           <p className="space-x-1">
             <span>Coupon</span>
-            <FaRegEdit className="inline-block -mt-1 cursor-pointer hover:text-[var(--color-primary)]" />
+            <FaRegEdit
+              className="inline-block -mt-1 cursor-pointer hover:text-[var(--color-primary)]"
+              onClick={() => setCouponModalOpen(true)}
+            />
+            {!orderCoupon || (
+              <Tag color="green" className="!mr-0">
+                {coupon?.code}{' '}
+                <IoClose
+                  className="inline-block hover:text-red-500 -mt-0.5 cursor-pointer"
+                  onClick={() => dispatch(setCoupon(null))}
+                />
+              </Tag>
+            )}
           </p>
-          <p className="font-semibold">{Toolbox.withCurrency(0)}</p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderCoupon)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
           <p className="space-x-1">
@@ -50,7 +68,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
         </div>
         <div className="flex items-center justify-between gap-2">
           <p>Subtotal</p>
-          <p className="font-semibold">{Toolbox.withCurrency(orderSubtotal)}</p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderSubtotal.subTotalSale)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
           <Switch
@@ -68,6 +86,26 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
           <p className="font-semibold">{Toolbox.withCurrency(orderGrandTotal.totalWithRoundOff)}</p>
         </div>
       </div>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title="Coupon"
+        footer={null}
+        open={isCouponModalOpen}
+        onCancel={() => setCouponModalOpen(false)}
+      >
+        <OrderSummaryCouponForm
+          form={couponFormInstance}
+          isLoading={false}
+          initialValues={coupon}
+          onFinish={(values) => {
+            const { coupon } = values;
+
+            dispatch(setCoupon(coupon));
+            setCouponModalOpen(false);
+          }}
+        />
+      </BaseModalWithoutClicker>
       <BaseModalWithoutClicker
         destroyOnHidden
         width={540}

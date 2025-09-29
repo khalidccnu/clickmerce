@@ -6,6 +6,7 @@ import FloatSelect from '@base/antd/components/FloatSelect';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomUploader from '@base/components/CustomUploader';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import { Dayjs } from '@lib/constant/dayjs';
 import { Messages } from '@lib/constant/messages';
 import { Toolbox } from '@lib/utils/toolbox';
 import DosageFormsForm from '@modules/dosage-forms/components/DosageFormsForm';
@@ -20,6 +21,7 @@ import { ISupplier } from '@modules/suppliers/lib/interfaces';
 import {
   Button,
   Col,
+  ColorPicker,
   Divider,
   Form,
   FormInstance,
@@ -40,6 +42,7 @@ import {
   ENUM_PRODUCT_TYPES,
   productDurabilityTypes,
   productMedicineTypes,
+  productSizeTypes,
   productTypes,
 } from '../lib/enums';
 import { IProductCreate } from '../lib/interfaces';
@@ -157,6 +160,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
         setDFModalOpen(false);
         dfFormInstance.resetFields();
         messageApi.success(Messages.create);
+        form.setFieldValue('dosage_form_id', res.data.id);
       },
     },
   });
@@ -172,6 +176,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
         setGenericsModalOpen(false);
         genericsFormInstance.resetFields();
         messageApi.success(Messages.create);
+        form.setFieldValue('generic_id', res.data.id);
       },
     },
   });
@@ -187,6 +192,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
         setSuppliersModalOpen(false);
         suppliersFormInstance.resetFields();
         messageApi.success(Messages.create);
+        form.setFieldValue('supplier_id', res.data.id);
       },
     },
   });
@@ -347,16 +353,16 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           </Col>
           <Col xs={24}>
             <Form.Item
-              name="strength"
+              name="specification"
               rules={[
                 {
                   required: formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
-                  message: 'Strength is required!',
+                  message: 'Specification is required!',
                 },
               ]}
               className="!mb-0"
             >
-              <FloatInput placeholder="Strength" />
+              <FloatInput placeholder="Specification" />
             </Form.Item>
           </Col>
           {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL || (
@@ -558,6 +564,21 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                                 required: true,
                                 message: 'Sale price is required!',
                               },
+                              ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                  const cost_price = getFieldValue(['variations', name, 'cost_price']);
+
+                                  if (!value) {
+                                    return Promise.resolve();
+                                  }
+
+                                  if (value < cost_price) {
+                                    return Promise.reject(new Error('Sale price cannot be lower than cost price!'));
+                                  }
+
+                                  return Promise.resolve();
+                                },
+                              }),
                             ]}
                             className="!mb-0"
                           >
@@ -580,7 +601,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                           >
                             <FloatDatePicker
                               placeholder="Manufacturing Date"
-                              format="YYYY-MM-DD"
+                              format={Dayjs.date}
                               suffixIcon={<IoCalendar />}
                               disabledDate={(current) => current && dayjs(current).isAfter(dayjs(), 'day')}
                               className="w-full"
@@ -603,13 +624,47 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                           >
                             <FloatDatePicker
                               placeholder="Expire Date"
-                              format="YYYY-MM-DD"
+                              format={Dayjs.date}
                               suffixIcon={<IoCalendar />}
                               disabledDate={(current) => current && dayjs(current).isBefore(dayjs(), 'day')}
                               className="w-full"
                             />
                           </Form.Item>
                         </Col>
+                        {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL && (
+                          <React.Fragment>
+                            <Col xs={24} md={12}>
+                              <Form.Item {...rest} name={[name, 'color']} className="!mb-0">
+                                <ColorPicker
+                                  allowClear
+                                  showText
+                                  onChange={(color) =>
+                                    form.setFieldValue(['variations', name, 'color'], color.toHexString())
+                                  }
+                                  className="w-full justify-start"
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col xs={24} md={12}>
+                              <Form.Item {...rest} name={[name, 'size']} className="!mb-0">
+                                <FloatSelect
+                                  allowClear
+                                  showSearch
+                                  virtual={false}
+                                  placeholder="Size"
+                                  filterOption={(input, option: any) =>
+                                    option.label.toLowerCase().includes(input.toLowerCase())
+                                  }
+                                  options={productSizeTypes.map((sizeType) => ({
+                                    key: sizeType,
+                                    label: sizeType,
+                                    value: sizeType,
+                                  }))}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </React.Fragment>
+                        )}
                         <FloatFormList {...rest} name={[name, 'quantities']} initialValue={[{}]}>
                           {(nestedFields, { add: nestedAdd, remove: nestedRemove }) => {
                             return (

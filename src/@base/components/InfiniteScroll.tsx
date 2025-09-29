@@ -64,9 +64,7 @@ const InfiniteScroll = <D = any,>({
       style={{ maxHeight: '100%', overflowY: 'auto', ...style }}
       className={cn('designed_scrollbar overscroll-contain', className)}
     >
-      {items.map((item, idx) => (
-        <div key={idx}>{children({ idx, item })}</div>
-      ))}
+      {items.map((item, idx) => children({ idx, item }))}
       {query.isFetchingNextPage && (
         <div className="flex items-center justify-center py-4">
           <Spin />

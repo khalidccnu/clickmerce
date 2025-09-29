@@ -37,42 +37,54 @@ export interface ISupabaseBooleanFilterCondition {
 }
 
 export interface ISupabaseFilter extends IBaseFilter {
-  textFilters?:
-    | {
-        [field: string]: ISupabaseTextFilterCondition;
-      }
-    | {
-        [tableName: string]: {
-          [fieldName: string]: ISupabaseTextFilterCondition;
+  textFilters?: {
+    type?: 'and' | 'or';
+    conditions:
+      | {
+          [field: string]: ISupabaseTextFilterCondition;
+        }
+      | {
+          [table: string]: {
+            [field: string]: ISupabaseTextFilterCondition;
+          };
         };
-      };
-  numericFilters?:
-    | {
-        [field: string]: ISupabaseNumericFilterCondition;
-      }
-    | {
-        [tableName: string]: {
-          [fieldName: string]: ISupabaseNumericFilterCondition;
+  };
+  numericFilters?: {
+    type?: 'and' | 'or';
+    conditions:
+      | {
+          [field: string]: ISupabaseNumericFilterCondition;
+        }
+      | {
+          [table: string]: {
+            [field: string]: ISupabaseNumericFilterCondition;
+          };
         };
-      };
-  dateFilters?:
-    | {
-        [field: string]: ISupabaseDateFilterCondition;
-      }
-    | {
-        [tableName: string]: {
-          [fieldName: string]: ISupabaseDateFilterCondition;
+  };
+  dateFilters?: {
+    type?: 'and' | 'or';
+    conditions:
+      | {
+          [field: string]: ISupabaseDateFilterCondition;
+        }
+      | {
+          [table: string]: {
+            [field: string]: ISupabaseDateFilterCondition;
+          };
         };
-      };
-  booleanFilters?:
-    | {
-        [field: string]: ISupabaseBooleanFilterCondition;
-      }
-    | {
-        [tableName: string]: {
-          [fieldName: string]: ISupabaseBooleanFilterCondition;
+  };
+  booleanFilters?: {
+    type?: 'and' | 'or';
+    conditions:
+      | {
+          [field: string]: ISupabaseBooleanFilterCondition;
+        }
+      | {
+          [table: string]: {
+            [field: string]: ISupabaseBooleanFilterCondition;
+          };
         };
-      };
+  };
 }
 
 export interface ISupabaseQueryOption {

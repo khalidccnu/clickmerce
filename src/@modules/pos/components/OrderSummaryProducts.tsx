@@ -38,7 +38,8 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
                 productId: cartItem.productId,
                 productVariationId: cartItem.productVariationId,
                 selectedQuantity: cartItem.selectedQuantity,
-                price: variation.sale_price,
+                costPrice: variation.cost_price,
+                salePrice: variation.sale_price,
               };
             })
             .filter(Boolean) || [];

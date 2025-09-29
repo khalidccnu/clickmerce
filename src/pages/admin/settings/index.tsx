@@ -3,7 +3,7 @@ import WithAuthorization from '@modules/auth/components/WithAuthorization';
 import SettingsIdentityForm from '@modules/settings/components/SettingsIdentityForm';
 import SettingsS3Form from '@modules/settings/components/SettingsS3Form';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
-import { Form, message, Tabs, TabsProps } from 'antd';
+import { Form, message, Spin, Tabs, TabsProps } from 'antd';
 
 const SettingsPage = () => {
   const [messageApi, messageHolder] = message.useMessage();
@@ -71,7 +71,7 @@ const SettingsPage = () => {
   return (
     <PageWrapper>
       {messageHolder}
-      <Tabs defaultActiveKey={items[0].key} items={items} />
+      {settingsQuery.isLoading ? <Spin /> : <Tabs defaultActiveKey={items[0].key} items={items} />}
     </PageWrapper>
   );
 };

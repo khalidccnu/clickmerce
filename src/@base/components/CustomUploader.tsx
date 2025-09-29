@@ -167,6 +167,7 @@ const CustomUploader: React.FC<TProps> = ({
         }}
         onModalCancel={(resolve) => resolve(true)}
         modalProps={{ centered: true }}
+        modalWidth={680}
       >
         <Upload
           name="files"

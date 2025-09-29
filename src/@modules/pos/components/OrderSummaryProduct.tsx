@@ -45,9 +45,11 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
             />
           </div>
         </div>
-        {!!product?.strength && (
+        {!!product?.specification && (
           <p className="text-gray-500 dark:text-gray-300 text-sm">
-            {product?.dosage_form?.name ? `${product?.dosage_form?.name} (${product?.strength})` : product?.strength}
+            {product?.dosage_form?.name
+              ? `${product?.dosage_form?.name} (${product?.specification})`
+              : product?.specification}
           </p>
         )}
         <p className="text-gray-500 dark:text-gray-300 text-sm">{product?.supplier?.name}</p>

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS products (
     
     name VARCHAR NOT NULL,
     slug VARCHAR UNIQUE NOT NULL,
-    strength VARCHAR,
+    specification VARCHAR,
     type VARCHAR NOT NULL,
     medicine_type VARCHAR,
     durability VARCHAR NOT NULL,

@@ -27,13 +27,15 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
             <span>Supplier:</span>
             <span className="ml-2 font-medium">{product?.supplier?.name}</span>
           </div>
-          {product?.strength && (
+          {product?.specification && (
             <p className={cn('col-span-2 font-medium', { 'col-span-full': !product?.rack })}>
-              {product?.dosage_form?.name ? `${product?.dosage_form?.name} (${product?.strength})` : product?.strength}
+              {product?.dosage_form?.name
+                ? `${product?.dosage_form?.name} (${product?.specification})`
+                : product?.specification}
             </p>
           )}
           {product?.rack && (
-            <div className={cn({ 'col-span-full': !product?.strength })}>
+            <div className={cn({ 'col-span-full': !product?.specification })}>
               <span>Rack:</span>
               <span className="ml-2 font-medium">{product.rack}</span>
             </div>

@@ -1,26 +1,29 @@
 import { TId } from '@base/interfaces';
+import { ICoupon } from '@modules/coupons/lib/interfaces';
 import { ENUM_POS_DISCOUNT_TYPES, TPosDiscountType } from '@modules/pos/lib/enums';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
 
-interface ICartItem {
+interface IOrderCartItem {
   productId: TId;
   productVariationId: TId;
   selectedQuantity?: number;
   priority?: number;
 }
 
-interface ICartProduct {
+interface IOrderCartProduct {
   productId: TId;
   productVariationId: TId;
   selectedQuantity: number;
-  price: number;
+  costPrice: number;
+  salePrice: number;
 }
 
 export interface IOrderState {
   customerId: TId;
-  cart: ICartItem[];
-  cartProducts: ICartProduct[];
+  cart: IOrderCartItem[];
+  cartProducts: IOrderCartProduct[];
+  coupon: ICoupon;
   discountType: TPosDiscountType;
   discount: number;
   isRoundOff: boolean;
@@ -31,6 +34,7 @@ const initialState: IOrderState = {
   customerId: null,
   cart: [],
   cartProducts: [],
+  coupon: null,
   discountType: ENUM_POS_DISCOUNT_TYPES.FIXED,
   discount: 0,
   isRoundOff: true,
@@ -45,7 +49,7 @@ const orderSlice = createSlice({
       state.customerId = action.payload;
     },
 
-    addToCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
+    addToCartFn: (state, action: PayloadAction<{ item: IOrderCartItem }>) => {
       const { item } = action.payload;
 
       const itemIdx = state.cart.findIndex(
@@ -66,7 +70,7 @@ const orderSlice = createSlice({
       }
     },
 
-    updateCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
+    updateCartFn: (state, action: PayloadAction<{ item: IOrderCartItem }>) => {
       const { item } = action.payload;
 
       const itemIdx = state.cart.findIndex(
@@ -81,7 +85,7 @@ const orderSlice = createSlice({
       }
     },
 
-    removeFromCartFn: (state, action: PayloadAction<{ item: ICartItem }>) => {
+    removeFromCartFn: (state, action: PayloadAction<{ item: IOrderCartItem }>) => {
       const { item } = action.payload;
 
       state.cart = state.cart.filter(
@@ -92,14 +96,18 @@ const orderSlice = createSlice({
     },
 
     clearCartFn: (state) => {
-      state.cart = [];
       message.info('Cart cleared!');
+      return { ...initialState, customerId: state.customerId };
     },
 
     clearOrderFn: () => initialState,
 
-    setCartProducts: (state, action: PayloadAction<ICartProduct[]>) => {
+    setCartProducts: (state, action: PayloadAction<IOrderCartProduct[]>) => {
       state.cartProducts = action.payload;
+    },
+
+    setCoupon: (state, action: PayloadAction<ICoupon>) => {
+      state.coupon = action.payload;
     },
 
     setDiscount: (state, action: PayloadAction<{ type: TPosDiscountType; amount: number }>) => {
@@ -129,6 +137,7 @@ export const {
   clearCartFn,
   clearOrderFn,
   setCartProducts,
+  setCoupon,
   setDiscount,
   setRoundOff,
   setPayableAmount,

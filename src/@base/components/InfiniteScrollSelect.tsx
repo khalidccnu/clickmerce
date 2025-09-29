@@ -23,9 +23,20 @@ const InfiniteScrollSelect = <D = any,>({
   onChangeSearchTerm,
   onChangeItems,
   query,
+  value,
   ...rest
 }: IProps<D>) => {
   const { ref, inView } = useInView();
+
+  const normalizeValueFn = (value) => {
+    const extractValueFn = (elem) => elem?.id ?? elem;
+
+    if (Array.isArray(value)) {
+      return value.map(extractValueFn);
+    }
+
+    return extractValueFn(value);
+  };
 
   const mergeItems = useCallback(() => {
     if (!query.data?.pages) return [];
@@ -74,6 +85,7 @@ const InfiniteScrollSelect = <D = any,>({
               }
             : null,
         ])}
+        value={normalizeValueFn(value)}
       />
     );
   }
@@ -104,6 +116,7 @@ const InfiniteScrollSelect = <D = any,>({
             }
           : null,
       ])}
+      value={normalizeValueFn(value)}
     />
   );
 };

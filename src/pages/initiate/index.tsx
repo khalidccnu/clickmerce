@@ -76,7 +76,7 @@ const InitiatePage = () => {
                 },
               ]}
               isLoading={initiateFn.isPending}
-              initialValues={{ identity: { phone_code: Env.webPhoneCode, currency: Env.webCurrency } }}
+              initialValues={{ identity: { phone_code: Env.webPhoneCode } }}
               onSubmit={(values) => {
                 {
                   const { user, identity, s3 } = values;

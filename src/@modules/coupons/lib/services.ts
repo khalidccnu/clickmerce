@@ -3,6 +3,8 @@ import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { Toolbox } from '@lib/utils/toolbox';
+import dayjs from 'dayjs';
 import { ICoupon, ICouponCreate, ICouponsFilter, ICouponsResponse } from './interfaces';
 
 const END_POINT: string = Database.coupons;
@@ -20,8 +22,29 @@ export const CouponsServices = {
   },
 
   find: async (filters: ICouponsFilter): Promise<ICouponsResponse> => {
-    const { start_date, end_date, ...restFilters } = filters;
+    const { is_valid, start_date, end_date, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
+
+    if (is_valid) {
+      const now = dayjs();
+
+      if (Toolbox.toBool(is_valid)) {
+        newFilters.dateFilters = {
+          conditions: {
+            valid_from: { gte: now.toISOString() },
+            valid_until: { lte: now.toISOString() },
+          },
+        };
+      } else {
+        newFilters.dateFilters = {
+          type: 'or',
+          conditions: {
+            valid_from: { lt: now.toISOString() },
+            valid_until: { gt: now.toISOString() },
+          },
+        };
+      }
+    }
 
     if (start_date) {
       newFilters.start_date = decodeURIComponent(start_date);

@@ -3,6 +3,7 @@ import FloatInput from '@base/antd/components/FloatInput';
 import FloatInputPassword from '@base/antd/components/FloatInputPassword';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import InputPhone from '@base/components/InputPhone';
+import { Dayjs } from '@lib/constant/dayjs';
 import { bloodGroups } from '@lib/data/bloodGroups';
 import { Col, Form, FormInstance, Row } from 'antd';
 import dayjs from 'dayjs';
@@ -120,7 +121,7 @@ const InitiateUsersForm: React.FC<IProps> = ({ form }) => {
         >
           <FloatDatePicker
             placeholder="Birthday"
-            format="YYYY-MM-DD"
+            format={Dayjs.date}
             suffixIcon={<IoCalendar />}
             disabledDate={(current) => current && current > dayjs().subtract(5, 'years').startOf('day')}
             defaultPickerValue={

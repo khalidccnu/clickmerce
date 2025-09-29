@@ -5,6 +5,7 @@ import FloatSelect from '@base/antd/components/FloatSelect';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import InputPhone from '@base/components/InputPhone';
 import { TId } from '@base/interfaces';
+import { Dayjs } from '@lib/constant/dayjs';
 import { bloodGroups } from '@lib/data/bloodGroups';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
@@ -172,7 +173,7 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
             <Form.Item name="birthday" className="!mb-0">
               <FloatDatePicker
                 placeholder="Birthday"
-                format="YYYY-MM-DD"
+                format={Dayjs.date}
                 suffixIcon={<IoCalendar />}
                 disabledDate={(current) => current && current > dayjs().subtract(5, 'years').startOf('day')}
                 defaultPickerValue={

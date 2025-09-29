@@ -806,8 +806,14 @@ export const SupabaseAdapter = {
   },
 };
 
-const recursivelyTraverseFilterFn = (query, filters, filterType, currentPath = []) => {
+const recursivelyTraverseFilterFn = (query, filters, type) => {
   if (!filters || typeof filters !== 'object') return query;
+
+  const conditions = filters.conditions;
+
+  if (!conditions || typeof conditions !== 'object') return query;
+
+  const filterType = filters.type || 'and';
 
   const validConditions = {
     textFilters: ['eq', 'neq', 'in', 'notin', 'like', 'ilike'],
@@ -816,19 +822,41 @@ const recursivelyTraverseFilterFn = (query, filters, filterType, currentPath = [
     booleanFilters: ['eq', 'neq'],
   };
 
-  const conditions = validConditions[filterType] || [];
+  const allowedConditions = validConditions[type] || [];
 
-  const hasConditions = conditions.some((condition) => condition in filters);
+  const flattenConditionsFn = (obj: Record<string, any>, parent = '') => {
+    const result = [];
 
-  if (hasConditions) {
-    const fieldName = currentPath.join('.');
-    query = applyConditionsToQueryFn(query, fieldName, filters, filterType);
-  } else {
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value && typeof value === 'object') {
-        const newPath = [...currentPath, key];
-        query = recursivelyTraverseFilterFn(query, value, filterType, newPath);
+    Object.entries(obj).forEach(([key, value]) => {
+      if (typeof value === 'object' && !Array.isArray(value)) {
+        const hasConditions = Object.keys(value).some((condition) => allowedConditions.includes(condition));
+
+        if (hasConditions) {
+          Object.entries(value).forEach(([condition, value]) => {
+            if (allowedConditions.includes(condition)) {
+              result.push({ field: parent ? `${parent}.${key}` : key, condition, value });
+            }
+          });
+        } else {
+          result.push(...flattenConditionsFn(value, parent ? `${parent}.${key}` : key));
+        }
       }
+    });
+
+    return result;
+  };
+
+  const flattenConditions = flattenConditionsFn(conditions);
+
+  if (filterType === 'or') {
+    const orConditions = flattenConditions
+      .map(({ field, condition, value }) => `${field}.${condition}.${value}`)
+      .join(',');
+
+    if (orConditions) query = query.or(orConditions);
+  } else {
+    flattenConditions.forEach(({ field, condition, value }) => {
+      query = applyConditionsToQueryFn(query, field, { [condition]: value }, type);
     });
   }
 
