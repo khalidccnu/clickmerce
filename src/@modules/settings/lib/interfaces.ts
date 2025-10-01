@@ -1,4 +1,5 @@
 import { IBaseEntity, IBaseResponse } from '@base/interfaces';
+import { TSettingsTaxType, TSettingsVatType } from './enums';
 
 export interface ISettingsIdentity {
   name: string;
@@ -17,9 +18,21 @@ export interface ISettingsS3 {
   bucket: string;
 }
 
+export interface ISettingsVat {
+  type: TSettingsVatType;
+  amount: number;
+}
+
+export interface ISettingsTax {
+  type: TSettingsTaxType;
+  amount: number;
+}
+
 export interface ISettings extends IBaseEntity {
   identity: ISettingsIdentity;
   s3: ISettingsS3;
+  vat: ISettingsVat;
+  tax: ISettingsTax;
   is_s3_configured: boolean;
 }
 
@@ -30,4 +43,6 @@ export interface ISettingsResponse extends IBaseResponse {
 export interface ISettingsCreate {
   identity: ISettingsIdentity;
   s3: ISettingsS3;
+  vat: ISettingsVat;
+  tax: ISettingsTax;
 }

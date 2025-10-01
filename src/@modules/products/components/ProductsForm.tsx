@@ -6,8 +6,10 @@ import FloatSelect from '@base/antd/components/FloatSelect';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomUploader from '@base/components/CustomUploader';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import RichTextEditor from '@base/components/RichTextEditor';
 import { Dayjs } from '@lib/constant/dayjs';
 import { Messages } from '@lib/constant/messages';
+import useTheme from '@lib/hooks/useTheme';
 import { Toolbox } from '@lib/utils/toolbox';
 import DosageFormsForm from '@modules/dosage-forms/components/DosageFormsForm';
 import { DosageFormsHooks } from '@modules/dosage-forms/lib/hooks';
@@ -56,6 +58,7 @@ interface IProps {
 }
 
 const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', initialValues, onFinish }) => {
+  const { isDark } = useTheme();
   const [messageApi, messageHolder] = message.useMessage();
   const formValues = Form.useWatch([], form);
   const [dfFormInstance] = Form.useForm();
@@ -527,202 +530,209 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
               />
             </Col>
           )}
-          <FloatFormList name="variations" initialValue={[{}]}>
-            {(fields, { add, remove }) => {
-              return (
-                <React.Fragment>
-                  {fields.map(({ key, name, ...rest }) => (
-                    <div
-                      key={key}
-                      className="relative p-4 border border-dashed border-[var(--color-primary)] rounded-md pt-8"
-                    >
-                      <Row gutter={[16, 16]}>
-                        <p className="absolute top-0 left-4 -translate-y-1/2 bg-[var(--color-primary)] px-1.5 py-0.5 text-xs text-white rounded-md">
-                          Variation {fields.length > 1 ? name + 1 : ''}
-                        </p>
-                        <Col xs={24} md={12}>
-                          <Form.Item
-                            {...rest}
-                            name={[name, 'cost_price']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Cost price is required!',
-                              },
-                            ]}
-                            className="!mb-0"
-                          >
-                            <FloatInputNumber placeholder="Cost Price" className="w-full" />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={24} md={12}>
-                          <Form.Item
-                            {...rest}
-                            name={[name, 'sale_price']}
-                            rules={[
-                              {
-                                required: true,
-                                message: 'Sale price is required!',
-                              },
-                              ({ getFieldValue }) => ({
-                                validator(_, value) {
-                                  const cost_price = getFieldValue(['variations', name, 'cost_price']);
-
-                                  if (!value) {
-                                    return Promise.resolve();
-                                  }
-
-                                  if (value < cost_price) {
-                                    return Promise.reject(new Error('Sale price cannot be lower than cost price!'));
-                                  }
-
-                                  return Promise.resolve();
+          <Col xs={24}>
+            <FloatFormList name="variations" initialValue={[{}]}>
+              {(fields, { add, remove }) => {
+                return (
+                  <React.Fragment>
+                    {fields.map(({ key, name, ...rest }) => (
+                      <div
+                        key={key}
+                        className="relative p-4 border border-dashed border-[var(--color-primary)] rounded-md pt-8"
+                      >
+                        <Row gutter={[16, 16]}>
+                          <p className="absolute top-0 left-4 -translate-y-1/2 bg-[var(--color-primary)] px-1.5 py-0.5 text-xs text-white rounded-md">
+                            Variation {fields.length > 1 ? name + 1 : ''}
+                          </p>
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'cost_price']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Cost price is required!',
                                 },
-                              }),
-                            ]}
-                            className="!mb-0"
-                          >
-                            <FloatInputNumber placeholder="Sale Price" className="w-full" />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={24} md={12}>
-                          <Form.Item
-                            {...rest}
-                            name={[name, 'mfg']}
-                            rules={[
-                              {
-                                required:
-                                  durability === ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE ||
-                                  formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
-                                message: 'Manufacturing date is required!',
-                              },
-                            ]}
-                            className="!mb-0"
-                          >
-                            <FloatDatePicker
-                              placeholder="Manufacturing Date"
-                              format={Dayjs.date}
-                              suffixIcon={<IoCalendar />}
-                              disabledDate={(current) => current && dayjs(current).isAfter(dayjs(), 'day')}
-                              className="w-full"
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col xs={24} md={12}>
-                          <Form.Item
-                            {...rest}
-                            name={[name, 'exp']}
-                            rules={[
-                              {
-                                required:
-                                  durability === ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE ||
-                                  formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
-                                message: 'Expire date is required!',
-                              },
-                            ]}
-                            className="!mb-0"
-                          >
-                            <FloatDatePicker
-                              placeholder="Expire Date"
-                              format={Dayjs.date}
-                              suffixIcon={<IoCalendar />}
-                              disabledDate={(current) => current && dayjs(current).isBefore(dayjs(), 'day')}
-                              className="w-full"
-                            />
-                          </Form.Item>
-                        </Col>
-                        {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL && (
-                          <React.Fragment>
-                            <Col xs={24} md={12}>
-                              <Form.Item {...rest} name={[name, 'color']} className="!mb-0">
-                                <ColorPicker
-                                  allowClear
-                                  showText
-                                  onChange={(color) =>
-                                    form.setFieldValue(['variations', name, 'color'], color.toHexString())
-                                  }
-                                  className="w-full justify-start"
-                                />
-                              </Form.Item>
-                            </Col>
-                            <Col xs={24} md={12}>
-                              <Form.Item {...rest} name={[name, 'size']} className="!mb-0">
-                                <FloatSelect
-                                  allowClear
-                                  showSearch
-                                  virtual={false}
-                                  placeholder="Size"
-                                  filterOption={(input, option: any) =>
-                                    option.label.toLowerCase().includes(input.toLowerCase())
-                                  }
-                                  options={productSizeTypes.map((sizeType) => ({
-                                    key: sizeType,
-                                    label: sizeType,
-                                    value: sizeType,
-                                  }))}
-                                />
-                              </Form.Item>
-                            </Col>
-                          </React.Fragment>
-                        )}
-                        <FloatFormList {...rest} name={[name, 'quantities']} initialValue={[{}]}>
-                          {(nestedFields, { add: nestedAdd, remove: nestedRemove }) => {
-                            return (
-                              <React.Fragment>
-                                {nestedFields.map(({ key: nestedKey, name: nestedName, ...nestedRest }) => {
-                                  const isFullColumn = nestedName === nestedFields.length - 1 && nestedName % 2 === 0;
+                              ]}
+                              className="!mb-0"
+                            >
+                              <FloatInputNumber placeholder="Cost Price" className="w-full" />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'sale_price']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Sale price is required!',
+                                },
+                                ({ getFieldValue }) => ({
+                                  validator(_, value) {
+                                    const cost_price = getFieldValue(['variations', name, 'cost_price']);
 
-                                  return (
-                                    <Col key={nestedKey} xs={24} md={isFullColumn ? 24 : 12}>
-                                      <Form.Item
-                                        {...nestedRest}
-                                        name={[nestedName, `q${nestedName + 1}`]}
-                                        rules={[
-                                          {
-                                            required: true,
-                                            message: 'Quantity is required!',
-                                          },
-                                        ]}
-                                        className="!mb-0"
-                                      >
-                                        <QuantityInput
-                                          nestedName={nestedName}
-                                          nestedFields={nestedFields}
-                                          nestedAdd={() => nestedAdd()}
-                                          nestedRemove={() => nestedRemove(nestedName)}
-                                          placeholder={`Quantity ${nestedFields.length > 1 ? nestedName + 1 : ''}`}
-                                          className="w-full"
-                                          style={{ zIndex: 0 }}
-                                        />
-                                      </Form.Item>
-                                    </Col>
-                                  );
-                                })}
-                              </React.Fragment>
-                            );
-                          }}
-                        </FloatFormList>
-                      </Row>
-                      <div className="flex justify-center gap-4 mt-8">
-                        <Button
-                          size="small"
-                          type="primary"
-                          ghost
-                          onClick={() => add()}
-                          disabled={name + 1 !== fields.length}
-                        >
-                          Add More
-                        </Button>
-                        <Button size="small" type="dashed" onClick={() => remove(name)} disabled={fields.length < 2}>
-                          Remove
-                        </Button>
+                                    if (!value) {
+                                      return Promise.resolve();
+                                    }
+
+                                    if (value < cost_price) {
+                                      return Promise.reject(new Error('Sale price cannot be lower than cost price!'));
+                                    }
+
+                                    return Promise.resolve();
+                                  },
+                                }),
+                              ]}
+                              className="!mb-0"
+                            >
+                              <FloatInputNumber placeholder="Sale Price" className="w-full" />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'mfg']}
+                              rules={[
+                                {
+                                  required:
+                                    durability === ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE ||
+                                    formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
+                                  message: 'Manufacturing date is required!',
+                                },
+                              ]}
+                              className="!mb-0"
+                            >
+                              <FloatDatePicker
+                                placeholder="Manufacturing Date"
+                                format={Dayjs.date}
+                                suffixIcon={<IoCalendar />}
+                                disabledDate={(current) => current && dayjs(current).isAfter(dayjs(), 'day')}
+                                className="w-full"
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'exp']}
+                              rules={[
+                                {
+                                  required:
+                                    durability === ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE ||
+                                    formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE,
+                                  message: 'Expire date is required!',
+                                },
+                              ]}
+                              className="!mb-0"
+                            >
+                              <FloatDatePicker
+                                placeholder="Expire Date"
+                                format={Dayjs.date}
+                                suffixIcon={<IoCalendar />}
+                                disabledDate={(current) => current && dayjs(current).isBefore(dayjs(), 'day')}
+                                className="w-full"
+                              />
+                            </Form.Item>
+                          </Col>
+                          {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL && (
+                            <React.Fragment>
+                              <Col xs={24} md={12}>
+                                <Form.Item {...rest} name={[name, 'color']} className="!mb-0">
+                                  <ColorPicker
+                                    allowClear
+                                    showText
+                                    onChange={(color) =>
+                                      form.setFieldValue(['variations', name, 'color'], color.toHexString())
+                                    }
+                                    className="w-full justify-start"
+                                  />
+                                </Form.Item>
+                              </Col>
+                              <Col xs={24} md={12}>
+                                <Form.Item {...rest} name={[name, 'size']} className="!mb-0">
+                                  <FloatSelect
+                                    allowClear
+                                    showSearch
+                                    virtual={false}
+                                    placeholder="Size"
+                                    filterOption={(input, option: any) =>
+                                      option.label.toLowerCase().includes(input.toLowerCase())
+                                    }
+                                    options={productSizeTypes.map((sizeType) => ({
+                                      key: sizeType,
+                                      label: sizeType,
+                                      value: sizeType,
+                                    }))}
+                                  />
+                                </Form.Item>
+                              </Col>
+                            </React.Fragment>
+                          )}
+                          <FloatFormList {...rest} name={[name, 'quantities']} initialValue={[{}]}>
+                            {(nestedFields, { add: nestedAdd, remove: nestedRemove }) => {
+                              return (
+                                <React.Fragment>
+                                  {nestedFields.map(({ key: nestedKey, name: nestedName, ...nestedRest }) => {
+                                    const isFullColumn = nestedName === nestedFields.length - 1 && nestedName % 2 === 0;
+
+                                    return (
+                                      <Col key={nestedKey} xs={24} md={isFullColumn ? 24 : 12}>
+                                        <Form.Item
+                                          {...nestedRest}
+                                          name={[nestedName, `q${nestedName + 1}`]}
+                                          rules={[
+                                            {
+                                              required: true,
+                                              message: 'Quantity is required!',
+                                            },
+                                          ]}
+                                          className="!mb-0"
+                                        >
+                                          <QuantityInput
+                                            nestedName={nestedName}
+                                            nestedFields={nestedFields}
+                                            nestedAdd={() => nestedAdd()}
+                                            nestedRemove={() => nestedRemove(nestedName)}
+                                            placeholder={`Quantity ${nestedFields.length > 1 ? nestedName + 1 : ''}`}
+                                            className="w-full"
+                                            style={{ zIndex: 0 }}
+                                          />
+                                        </Form.Item>
+                                      </Col>
+                                    );
+                                  })}
+                                </React.Fragment>
+                              );
+                            }}
+                          </FloatFormList>
+                        </Row>
+                        <div className="flex justify-center gap-4 mt-8">
+                          <Button
+                            size="small"
+                            type="primary"
+                            ghost
+                            onClick={() => add()}
+                            disabled={name + 1 !== fields.length}
+                          >
+                            Add More
+                          </Button>
+                          <Button size="small" type="dashed" onClick={() => remove(name)} disabled={fields.length < 2}>
+                            Remove
+                          </Button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </React.Fragment>
-              );
-            }}
-          </FloatFormList>
+                    ))}
+                  </React.Fragment>
+                );
+              }}
+            </FloatFormList>
+          </Col>
+          <Col xs={24}>
+            <Form.Item name="description" className="!mb-0">
+              <RichTextEditor placeholder="Description" isDark={isDark} />
+            </Form.Item>
+          </Col>
           <Col xs={24}>
             <Form.Item name="is_active" className="!mb-0">
               <Radio.Group buttonStyle="solid" className="w-full text-center">

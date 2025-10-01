@@ -6,10 +6,13 @@ import {
   orderGrandTotalSnap,
   orderRoundOffSnap,
   orderSubtotalSnap,
+  orderTaxSnap,
+  orderVatSnap,
 } from '@lib/redux/order/orderSelector';
 import { setCoupon, setDiscount, setRoundOff } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { Form, Switch, Tag } from 'antd';
 import React, { useState } from 'react';
 import { FaRegEdit } from 'react-icons/fa';
@@ -28,10 +31,12 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
   const [isDiscountModalOpen, setDiscountModalOpen] = useState(false);
   const orderCoupon = useAppSelector(orderCouponSnap);
   const orderDiscount = useAppSelector(orderDiscountSnap);
+  const orderVat = useAppSelector(orderVatSnap);
+  const orderTax = useAppSelector(orderTaxSnap);
   const orderSubtotal = useAppSelector(orderSubtotalSnap);
   const orderRoundOff = useAppSelector(orderRoundOffSnap);
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
-  const { coupon, discountType, discount, isRoundOff } = useAppSelector((store) => store.orderSlice);
+  const { coupon, discountType, discount, vat, tax, isRoundOff } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
 
   return (
@@ -65,6 +70,28 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
             />
           </p>
           <p className="font-semibold">{Toolbox.withCurrency(orderDiscount)}</p>
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <p className="space-x-1">
+            <span>Vat</span>
+            {vat?.type === ENUM_SETTINGS_VAT_TYPES.PERCENTAGE && (
+              <Tag color="warning" className="!mr-0">
+                {vat?.amount}%
+              </Tag>
+            )}
+          </p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderVat)}</p>
+        </div>
+        <div className="flex items-center justify-between gap-2">
+          <p className="space-x-1">
+            <span>Tax</span>
+            {tax?.type === ENUM_SETTINGS_TAX_TYPES.PERCENTAGE && (
+              <Tag color="warning" className="!mr-0">
+                {tax?.amount}%
+              </Tag>
+            )}
+          </p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderTax)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
           <p>Subtotal</p>

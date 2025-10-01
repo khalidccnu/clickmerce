@@ -1,8 +1,10 @@
 import { TId } from '@base/interfaces';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
 import { ENUM_POS_DISCOUNT_TYPES, TPosDiscountType } from '@modules/pos/lib/enums';
+import { ISettingsTax, ISettingsVat } from '@modules/settings/lib/interfaces';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
+import { loadOrderCustomerId, loadOrderVatTax } from './orderThunks';
 
 interface IOrderCartItem {
   productId: TId;
@@ -26,6 +28,8 @@ export interface IOrderState {
   coupon: ICoupon;
   discountType: TPosDiscountType;
   discount: number;
+  vat: ISettingsVat;
+  tax: ISettingsTax;
   isRoundOff: boolean;
   payableAmount: number;
 }
@@ -37,6 +41,8 @@ const initialState: IOrderState = {
   coupon: null,
   discountType: ENUM_POS_DISCOUNT_TYPES.FIXED,
   discount: 0,
+  vat: null,
+  tax: null,
   isRoundOff: true,
   payableAmount: 0,
 };
@@ -126,6 +132,20 @@ const orderSlice = createSlice({
       const { amount } = action.payload;
       state.payableAmount = amount;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(loadOrderCustomerId.fulfilled, (state, action) => {
+      const { customerId } = action.payload;
+
+      state.customerId = customerId;
+    });
+
+    builder.addCase(loadOrderVatTax.fulfilled, (state, action) => {
+      const { vat, tax } = action.payload;
+
+      state.vat = vat;
+      state.tax = tax;
+    });
   },
 });
 

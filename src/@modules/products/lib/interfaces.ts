@@ -40,6 +40,7 @@ export interface IProduct extends IBaseEntity {
   supplier: ISupplier;
   durability: TProductDurabilityType;
   variations: (IProductVariation & IBaseEntity)[];
+  description: string;
 }
 
 export interface IProductsResponse extends IBaseResponse {
@@ -59,5 +60,6 @@ export interface IProductCreate {
   supplier_id: TId;
   durability: TProductDurabilityType;
   variations: (IProductVariation & { id?: TId; is_deleted?: boolean })[];
+  description: string;
   is_active: string;
 }

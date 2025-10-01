@@ -4,6 +4,7 @@ import { IRole } from '@modules/roles/lib/interfaces';
 export interface IUsersFilter extends IBaseFilter {
   blood_group?: string;
   is_admin?: string;
+  is_default_customer?: string;
 }
 
 export interface IUser extends IBaseEntity {
@@ -11,6 +12,7 @@ export interface IUser extends IBaseEntity {
   phone: string;
   email: string;
   is_admin: boolean;
+  is_default_customer: boolean;
   user_info: {
     birthday: string;
     blood_group: string;
@@ -31,5 +33,6 @@ export interface IUserCreate {
   blood_group: string;
   roles: { id?: TId; is_deleted?: boolean }[];
   is_admin: string;
+  is_default_customer: string;
   is_active: string;
 }

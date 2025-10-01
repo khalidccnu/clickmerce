@@ -1,6 +1,7 @@
 import { RootState } from '@lib/redux/store';
 import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
 import { ENUM_POS_DISCOUNT_TYPES } from '@modules/pos/lib/enums';
+import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { createSelector } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import dayjs from 'dayjs';
@@ -75,9 +76,35 @@ export const orderDiscountSnap = createSelector([orderState, orderSubtotalSnap],
   return (subTotalSale * edge.discount) / 100;
 });
 
+export const orderVatSnap = createSelector([orderState, orderSubtotalSnap], (edge, subtotalSnap) => {
+  if (!edge.vat) return 0;
+
+  const { type, amount } = edge.vat;
+  const { subTotalSale } = subtotalSnap;
+
+  if (type === ENUM_SETTINGS_VAT_TYPES.PERCENTAGE) {
+    return (subTotalSale * amount) / 100;
+  }
+
+  return amount;
+});
+
+export const orderTaxSnap = createSelector([orderState, orderSubtotalSnap], (edge, subtotalSnap) => {
+  if (!edge.tax) return 0;
+
+  const { type, amount } = edge.tax;
+  const { subTotalSale } = subtotalSnap;
+
+  if (type === ENUM_SETTINGS_TAX_TYPES.PERCENTAGE) {
+    return (subTotalSale * amount) / 100;
+  }
+
+  return amount;
+});
+
 export const orderGrandTotalSnap = createSelector(
-  [orderState, orderSubtotalSnap, orderCouponSnap, orderDiscountSnap],
-  (edge, subtotalSnap, couponSnap, discountSnap) => {
+  [orderState, orderSubtotalSnap, orderCouponSnap, orderDiscountSnap, orderVatSnap, orderTaxSnap],
+  (edge, subtotalSnap, couponSnap, discountSnap, vatSnap, taxSnap) => {
     const { subTotalCost, subTotalSale } = subtotalSnap;
 
     const profit = subTotalSale - subTotalCost;
@@ -87,7 +114,7 @@ export const orderGrandTotalSnap = createSelector(
       totalDiscount = profit;
     }
 
-    const total = subTotalSale - totalDiscount;
+    const total = subTotalSale - totalDiscount + vatSnap + taxSnap;
     const totalWithRoundOff = edge.isRoundOff ? Math.round(total) : total;
 
     return { total, totalWithRoundOff };

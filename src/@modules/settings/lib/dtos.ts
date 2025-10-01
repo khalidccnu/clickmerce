@@ -1,5 +1,6 @@
 import { PartialType } from '@lib/utils/yup';
 import * as yup from 'yup';
+import { settingsTaxTypes, settingsVatTypes } from './enums';
 
 export const settingsIdentityCreateSchema = yup.object({
   name: yup.string().min(3).required(),
@@ -18,9 +19,21 @@ export const settingsS3CreateSchema = yup.object({
   bucket: yup.string().min(3).required(),
 });
 
+export const settingsVatCreateSchema = yup.object({
+  type: yup.string().oneOf(settingsVatTypes).required(),
+  amount: yup.number().min(0).required(),
+});
+
+export const settingsTaxCreateSchema = yup.object({
+  type: yup.string().oneOf(settingsTaxTypes).required(),
+  amount: yup.number().min(0).required(),
+});
+
 export const settingsCreateSchema = yup.object({
   identity: settingsIdentityCreateSchema.required(),
   s3: settingsS3CreateSchema.required(),
+  tax: settingsTaxCreateSchema.required(),
+  vat: settingsVatCreateSchema.required(),
   is_active: yup.string().optional(),
 });
 

@@ -48,7 +48,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
           const hasInCart = hasProductVariationInCartFn(variation.id, cart);
           const expirationDate = variation.exp ? dayjs(variation.exp) : null;
           const isExpiringSoon = expirationDate && expirationDate.diff(dayjs(), 'months') < 3;
-          const isExpired = expirationDate && expirationDate.isBefore(dayjs());
+          const isExpired = expirationDate && expirationDate.isBefore(dayjs(), 'day');
 
           return (
             <div
@@ -120,6 +120,29 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
                   />
                 </div>
               </div>
+              {(variation.color || variation.size) && (
+                <div className="flex items-center gap-2 text-xs">
+                  {variation.color && (
+                    <p className="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      Color: {variation.color}{' '}
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: 8,
+                          height: 8,
+                          borderRadius: '100%',
+                          backgroundColor: variation.color,
+                        }}
+                      />
+                    </p>
+                  )}
+                  {variation.size && (
+                    <p className="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      Size: {variation.size}
+                    </p>
+                  )}
+                </div>
+              )}
               {(hasInCart || isOutOfStock || isExpired || isExpiringSoon) && (
                 <React.Fragment>
                   {hasInCart && (

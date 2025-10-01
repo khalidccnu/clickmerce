@@ -174,7 +174,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json(response);
     }
 
-    const { identity, s3 } = settings;
+    const { identity, s3, vat, tax } = settings;
 
     const purifiedSettingsS3 = {
       access_key_id: s3?.access_key_id || null,
@@ -188,6 +188,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     const settingsResult = await SupabaseAdapter.create(supabaseServiceClient, Database.settings, {
       identity,
       s3: purifiedSettingsS3,
+      vat,
+      tax,
     });
 
     if (!settingsResult.success) {

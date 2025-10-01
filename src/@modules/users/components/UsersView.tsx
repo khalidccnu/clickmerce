@@ -32,6 +32,11 @@ const UsersView: React.FC<IProps> = ({ data }) => {
       </Descriptions.Item>
       <Descriptions.Item label="Meta" span={2}>
         {data?.is_admin ? <Tag color="blue">Admin</Tag> : <Tag color="green">Customer</Tag>}
+        {data?.is_default_customer ? (
+          <Tag color="purple">Default Customer</Tag>
+        ) : (
+          <Tag color="orange">Optional Customer</Tag>
+        )}
       </Descriptions.Item>
     </Descriptions>
   );

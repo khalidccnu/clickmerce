@@ -218,6 +218,18 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
             </Form.Item>
           </Col>
           <Col xs={24}>
+            <Form.Item name="is_default_customer" className="!mb-0">
+              <Radio.Group buttonStyle="solid" className="w-full text-center">
+                <Radio.Button className="w-1/2" value="true">
+                  Default Customer
+                </Radio.Button>
+                <Radio.Button className="w-1/2" value="false">
+                  Optional Customer
+                </Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
             <Form.Item name="is_active" className="!mb-0">
               <Radio.Group buttonStyle="solid" className="w-full text-center">
                 <Radio.Button className="w-1/2" value="true">

@@ -5,6 +5,7 @@ import { TId } from '@base/interfaces';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { orderChangeAmountSnap } from '@lib/redux/order/orderSelector';
 import { clearOrderFn, setCustomerId, setPayableAmount } from '@lib/redux/order/orderSlice';
+import { loadOrderCustomerId } from '@lib/redux/order/orderThunks';
 import { cn } from '@lib/utils/cn';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
@@ -22,6 +23,7 @@ interface IProps {
 
 const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   const [messageApi, messageHolder] = message.useMessage();
+  const [modalApi, modalHolder] = Modal.useModal();
   const [userFormInstance] = Form.useForm();
   const [usersSearchTerm, setUsersSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
@@ -30,7 +32,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
   const dispatch = useAppDispatch();
 
   const handleClearOrderFn = () => {
-    Modal.confirm({
+    modalApi.confirm({
       title: 'Clear Order',
       content: 'Are you sure you want to clear this order? This action cannot be undone.',
       okText: 'Yes, Clear',
@@ -39,6 +41,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
       onOk: () => {
         dispatch(clearOrderFn());
         messageApi.success('Order cleared successfully');
+        dispatch(loadOrderCustomerId());
       },
     });
   };
@@ -78,7 +81,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
 
   return (
     <React.Fragment>
-      {messageHolder}
+      {messageHolder} {modalHolder}
       <div className={cn('order_summary', className)}>
         <div className="order_summary_header space-y-4 border-b border-gray-300 border-dotted pb-4 mb-4">
           <p className="font-semibold dark:text-white">Order Summary</p>
@@ -94,6 +97,7 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
             <Col xs={24}>
               <Space.Compact style={{ width: '100%' }} size="large">
                 <InfiniteScrollSelect<IUser>
+                  allowClear
                   showSearch
                   virtual={false}
                   placeholder="Customer"

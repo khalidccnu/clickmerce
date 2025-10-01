@@ -63,7 +63,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  let { identity, s3 } = data;
+  let { identity, s3, vat, tax } = data;
 
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
@@ -102,9 +102,25 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       s3 = purifiedS3;
     }
 
+    if (vat) {
+      vat = {
+        ...existingSettings.data?.vat,
+        ...vat,
+      };
+    }
+
+    if (tax) {
+      tax = {
+        ...existingSettings.data?.tax,
+        ...tax,
+      };
+    }
+
     const updateResult = await SupabaseAdapter.update<ISettings>(supabaseServerClient, Database.settings, id, {
       identity,
       s3,
+      vat,
+      tax,
     });
 
     if (!updateResult.success) {

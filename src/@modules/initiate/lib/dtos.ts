@@ -1,5 +1,10 @@
 import { OmitType, PartialType } from '@lib/utils/yup';
-import { settingsIdentityCreateSchema, settingsS3CreateSchema } from '@modules/settings/lib/dtos';
+import {
+  settingsIdentityCreateSchema,
+  settingsS3CreateSchema,
+  settingsTaxCreateSchema,
+  settingsVatCreateSchema,
+} from '@modules/settings/lib/dtos';
 import { userCreateSchema } from '@modules/users/lib/dtos';
 import * as yup from 'yup';
 import { ENUM_INITIATE_TYPE, TInitiateType } from './enums';
@@ -11,6 +16,8 @@ export const initiateCreateSchema = yup.object({
     .object({
       identity: settingsIdentityCreateSchema.required(),
       s3: PartialType(settingsS3CreateSchema, true).optional(),
+      vat: settingsVatCreateSchema.required(),
+      tax: settingsTaxCreateSchema.required(),
     })
     .required(),
 });

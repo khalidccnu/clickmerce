@@ -6,6 +6,8 @@ export interface IInitiate {
   user: IUserCreate;
   identity: ISettingsCreate['identity'];
   s3: ISettingsCreate['s3'];
+  vat: ISettingsCreate['vat'];
+  tax: ISettingsCreate['tax'];
 }
 
 export interface IInitiateCreate {

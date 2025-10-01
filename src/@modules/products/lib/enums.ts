@@ -8,6 +8,7 @@ export const productTypes: TProductType[] = Object.values(ENUM_PRODUCT_TYPES);
 
 export enum ENUM_PRODUCT_MEDICINE_TYPES {
   ALLOPATHIC = 'ALLOPATHIC',
+  HOMEOPATHIC = 'HOMEOPATHIC',
 }
 
 export type TProductMedicineType = `${ENUM_PRODUCT_MEDICINE_TYPES}`;

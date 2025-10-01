@@ -124,8 +124,8 @@ export const SupabaseAdapter = {
 
       if (!data) {
         return {
-          success: false,
-          statusCode: 404,
+          success: true,
+          statusCode: 200,
           message: 'No record found matching the criteria',
           data: null,
           meta: null,

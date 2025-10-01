@@ -323,6 +323,7 @@ export type Database = {
       products: {
         Row: {
           created_at: string;
+          description: string | null;
           dosage_form_id: string | null;
           durability: string;
           generic_id: string | null;
@@ -341,6 +342,7 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          description?: string | null;
           dosage_form_id?: string | null;
           durability: string;
           generic_id?: string | null;
@@ -359,6 +361,7 @@ export type Database = {
         };
         Update: {
           created_at?: string;
+          description?: string | null;
           dosage_form_id?: string | null;
           durability?: string;
           generic_id?: string | null;
@@ -472,7 +475,9 @@ export type Database = {
           identity: Json | null;
           is_active: boolean;
           s3: Json | null;
+          tax: Json | null;
           updated_at: string;
+          vat: Json | null;
         };
         Insert: {
           created_at?: string;
@@ -480,7 +485,9 @@ export type Database = {
           identity?: Json | null;
           is_active?: boolean;
           s3?: Json | null;
+          tax?: Json | null;
           updated_at?: string;
+          vat?: Json | null;
         };
         Update: {
           created_at?: string;
@@ -488,7 +495,9 @@ export type Database = {
           identity?: Json | null;
           is_active?: boolean;
           s3?: Json | null;
+          tax?: Json | null;
           updated_at?: string;
+          vat?: Json | null;
         };
         Relationships: [];
       };
@@ -574,6 +583,7 @@ export type Database = {
           id: string;
           is_active: boolean;
           is_admin: boolean;
+          is_default_customer: boolean;
           name: string;
           password: string | null;
           phone: string;
@@ -585,6 +595,7 @@ export type Database = {
           id?: string;
           is_active?: boolean;
           is_admin?: boolean;
+          is_default_customer?: boolean;
           name: string;
           password?: string | null;
           phone: string;
@@ -596,6 +607,7 @@ export type Database = {
           id?: string;
           is_active?: boolean;
           is_admin?: boolean;
+          is_default_customer?: boolean;
           name?: string;
           password?: string | null;
           phone?: string;

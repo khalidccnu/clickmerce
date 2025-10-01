@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS products (
     durability VARCHAR NOT NULL,
     rack VARCHAR,
     quantity INTEGER DEFAULT 0 NOT NULL,
+    description TEXT,
     images JSONB DEFAULT '[]'::jsonb,
     dosage_form_id UUID REFERENCES dosage_forms(id) ON DELETE NO ACTION,
     generic_id UUID REFERENCES generics(id) ON DELETE NO ACTION,

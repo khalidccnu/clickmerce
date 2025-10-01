@@ -9,7 +9,13 @@ CREATE TABLE IF NOT EXISTS settings (
     
     -- S3/Storage configuration as JSONB
     s3 JSONB,
-    
+
+    -- VAT configuration as JSONB
+    vat JSONB,
+
+    -- Tax configuration as JSONB
+    tax JSONB,
+
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
@@ -21,3 +27,5 @@ CREATE INDEX IF NOT EXISTS idx_settings_updated_at ON settings(updated_at);
 -- Create GIN indexes for JSONB columns for better query performance
 CREATE INDEX IF NOT EXISTS idx_settings_identity_gin ON settings USING GIN (identity);
 CREATE INDEX IF NOT EXISTS idx_settings_s3_gin ON settings USING GIN (s3);
+CREATE INDEX IF NOT EXISTS idx_settings_vat_gin ON settings USING GIN (vat);
+CREATE INDEX IF NOT EXISTS idx_settings_tax_gin ON settings USING GIN (tax);

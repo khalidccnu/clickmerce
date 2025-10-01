@@ -163,6 +163,7 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
             blood_group: updateItem?.user_info?.blood_group,
             roles: updateItem?.user_roles?.map((userRole) => ({ id: userRole?.role_id })),
             is_admin: updateItem?.is_admin?.toString(),
+            is_default_customer: updateItem?.is_default_customer?.toString(),
             is_active: updateItem?.is_active?.toString(),
           }}
           isLoading={userUpdateFn.isPending}

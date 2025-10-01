@@ -141,7 +141,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { name, phone, email, password, is_admin, is_active, roles, ...rest } = data;
+  const { name, phone, email, password, is_admin, is_default_customer, is_active, roles, ...rest } = data;
 
   try {
     const existingUser = await SupabaseAdapter.findById<IUser & { password: string }>(
@@ -167,6 +167,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       phone,
       email,
       is_admin,
+      is_default_customer,
       is_active,
     };
 
@@ -216,6 +217,38 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
           };
 
           return res.status(409).json(response);
+        }
+      }
+
+      if (!existingUser.data.is_default_customer && Toolbox.toBool(is_default_customer)) {
+        const existingDefaultCustomer = await SupabaseAdapter.findOne<IUser & { password: string }>(
+          supabaseServiceClient,
+          Database.users,
+          { booleanFilters: { conditions: { is_default_customer: { eq: true } } } },
+        );
+
+        if (!existingDefaultCustomer.success) {
+          const response: IBaseResponse = {
+            success: false,
+            statusCode: 400,
+            message: existingDefaultCustomer.message || 'Failed to check existing default customer',
+            data: null,
+            meta: null,
+          };
+
+          return res.status(400).json(response);
+        }
+
+        if (existingDefaultCustomer.data) {
+          const response: IBaseResponse = {
+            success: false,
+            statusCode: 400,
+            message: "Already default customer exists. You can't create more than one default customer",
+            data: null,
+            meta: null,
+          };
+
+          return res.status(400).json(response);
         }
       }
 

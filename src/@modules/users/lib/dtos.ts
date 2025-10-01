@@ -24,6 +24,7 @@ export const userCreateSchema = yup.object({
   blood_group: yup.mixed<TBloodGroupType>().oneOf(Object.values(ENUM_BLOOD_GROUP_TYPES)).optional().nullable(),
   roles: yup.array().of(userRoleCreateSchema).optional().nullable(),
   is_admin: yup.string().optional(),
+  is_default_customer: yup.string().optional(),
   is_active: yup.string().optional(),
 });
 
@@ -33,9 +34,12 @@ export const userUpdateSchema = PartialType(OmitType(userCreateSchema, ['roles']
   }),
 );
 
-export const userFilterSchema = PickType(userCreateSchema, ['blood_group', 'is_admin', 'is_active']).concat(
-  baseFilterSchema,
-);
+export const userFilterSchema = PickType(userCreateSchema, [
+  'blood_group',
+  'is_admin',
+  'is_default_customer',
+  'is_active',
+]).concat(baseFilterSchema);
 
 export type TUserCreateDto = yup.InferType<typeof userCreateSchema>;
 export type TUserUpdateDto = yup.InferType<typeof userUpdateSchema>;

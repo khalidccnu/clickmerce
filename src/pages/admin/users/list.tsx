@@ -83,7 +83,7 @@ const UsersPage = () => {
       <Drawer width={640} title="Create a new user" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
         <UsersForm
           form={formInstance}
-          initialValues={{ is_admin: 'false', is_active: 'true' }}
+          initialValues={{ is_admin: 'false', is_default_customer: 'false', is_active: 'true' }}
           isLoading={userCreateFn.isPending}
           onFinish={(values) => userCreateFn.mutate(values)}
         />

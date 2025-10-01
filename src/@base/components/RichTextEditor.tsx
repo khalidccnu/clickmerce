@@ -3,7 +3,7 @@ import { getAuthToken } from '@modules/auth/lib/utils/client';
 import { Spin } from 'antd';
 import { type IJoditEditorProps, Jodit } from 'jodit-react';
 import dynamic from 'next/dynamic';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 
 const JoditEditor = dynamic(() => import('jodit-react'), {
   ssr: false,
@@ -40,10 +40,6 @@ const RichTextEditor: React.FC<IProps> = ({
         .replace(/<p><span>(.*?)<\/span><\/p>/g, '<p>$1</p>');
     }
   };
-
-  useEffect(() => {
-    setContent(value);
-  }, [value]);
 
   const config = useMemo<IJoditEditorProps['config']>(
     () => ({
@@ -125,8 +121,11 @@ const RichTextEditor: React.FC<IProps> = ({
         ref={editorRef}
         config={config}
         value={content}
-        onBlur={(newContent) => setContent(beautifyHtmlFn(newContent))}
-        onChange={(newContent) => onChange?.(beautifyHtmlFn(newContent))}
+        onChange={(newContent) => {
+          setContent(beautifyHtmlFn(newContent));
+          onChange?.(beautifyHtmlFn(newContent));
+        }}
+        className="[&_.jodit-workplace]:prose"
       />
       <style jsx global>{`
         .richtext_editor {
