@@ -24,7 +24,6 @@ const ProductCatalogCard: React.FC<IProps> = ({
   product,
   onAddToCart,
 }) => {
-  // const { invId } = usePosInv();
   const featuredImage = Toolbox.isNotEmpty(product?.images)
     ? product.images.find((image) => image.is_featured) || product.images[0]
     : null;

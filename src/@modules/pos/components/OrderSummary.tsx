@@ -1,7 +1,7 @@
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
-import { TId } from '@base/interfaces';
+import { usePosInv } from '@lib/context/PosInvContext';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { orderChangeAmountSnap } from '@lib/redux/order/orderSelector';
 import { clearOrderFn, setCustomerId, setPayableAmount } from '@lib/redux/order/orderSlice';
@@ -18,10 +18,10 @@ import OrderSummaryProducts from './OrderSummaryProducts';
 
 interface IProps {
   className?: string;
-  invId: TId;
 }
 
-const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
+const OrderSummary: React.FC<IProps> = ({ className }) => {
+  const { invId } = usePosInv();
   const [messageApi, messageHolder] = message.useMessage();
   const [modalApi, modalHolder] = Modal.useModal();
   const [userFormInstance] = Form.useForm();
@@ -97,7 +97,6 @@ const OrderSummary: React.FC<IProps> = ({ className, invId }) => {
             <Col xs={24}>
               <Space.Compact style={{ width: '100%' }} size="large">
                 <InfiniteScrollSelect<IUser>
-                  allowClear
                   showSearch
                   virtual={false}
                   placeholder="Customer"

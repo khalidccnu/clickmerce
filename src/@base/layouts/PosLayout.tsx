@@ -85,7 +85,9 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
         }}
       >
         <div style={styles.siderWrapper} className="designed_scrollbar overscroll-contain">
-          <OrderSummary className="p-4 pt-0" invId={invId} />
+          <PosInvContext.Provider value={{ invId }}>
+            <OrderSummary className="p-4 pt-0" />
+          </PosInvContext.Provider>
         </div>
       </Layout.Sider>
       <Layout style={styles.layout}>
