@@ -36,7 +36,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
   const orderSubtotal = useAppSelector(orderSubtotalSnap);
   const orderRoundOff = useAppSelector(orderRoundOffSnap);
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
-  const { coupon, discountType, discount, vat, tax, isRoundOff } = useAppSelector((store) => store.orderSlice);
+  const { coupon, discount, vat, tax, deliveryCharge, isRoundOff } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
 
   return (
@@ -94,6 +94,10 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
           <p className="font-semibold">{Toolbox.withCurrency(orderTax)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
+          <p>Delivery Charge</p>
+          <p className="font-semibold">{Toolbox.withCurrency(deliveryCharge)}</p>
+        </div>
+        <div className="flex items-center justify-between gap-2">
           <p>Subtotal</p>
           <p className="font-semibold">{Toolbox.withCurrency(orderSubtotal.subTotalSale)}</p>
         </div>
@@ -110,7 +114,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
         </div>
         <div className="flex items-center justify-between gap-2 border-t border-gray-300 border-dotted pt-4 text-black dark:text-white text-base">
           <p>Payable</p>
-          <p className="font-semibold">{Toolbox.withCurrency(orderGrandTotal.totalWithRoundOff)}</p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderGrandTotal.totalSaleWithRoundOff)}</p>
         </div>
       </div>
       <BaseModalWithoutClicker
@@ -144,7 +148,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
         <OrderSummaryDiscountForm
           form={discountFormInstance}
           isLoading={false}
-          initialValues={{ type: discountType, amount: discount }}
+          initialValues={{ type: discount.type, amount: discount.amount }}
           onFinish={(values) => {
             const { type, amount } = values;
 

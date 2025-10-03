@@ -19,7 +19,7 @@ import { ProductsHooks } from '@modules/products/lib/hooks';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { UsersServices } from '@modules/users/lib/services';
 import { pdf } from '@react-pdf/renderer';
-import { Button, Empty, message, Spin, Tag } from 'antd';
+import { Button, Empty, message, Popconfirm, Spin, Tag } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { normalizeReceiptImageUrlFn } from '../lib/utils';
@@ -34,7 +34,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
   const { invId } = usePosInv();
   const [messageApi, messageHolder] = message.useMessage();
   const [isReceiptPreviewLoading, setIsReceiptPreviewLoading] = useState(false);
-  const { customerId, cart, vat, tax, isRoundOff } = useAppSelector((store) => store.orderSlice);
+  const { customerId, cart, vat, tax, deliveryCharge, isRoundOff } = useAppSelector((store) => store.orderSlice);
   const orderCoupon = useAppSelector(orderCouponSnap);
   const orderDiscount = useAppSelector(orderDiscountSnap);
   const orderVat = useAppSelector(orderVatSnap);
@@ -84,9 +84,11 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
         vatPercent: vat?.type === ENUM_SETTINGS_VAT_TYPES.PERCENTAGE ? vat?.amount : 0,
         tax: orderTax,
         taxPercent: tax?.type === ENUM_SETTINGS_TAX_TYPES.PERCENTAGE ? tax?.amount : 0,
+        deliveryCharge,
         subTotal: orderSubtotal.subTotalSale,
         roundOff: isRoundOff ? orderRoundOff : 0,
-        grandTotal: orderGrandTotal.totalWithRoundOff,
+        grandTotal: orderGrandTotal.totalSaleWithRoundOff,
+        isRedeemExceedingProfit: orderGrandTotal.isRedeemExceedingProfit,
         receivedBy: profile?.name,
       };
 
@@ -121,6 +123,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
                 selectedQuantity: cartItem.selectedQuantity,
                 costPrice: variation.cost_price,
                 salePrice: variation.sale_price,
+                discount: variation.discount,
               };
             })
             .filter(Boolean) || [];
@@ -152,13 +155,22 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
           Preview
         </Button>
         <Tag color="var(--color-primary)" className="!ml-auto !me-0">
-          Total Price: {Toolbox.withCurrency(orderGrandTotal.totalWithRoundOff)}
+          Total Price: {Toolbox.withCurrency(orderGrandTotal.totalSaleWithRoundOff)}
         </Tag>
-        <Button danger size="small" onClick={() => dispatch(clearCartFn())} disabled={!cart?.length}>
-          Clear
-        </Button>
+        <Popconfirm
+          title="Clear Cart"
+          description="Are you sure you want to clear the cart?"
+          onConfirm={() => dispatch(clearCartFn())}
+          okText="Yes, Clear"
+          cancelText="Cancel"
+          okType="danger"
+        >
+          <Button danger size="small" disabled={!cart?.length}>
+            Clear
+          </Button>
+        </Popconfirm>
       </div>
-      <div className="space-y-4 max-h-[720px] overflow-y-auto hidden_scrollbar">
+      <div className="space-y-4 max-h-[520px] overflow-y-auto hidden_scrollbar overscroll-contain">
         {productsBulkQuery.isPending ? (
           <div className="text-center">
             <Spin />
@@ -177,6 +189,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
               const purifiedElem = {
                 ...product,
                 selectedQuantity: cartItem.selectedQuantity,
+                discount: cartItem.discount,
                 selectedVariation: variation,
               };
 

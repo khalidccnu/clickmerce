@@ -78,6 +78,19 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 8,
   },
+  warningBox: {
+    backgroundColor: '#fff3cd',
+    border: '1pt solid #ffeaa7',
+    borderRadius: 4,
+    padding: 4,
+    marginVertical: 4,
+  },
+  warningText: {
+    fontSize: 8,
+    color: '#856404',
+    textAlign: 'center',
+    fontWeight: 500,
+  },
   footer: {
     marginTop: 10,
     borderTop: '1pt dashed #bdbed1',
@@ -110,9 +123,11 @@ interface IProps {
   vatPercent: number;
   tax: number;
   taxPercent: number;
+  deliveryCharge: number;
   subTotal: number;
   roundOff: number;
   grandTotal: number;
+  isRedeemExceedingProfit: boolean;
   receivedBy: string;
 }
 
@@ -130,9 +145,11 @@ const Receipt: React.FC<IProps> = ({
   vatPercent,
   tax,
   taxPercent,
+  deliveryCharge,
   subTotal,
   roundOff,
   grandTotal,
+  isRedeemExceedingProfit,
   receivedBy,
 }) => {
   return (
@@ -201,6 +218,11 @@ const Receipt: React.FC<IProps> = ({
             <Text>Discount</Text>
             <Text>{Toolbox.truncateNumber(discount)}</Text>
           </View>
+          {isRedeemExceedingProfit && (
+            <View style={styles.warningBox}>
+              <Text style={styles.warningText}>⚠ Redeem limit applied</Text>
+            </View>
+          )}
           <View style={styles.totalRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Text>Vat</Text>
@@ -216,6 +238,10 @@ const Receipt: React.FC<IProps> = ({
             <Text>{Toolbox.truncateNumber(tax)}</Text>
           </View>
           <View style={styles.totalRow}>
+            <Text>Delivery Charge</Text>
+            <Text>{Toolbox.truncateNumber(deliveryCharge)}</Text>
+          </View>
+          <View style={styles.totalRow}>
             <Text>Sub Total</Text>
             <Text>{Toolbox.truncateNumber(subTotal)}</Text>
           </View>
@@ -223,6 +249,7 @@ const Receipt: React.FC<IProps> = ({
             <Text>Round Off</Text>
             <Text>{Toolbox.truncateNumber(roundOff)}</Text>
           </View>
+          <View style={styles.dashed}></View>
           <View style={styles.totalRow}>
             <Text>Grand Total</Text>
             <Text>{Toolbox.truncateNumber(grandTotal)}</Text>

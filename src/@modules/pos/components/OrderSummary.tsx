@@ -3,16 +3,27 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { usePosInv } from '@lib/context/PosInvContext';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { orderChangeAmountSnap } from '@lib/redux/order/orderSelector';
-import { clearOrderFn, setCustomerId, setPayableAmount } from '@lib/redux/order/orderSlice';
-import { loadOrderCustomerId } from '@lib/redux/order/orderThunks';
+import { orderChangeAmountSnap, orderGrandTotalSnap } from '@lib/redux/order/orderSelector';
+import {
+  clearOrderFn,
+  setCustomerId,
+  setDeliveryCharge,
+  setDeliveryZoneId,
+  setPayableAmount,
+  setPaymentMethodId,
+} from '@lib/redux/order/orderSlice';
+import { loadOrderCustomerId, loadOrderPaymentMethodId } from '@lib/redux/order/orderThunks';
 import { cn } from '@lib/utils/cn';
+import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
+import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
+import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
+import { IPaymentMethod } from '@modules/payment-methods/lib/interfaces';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
-import { Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
+import { Alert, Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
 import React, { useState } from 'react';
-import { FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
+import { FaClipboardList, FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
 import OrderSummaryPrice from './OrderSummaryPrice';
 import OrderSummaryProducts from './OrderSummaryProducts';
 
@@ -26,9 +37,14 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const [modalApi, modalHolder] = Modal.useModal();
   const [userFormInstance] = Form.useForm();
   const [usersSearchTerm, setUsersSearchTerm] = useState(null);
+  const [paymentMethodsSearchTerm, setPaymentMethodsSearchTerm] = useState(null);
+  const [deliveryZonesSearchTerm, setDeliveryZonesSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
-  const { customerId, cart, payableAmount } = useAppSelector((store) => store.orderSlice);
+  const { customerId, cart, payableAmount, paymentMethodId, deliveryZoneId } = useAppSelector(
+    (store) => store.orderSlice,
+  );
   const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
+  const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
   const dispatch = useAppDispatch();
 
   const handleClearOrderFn = () => {
@@ -42,6 +58,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
         dispatch(clearOrderFn());
         messageApi.success('Order cleared successfully');
         dispatch(loadOrderCustomerId());
+        dispatch(loadOrderPaymentMethodId());
       },
     });
   };
@@ -76,6 +93,40 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
       search_term: usersSearchTerm,
       is_active: 'true',
       search_fields: ['name', 'phone', 'email'],
+    },
+  });
+
+  const paymentMethodQuery = PaymentMethodsHooks.useFindById({
+    id: paymentMethodId,
+    config: {
+      queryKey: [],
+      enabled: !!paymentMethodId,
+    },
+  });
+
+  const paymentMethodsQuery = PaymentMethodsHooks.useFindInfinite({
+    options: {
+      limit: '20',
+      search_term: paymentMethodsSearchTerm,
+      search_field: 'name',
+      is_active: 'true',
+    },
+  });
+
+  const deliveryZoneQuery = DeliveryZonesHooks.useFindById({
+    id: deliveryZoneId,
+    config: {
+      queryKey: [],
+      enabled: !!deliveryZoneId,
+    },
+  });
+
+  const deliveryZonesQuery = DeliveryZonesHooks.useFindInfinite({
+    options: {
+      limit: '20',
+      search_term: deliveryZonesSearchTerm,
+      search_field: 'name',
+      is_active: 'true',
     },
   });
 
@@ -122,6 +173,17 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
             <Col xs={24}>
               <OrderSummaryProducts className="border-y border-gray-300 border-dotted py-4" />
             </Col>
+            {orderGrandTotal.isRedeemExceedingProfit && (
+              <Col xs={24}>
+                <Alert
+                  showIcon
+                  closable
+                  type="warning"
+                  message="Redeem Warning"
+                  description="The redeem exceeds the profit margin. Redeem has been automatically adjusted to maintain minimum profit."
+                />
+              </Col>
+            )}
             <Col xs={24}>
               <OrderSummaryPrice className="border-b border-gray-300 border-dotted pb-4" />
             </Col>
@@ -146,7 +208,65 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 readOnly
               />
             </Col>
-            <Col xs={24}>
+            <Col xs={24} md={12}>
+              <InfiniteScrollSelect<IPaymentMethod>
+                isFloat
+                showSearch
+                virtual={false}
+                placeholder="Payment Method"
+                initialOptions={paymentMethodQuery.data?.data?.id ? [paymentMethodQuery.data?.data] : []}
+                option={({ item: paymentMethod }) => ({
+                  key: paymentMethod?.id,
+                  label: paymentMethod?.name,
+                  value: paymentMethod?.id,
+                })}
+                onChangeSearchTerm={setPaymentMethodsSearchTerm}
+                query={paymentMethodsQuery}
+                value={paymentMethodId ? [paymentMethodId] : []}
+                onChange={(value) => {
+                  dispatch(setPaymentMethodId(value));
+                }}
+                style={{ width: '100%' }}
+                size="large"
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <InfiniteScrollSelect<IDeliveryZone>
+                isFloat
+                showSearch
+                virtual={false}
+                placeholder="Delivery Zone"
+                initialOptions={deliveryZoneQuery.data?.data?.id ? [deliveryZoneQuery.data?.data] : []}
+                option={({ item: deliveryZone }) => ({
+                  key: deliveryZone?.id,
+                  label: deliveryZone?.name,
+                  value: deliveryZone?.id,
+                  data: deliveryZone,
+                })}
+                onChangeSearchTerm={setDeliveryZonesSearchTerm}
+                query={deliveryZonesQuery}
+                value={deliveryZoneId ? [deliveryZoneId] : []}
+                onChange={(value, options: { data: IDeliveryZone }) => {
+                  dispatch(setDeliveryZoneId(value));
+                  dispatch(setDeliveryCharge(options?.data?.delivery_service_type?.amount || 0));
+                }}
+                style={{ width: '100%' }}
+                size="large"
+              />
+            </Col>
+            <Col xs={24} md={12}>
+              <Button
+                type="primary"
+                size="large"
+                block
+                disabled={!invId || !customerId || !cart?.length}
+                icon={<FaClipboardList />}
+                ghost
+              >
+                Place Draft Order
+              </Button>
+            </Col>
+            <Col xs={24} md={12}>
               <Button
                 type="primary"
                 size="large"

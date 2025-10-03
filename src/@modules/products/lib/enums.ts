@@ -33,3 +33,11 @@ export enum ENUM_PRODUCT_SIZE_TYPES {
 
 export type TProductSizeType = `${ENUM_PRODUCT_SIZE_TYPES}`;
 export const productSizeTypes: TProductSizeType[] = Object.values(ENUM_PRODUCT_SIZE_TYPES);
+
+export enum ENUM_PRODUCT_DISCOUNT_TYPES {
+  FIXED = 'FIXED',
+  PERCENTAGE = 'PERCENTAGE',
+}
+
+export type TProductDiscountType = `${ENUM_PRODUCT_DISCOUNT_TYPES}`;
+export const productDiscountTypes: TProductDiscountType[] = Object.values(ENUM_PRODUCT_DISCOUNT_TYPES);

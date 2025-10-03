@@ -1,6 +1,6 @@
 import { RootState } from '@lib/redux/store';
 import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
-import { ENUM_POS_DISCOUNT_TYPES } from '@modules/pos/lib/enums';
+import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { createSelector } from '@reduxjs/toolkit';
 import { message } from 'antd';
@@ -14,10 +14,22 @@ export const orderSubtotalSnap = createSelector([orderState], (edge) => {
     0,
   );
 
-  const subTotalSale = edge.cartProducts.reduce(
-    (sum, cartProduct) => sum + cartProduct.salePrice * cartProduct.selectedQuantity,
-    0,
-  );
+  const subTotalSale = edge.cartProducts.reduce((sum, cartProduct) => {
+    let effectivePrice = cartProduct.salePrice;
+    const { type, amount } = cartProduct.discount;
+
+    if (amount) {
+      if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
+        effectivePrice = cartProduct.salePrice - amount;
+      } else if (type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
+        effectivePrice = cartProduct.salePrice * (1 - amount / 100);
+      }
+
+      effectivePrice = Math.max(cartProduct.costPrice, effectivePrice);
+    }
+
+    return sum + effectivePrice * cartProduct.selectedQuantity;
+  }, 0);
 
   return { subTotalCost, subTotalSale };
 });
@@ -68,12 +80,13 @@ export const orderCouponSnap = createSelector([orderState, orderSubtotalSnap], (
 });
 
 export const orderDiscountSnap = createSelector([orderState, orderSubtotalSnap], (edge, subtotalSnap) => {
-  if (!edge.discount) return 0;
-  if (edge.discountType === ENUM_POS_DISCOUNT_TYPES.FIXED) return edge.discount;
+  const { type, amount } = edge.discount;
+
+  if (!amount) return 0;
+  if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) return amount;
 
   const { subTotalSale } = subtotalSnap;
-
-  return (subTotalSale * edge.discount) / 100;
+  return (subTotalSale * amount) / 100;
 });
 
 export const orderVatSnap = createSelector([orderState, orderSubtotalSnap], (edge, subtotalSnap) => {
@@ -108,25 +121,28 @@ export const orderGrandTotalSnap = createSelector(
     const { subTotalCost, subTotalSale } = subtotalSnap;
 
     const profit = subTotalSale - subTotalCost;
-    let totalDiscount = couponSnap + discountSnap;
+    let totalRedeem = couponSnap + discountSnap;
+    const isRedeemExceedingProfit = totalRedeem > profit;
 
-    if (totalDiscount > profit) {
-      totalDiscount = profit;
+    if (isRedeemExceedingProfit) {
+      totalRedeem = profit;
     }
 
-    const total = subTotalSale - totalDiscount + vatSnap + taxSnap;
-    const totalWithRoundOff = edge.isRoundOff ? Math.round(total) : total;
+    const totalSale = subTotalSale - totalRedeem + vatSnap + taxSnap + edge.deliveryCharge;
+    const totalSaleWithRoundOff = edge.isRoundOff ? Math.round(totalSale) : totalSale;
 
-    return { total, totalWithRoundOff };
+    return { totalSale, totalSaleWithRoundOff, totalRedeem, isRedeemExceedingProfit };
   },
 );
 
 export const orderRoundOffSnap = createSelector([orderGrandTotalSnap], (grandTotalSnap) => {
-  const { total } = grandTotalSnap;
-  return Math.round(total) - total;
+  const { totalSale } = grandTotalSnap;
+  return Math.round(totalSale) - totalSale;
 });
 
 export const orderChangeAmountSnap = createSelector([orderState, orderGrandTotalSnap], (edge, grandTotalSnap) => {
-  const { totalWithRoundOff } = grandTotalSnap;
-  return edge.payableAmount && edge.payableAmount > totalWithRoundOff ? edge.payableAmount - totalWithRoundOff : 0;
+  const { totalSaleWithRoundOff } = grandTotalSnap;
+  return edge.payableAmount && edge.payableAmount > totalSaleWithRoundOff
+    ? edge.payableAmount - totalSaleWithRoundOff
+    : 0;
 });

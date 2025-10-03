@@ -10,3 +10,11 @@ export const hasProductVariationInCartFn = (variationId: TId, cart: IOrderState[
   const item = cart.find((cartItem) => cartItem.productVariationId === variationId);
   return !!item;
 };
+
+export const cartItemFn = (productId: TId, variationId: TId, cart: IOrderState['cart']) => {
+  return cart.find((cartItem) => cartItem.productId === productId && cartItem.productVariationId === variationId);
+};
+
+export const cartItemIdxFn = (productId: TId, variationId: TId, cart: IOrderState['cart']) => {
+  return cart.findIndex((cartItem) => cartItem.productId === productId && cartItem.productVariationId === variationId);
+};

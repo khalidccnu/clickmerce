@@ -84,7 +84,7 @@ const PaymentMethodsPage = () => {
       <Drawer width={640} title="Create a new payment Method" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
         <PaymentMethodsForm
           form={formInstance}
-          initialValues={{ type: ENUM_PAYMENT_METHOD_TYPES.AUTO, is_active: 'true' }}
+          initialValues={{ type: ENUM_PAYMENT_METHOD_TYPES.AUTO, is_default: 'false', is_active: 'true' }}
           isLoading={paymentMethodCreateFn.isPending}
           onFinish={(values) => paymentMethodCreateFn.mutate(values)}
         />

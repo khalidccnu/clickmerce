@@ -176,6 +176,10 @@ const ProductsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               exp: variation?.exp,
               color: variation?.color,
               size: variation?.size,
+              discount: {
+                type: variation?.discount?.type,
+                amount: variation?.discount?.amount,
+              },
               quantity: variation?.quantity,
             })),
             is_active: updateItem?.is_active?.toString(),

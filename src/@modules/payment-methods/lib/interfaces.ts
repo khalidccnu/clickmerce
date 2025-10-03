@@ -1,7 +1,9 @@
 import { IBaseEntity, IBaseFilter, IBaseResponse } from '@base/interfaces';
 import { TPaymentMethodReferenceType, TPaymentMethodType } from './enums';
 
-export interface IPaymentMethodsFilter extends IBaseFilter {}
+export interface IPaymentMethodsFilter extends IBaseFilter {
+  is_default?: string;
+}
 
 export interface IPaymentMethod extends IBaseEntity {
   name: string;
@@ -9,6 +11,7 @@ export interface IPaymentMethod extends IBaseEntity {
   type: TPaymentMethodType;
   reference_type: TPaymentMethodReferenceType;
   description: string;
+  is_default: boolean;
 }
 
 export interface IPaymentMethodsResponse extends IBaseResponse {
@@ -21,5 +24,6 @@ export interface IPaymentMethodCreate {
   type: TPaymentMethodType;
   reference_type: TPaymentMethodReferenceType;
   description: string;
+  is_default: string;
   is_active: string;
 }

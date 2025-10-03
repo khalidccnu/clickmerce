@@ -7,7 +7,7 @@ import WithAuthorization from '@modules/auth/components/WithAuthorization';
 import ProductsFilter from '@modules/products/components/ProductsFilter';
 import ProductsForm from '@modules/products/components/ProductsForm';
 import ProductsList from '@modules/products/components/ProductsList';
-import { ENUM_PRODUCT_TYPES } from '@modules/products/lib/enums';
+import { ENUM_PRODUCT_DISCOUNT_TYPES, ENUM_PRODUCT_TYPES } from '@modules/products/lib/enums';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { IProductsFilter } from '@modules/products/lib/interfaces';
 import { Button, Drawer, Form, message, Tag } from 'antd';
@@ -84,7 +84,11 @@ const ProductsPage = () => {
       <Drawer width={640} title="Create a new product" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
         <ProductsForm
           form={formInstance}
-          initialValues={{ type: ENUM_PRODUCT_TYPES.GENERAL, is_active: 'true' }}
+          initialValues={{
+            type: ENUM_PRODUCT_TYPES.GENERAL,
+            variations: [{ discount: { type: ENUM_PRODUCT_DISCOUNT_TYPES.FIXED, amount: 0 } }],
+            is_active: 'true',
+          }}
           isLoading={productCreateFn.isPending}
           onFinish={(values) => productCreateFn.mutate(values)}
         />

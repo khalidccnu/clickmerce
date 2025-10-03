@@ -142,6 +142,7 @@ const PaymentMethodsList: React.FC<IProps> = ({ isLoading, data, pagination }) =
           form={formInstance}
           initialValues={{
             ...updateItem,
+            is_default: updateItem?.is_default?.toString(),
             is_active: updateItem?.is_active?.toString(),
           }}
           isLoading={paymentMethodUpdateFn.isPending}

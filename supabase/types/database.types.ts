@@ -179,6 +179,7 @@ export type Database = {
           id: string;
           image: string;
           is_active: boolean;
+          is_default: boolean;
           name: string;
           reference_type: string;
           type: string;
@@ -190,6 +191,7 @@ export type Database = {
           id?: string;
           image: string;
           is_active?: boolean;
+          is_default?: boolean;
           name: string;
           reference_type: string;
           type: string;
@@ -201,6 +203,7 @@ export type Database = {
           id?: string;
           image?: string;
           is_active?: boolean;
+          is_default?: boolean;
           name?: string;
           reference_type?: string;
           type?: string;
@@ -272,6 +275,7 @@ export type Database = {
           color: string | null;
           cost_price: number;
           created_at: string;
+          discount: Json | null;
           exp: string | null;
           id: string;
           is_active: boolean;
@@ -286,6 +290,7 @@ export type Database = {
           color?: string | null;
           cost_price?: number;
           created_at?: string;
+          discount?: Json | null;
           exp?: string | null;
           id?: string;
           is_active?: boolean;
@@ -300,6 +305,7 @@ export type Database = {
           color?: string | null;
           cost_price?: number;
           created_at?: string;
+          discount?: Json | null;
           exp?: string | null;
           id?: string;
           is_active?: boolean;

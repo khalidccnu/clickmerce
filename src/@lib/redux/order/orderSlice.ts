@@ -1,15 +1,18 @@
 import { TId } from '@base/interfaces';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
-import { ENUM_POS_DISCOUNT_TYPES, TPosDiscountType } from '@modules/pos/lib/enums';
+import { ENUM_PRODUCT_DISCOUNT_TYPES, TProductDiscountType } from '@modules/products/lib/enums';
+import { IProductVariation } from '@modules/products/lib/interfaces';
 import { ISettingsTax, ISettingsVat } from '@modules/settings/lib/interfaces';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
-import { loadOrderCustomerId, loadOrderVatTax } from './orderThunks';
+import { loadOrderCustomerId, loadOrderPaymentMethodId, loadOrderVatTax } from './orderThunks';
+import { cartItemIdxFn } from './utils';
 
 interface IOrderCartItem {
   productId: TId;
   productVariationId: TId;
   selectedQuantity?: number;
+  discount?: IProductVariation['discount'];
   priority?: number;
 }
 
@@ -19,6 +22,7 @@ interface IOrderCartProduct {
   selectedQuantity: number;
   costPrice: number;
   salePrice: number;
+  discount?: IProductVariation['discount'];
 }
 
 export interface IOrderState {
@@ -26,12 +30,14 @@ export interface IOrderState {
   cart: IOrderCartItem[];
   cartProducts: IOrderCartProduct[];
   coupon: ICoupon;
-  discountType: TPosDiscountType;
-  discount: number;
+  discount: IProductVariation['discount'];
   vat: ISettingsVat;
   tax: ISettingsTax;
+  deliveryCharge: number;
   isRoundOff: boolean;
   payableAmount: number;
+  paymentMethodId: TId;
+  deliveryZoneId: TId;
 }
 
 const initialState: IOrderState = {
@@ -39,12 +45,14 @@ const initialState: IOrderState = {
   cart: [],
   cartProducts: [],
   coupon: null,
-  discountType: ENUM_POS_DISCOUNT_TYPES.FIXED,
-  discount: 0,
+  discount: { type: ENUM_PRODUCT_DISCOUNT_TYPES.FIXED, amount: 0 },
   vat: null,
   tax: null,
+  deliveryCharge: 0,
   isRoundOff: true,
   payableAmount: 0,
+  paymentMethodId: null,
+  deliveryZoneId: null,
 };
 
 const orderSlice = createSlice({
@@ -58,10 +66,7 @@ const orderSlice = createSlice({
     addToCartFn: (state, action: PayloadAction<{ item: IOrderCartItem }>) => {
       const { item } = action.payload;
 
-      const itemIdx = state.cart.findIndex(
-        (cartItem) =>
-          cartItem?.productId === item?.productId && cartItem?.productVariationId === item?.productVariationId,
-      );
+      const itemIdx = cartItemIdxFn(item.productId, item.productVariationId, state.cart);
       const lastPriority = state.cart.length
         ? state.cart.reduce((max, cartItem) => Math.max(max, cartItem.priority || 0), 0)
         : 0;
@@ -70,24 +75,50 @@ const orderSlice = createSlice({
       if (itemIdx === -1) {
         state.cart.push({ ...item, priority });
         message.info('Successfully added to the cart!');
-      } else {
-        state.cart[itemIdx].selectedQuantity += item.selectedQuantity;
-        state.cartProducts[itemIdx].selectedQuantity += item.selectedQuantity;
+        return;
+      }
+
+      const { selectedQuantity, discount } = item;
+
+      if (!selectedQuantity && !discount) {
+        return;
+      }
+
+      if (selectedQuantity) {
+        state.cart[itemIdx].selectedQuantity = selectedQuantity;
+        state.cartProducts[itemIdx].selectedQuantity = selectedQuantity;
+      }
+
+      if (discount) {
+        state.cart[itemIdx].discount = discount;
+        state.cartProducts[itemIdx].discount = discount;
       }
     },
 
     updateCartFn: (state, action: PayloadAction<{ item: IOrderCartItem }>) => {
-      const { item } = action.payload;
+      const {
+        item: { productId, productVariationId, selectedQuantity, discount },
+      } = action.payload;
 
-      const itemIdx = state.cart.findIndex(
-        (cartItem) => cartItem.productId === item.productId && cartItem.productVariationId === item.productVariationId,
-      );
+      const itemIdx = cartItemIdxFn(productId, productVariationId, state.cart);
 
       if (itemIdx === -1) {
         message.error('Not found in the cart!');
-      } else {
-        state.cart[itemIdx].selectedQuantity = item.selectedQuantity;
-        state.cartProducts[itemIdx].selectedQuantity = item.selectedQuantity;
+        return;
+      }
+
+      if (!selectedQuantity && !discount) {
+        return;
+      }
+
+      if (selectedQuantity) {
+        state.cart[itemIdx].selectedQuantity = selectedQuantity;
+        state.cartProducts[itemIdx].selectedQuantity = selectedQuantity;
+      }
+
+      if (discount) {
+        state.cart[itemIdx].discount = discount;
+        state.cartProducts[itemIdx].discount = discount;
       }
     },
 
@@ -103,7 +134,7 @@ const orderSlice = createSlice({
 
     clearCartFn: (state) => {
       message.info('Cart cleared!');
-      return { ...initialState, customerId: state.customerId };
+      return { ...initialState, customerId: state.customerId, paymentMethodId: state.paymentMethodId };
     },
 
     clearOrderFn: () => initialState,
@@ -116,11 +147,13 @@ const orderSlice = createSlice({
       state.coupon = action.payload;
     },
 
-    setDiscount: (state, action: PayloadAction<{ type: TPosDiscountType; amount: number }>) => {
+    setDiscount: (state, action: PayloadAction<{ type: TProductDiscountType; amount: number }>) => {
       const { type, amount } = action.payload;
+      state.discount = { type, amount };
+    },
 
-      state.discountType = type;
-      state.discount = amount;
+    setDeliveryCharge: (state, action: PayloadAction<number>) => {
+      state.deliveryCharge = action.payload;
     },
 
     setRoundOff: (state, action: PayloadAction<{ isRoundOff: boolean }>) => {
@@ -132,11 +165,18 @@ const orderSlice = createSlice({
       const { amount } = action.payload;
       state.payableAmount = amount;
     },
+
+    setPaymentMethodId: (state, action: PayloadAction<TId>) => {
+      state.paymentMethodId = action.payload;
+    },
+
+    setDeliveryZoneId: (state, action: PayloadAction<TId>) => {
+      state.deliveryZoneId = action.payload;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(loadOrderCustomerId.fulfilled, (state, action) => {
       const { customerId } = action.payload;
-
       state.customerId = customerId;
     });
 
@@ -145,6 +185,11 @@ const orderSlice = createSlice({
 
       state.vat = vat;
       state.tax = tax;
+    });
+
+    builder.addCase(loadOrderPaymentMethodId.fulfilled, (state, action) => {
+      const { paymentMethodId } = action.payload;
+      state.paymentMethodId = paymentMethodId;
     });
   },
 });
@@ -159,7 +204,10 @@ export const {
   setCartProducts,
   setCoupon,
   setDiscount,
+  setDeliveryCharge,
   setRoundOff,
   setPayableAmount,
+  setPaymentMethodId,
+  setDeliveryZoneId,
 } = orderSlice.actions;
 export default orderSlice.reducer;

@@ -1,12 +1,12 @@
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
+import { productDiscountTypes, TProductDiscountType } from '@modules/products/lib/enums';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
 import React, { useEffect } from 'react';
-import { posDiscountTypes, TPosDiscountType } from '../lib/enums';
 
 interface IOrderSummaryDiscountProps {
-  type: TPosDiscountType;
+  type: TProductDiscountType;
   amount: number;
 }
 
@@ -56,7 +56,7 @@ const OrderSummaryDiscountForm: React.FC<IProps> = ({
               virtual={false}
               placeholder="Type"
               filterOption={(input, option) => Toolbox.toLowerText(option?.title)?.includes(Toolbox.toLowerText(input))}
-              options={posDiscountTypes.map((type) => ({
+              options={productDiscountTypes.map((type) => ({
                 title: Toolbox.toPrettyText(type),
                 label: Toolbox.toPrettyText(type),
                 value: type,

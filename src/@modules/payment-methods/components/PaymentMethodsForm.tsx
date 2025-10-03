@@ -120,6 +120,18 @@ const PaymentMethodsForm: React.FC<IProps> = ({ isLoading, form, formType = 'cre
           </Form.Item>
         </Col>
         <Col xs={24}>
+          <Form.Item name="is_default" className="!mb-0">
+            <Radio.Group buttonStyle="solid" className="w-full text-center">
+              <Radio.Button className="w-1/2" value="true">
+                Default
+              </Radio.Button>
+              <Radio.Button className="w-1/2" value="false">
+                Not Default
+              </Radio.Button>
+            </Radio.Group>
+          </Form.Item>
+        </Col>
+        <Col xs={24}>
           <Form.Item name="is_active" className="!mb-0">
             <Radio.Group buttonStyle="solid" className="w-full text-center">
               <Radio.Button className="w-1/2" value="true">

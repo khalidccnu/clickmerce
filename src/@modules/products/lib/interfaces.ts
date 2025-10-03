@@ -2,7 +2,13 @@ import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
 import { IDosageForm } from '@modules/dosage-forms/lib/interfaces';
 import { IGeneric } from '@modules/generics/lib/interfaces';
 import { ISupplier } from '@modules/suppliers/lib/interfaces';
-import { TProductDurabilityType, TProductMedicineType, TProductSizeType, TProductType } from './enums';
+import {
+  TProductDiscountType,
+  TProductDurabilityType,
+  TProductMedicineType,
+  TProductSizeType,
+  TProductType,
+} from './enums';
 
 export interface IProductsFilter extends IBaseFilter {
   type?: TProductType;
@@ -23,6 +29,10 @@ export interface IProductVariation {
   exp: string;
   color: string;
   size: TProductSizeType;
+  discount: {
+    type: TProductDiscountType;
+    amount: number;
+  };
   quantity: number;
 }
 
@@ -59,7 +69,7 @@ export interface IProductCreate {
   generic_id: TId;
   supplier_id: TId;
   durability: TProductDurabilityType;
-  variations: (IProductVariation & { id?: TId; is_deleted?: boolean })[];
+  variations: Partial<IProductVariation & { id?: TId; is_deleted?: boolean }>[];
   description: string;
   is_active: string;
 }

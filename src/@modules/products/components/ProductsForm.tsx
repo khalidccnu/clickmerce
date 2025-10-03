@@ -40,8 +40,10 @@ import React, { useEffect, useState } from 'react';
 import { FaMinusCircle, FaPlusCircle } from 'react-icons/fa';
 import { IoCalendar } from 'react-icons/io5';
 import {
+  ENUM_PRODUCT_DISCOUNT_TYPES,
   ENUM_PRODUCT_DURABILITY_TYPES,
   ENUM_PRODUCT_TYPES,
+  productDiscountTypes,
   productDurabilityTypes,
   productMedicineTypes,
   productSizeTypes,
@@ -669,6 +671,49 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                               </Col>
                             </React.Fragment>
                           )}
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'discount', 'type']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Discount type is required!',
+                                },
+                              ]}
+                              className="!mb-0"
+                            >
+                              <FloatSelect
+                                allowClear
+                                showSearch
+                                virtual={false}
+                                placeholder="Discount Type"
+                                filterOption={(input, option: any) =>
+                                  option.label.toLowerCase().includes(input.toLowerCase())
+                                }
+                                options={productDiscountTypes.map((discountType) => ({
+                                  key: discountType,
+                                  label: Toolbox.toPrettyText(discountType),
+                                  value: discountType,
+                                }))}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24} md={12}>
+                            <Form.Item
+                              {...rest}
+                              name={[name, 'discount', 'amount']}
+                              rules={[
+                                {
+                                  required: true,
+                                  message: 'Discount amount is required!',
+                                },
+                              ]}
+                              className="!mb-0"
+                            >
+                              <FloatInputNumber placeholder="Discount Amount" className="w-full" />
+                            </Form.Item>
+                          </Col>
                           <FloatFormList {...rest} name={[name, 'quantities']} initialValue={[{}]}>
                             {(nestedFields, { add: nestedAdd, remove: nestedRemove }) => {
                               return (
@@ -712,7 +757,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                             size="small"
                             type="primary"
                             ghost
-                            onClick={() => add()}
+                            onClick={() => add({ discount: { type: ENUM_PRODUCT_DISCOUNT_TYPES.FIXED, amount: 0 } })}
                             disabled={name + 1 !== fields.length}
                           >
                             Add More

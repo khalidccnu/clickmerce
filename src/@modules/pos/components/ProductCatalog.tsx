@@ -7,7 +7,7 @@ import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { addToCartFn } from '@lib/redux/order/orderSlice';
-import { loadOrderCustomerId } from '@lib/redux/order/orderThunks';
+import { loadOrderCustomerId, loadOrderPaymentMethodId } from '@lib/redux/order/orderThunks';
 import { hasProductInCartFn, hasProductVariationInCartFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { AuthHooks } from '@modules/auth/lib/hooks';
@@ -92,6 +92,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
             productId: product.id,
             productVariationId: variation.id,
             selectedQuantity: 1,
+            discount: variation?.discount,
           },
         }),
       );
@@ -121,6 +122,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
           productId: product.id,
           productVariationId: productVariation.id,
           selectedQuantity: 1,
+          discount: productVariation?.discount,
         },
       }),
     );
@@ -146,6 +148,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
 
   useEffect(() => {
     dispatch(loadOrderCustomerId());
+    dispatch(loadOrderPaymentMethodId());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
