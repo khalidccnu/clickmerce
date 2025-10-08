@@ -1,9 +1,8 @@
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
-import { usePosInv } from '@lib/context/PosInvContext';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { orderChangeAmountSnap, orderGrandTotalSnap } from '@lib/redux/order/orderSelector';
+import { orderChangeAmountSnap, orderGrandTotalSnap, orderRoundOffSnap } from '@lib/redux/order/orderSelector';
 import {
   clearOrderFn,
   setCustomerId,
@@ -12,17 +11,23 @@ import {
   setPayableAmount,
   setPaymentMethodId,
 } from '@lib/redux/order/orderSlice';
-import { loadOrderCustomerId, loadOrderPaymentMethodId } from '@lib/redux/order/orderThunks';
+import {
+  loadOrderCustomerId,
+  loadOrderInvId,
+  loadOrderPaymentMethodId,
+  loadOrderVatTax,
+} from '@lib/redux/order/orderThunks';
 import { cn } from '@lib/utils/cn';
 import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
+import { OrdersHooks } from '@modules/orders/lib/hooks';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
 import { IPaymentMethod } from '@modules/payment-methods/lib/interfaces';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
 import { Alert, Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaClipboardList, FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
 import OrderSummaryPrice from './OrderSummaryPrice';
 import OrderSummaryProducts from './OrderSummaryProducts';
@@ -32,7 +37,6 @@ interface IProps {
 }
 
 const OrderSummary: React.FC<IProps> = ({ className }) => {
-  const { invId } = usePosInv();
   const [messageApi, messageHolder] = message.useMessage();
   const [modalApi, modalHolder] = Modal.useModal();
   const [userFormInstance] = Form.useForm();
@@ -40,9 +44,10 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const [paymentMethodsSearchTerm, setPaymentMethodsSearchTerm] = useState(null);
   const [deliveryZonesSearchTerm, setDeliveryZonesSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
-  const { customerId, cart, payableAmount, paymentMethodId, deliveryZoneId } = useAppSelector(
+  const { invId, customerId, cart, payableAmount, paymentMethodId, deliveryZoneId } = useAppSelector(
     (store) => store.orderSlice,
   );
+  const orderRoundOff = useAppSelector(orderRoundOffSnap);
   const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
   const dispatch = useAppDispatch();
@@ -57,11 +62,31 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
       onOk: () => {
         dispatch(clearOrderFn());
         messageApi.success('Order cleared successfully');
+        dispatch(loadOrderInvId());
         dispatch(loadOrderCustomerId());
+        dispatch(loadOrderVatTax());
         dispatch(loadOrderPaymentMethodId());
       },
     });
   };
+
+  const orderCreateFn = OrdersHooks.useCreate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        dispatch(clearOrderFn());
+        messageApi.success('Order placed successfully');
+        dispatch(loadOrderInvId());
+        dispatch(loadOrderCustomerId());
+        dispatch(loadOrderVatTax());
+        dispatch(loadOrderPaymentMethodId());
+      },
+    },
+  });
 
   const userCreateFn = UsersHooks.useCreate({
     config: {
@@ -129,6 +154,14 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
       is_active: 'true',
     },
   });
+
+  useEffect(() => {
+    dispatch(loadOrderInvId());
+    dispatch(loadOrderCustomerId());
+    dispatch(loadOrderVatTax());
+    dispatch(loadOrderPaymentMethodId());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <React.Fragment>
@@ -262,6 +295,24 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 disabled={!invId || !customerId || !cart?.length}
                 icon={<FaClipboardList />}
                 ghost
+                onClick={() => {
+                  orderCreateFn.mutate({
+                    code: invId,
+                    customer_id: customerId,
+                    payment_method_id: paymentMethodId,
+                    delivery_zone_id: deliveryZoneId,
+                    pay_amount: payableAmount,
+                    redeem_amount: orderGrandTotal.totalRedeem,
+                    round_off_amount: orderRoundOff,
+                    products: cart.map((item) => ({
+                      id: item.productId,
+                      variation_id: item.productVariationId,
+                      selected_quantity: item.selectedQuantity,
+                      discount: item.discount,
+                    })),
+                    is_draft: 'true',
+                  });
+                }}
               >
                 Place Draft Order
               </Button>
@@ -273,6 +324,23 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 block
                 disabled={!invId || !customerId || !cart?.length}
                 icon={<FaShoppingBag />}
+                onClick={() => {
+                  orderCreateFn.mutate({
+                    code: invId,
+                    customer_id: customerId,
+                    payment_method_id: paymentMethodId,
+                    delivery_zone_id: deliveryZoneId,
+                    pay_amount: payableAmount,
+                    redeem_amount: orderGrandTotal.totalRedeem,
+                    round_off_amount: orderRoundOff,
+                    products: cart.map((item) => ({
+                      id: item.productId,
+                      variation_id: item.productVariationId,
+                      selected_quantity: item.selectedQuantity,
+                      discount: item.discount,
+                    })),
+                  });
+                }}
               >
                 Place Order
               </Button>

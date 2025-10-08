@@ -10,7 +10,7 @@ import useSessionState from '@lib/hooks/useSessionState';
 import useTheme from '@lib/hooks/useTheme';
 import { Button, FloatButton, Grid, Layout } from 'antd';
 import dynamic from 'next/dynamic';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { IoClose, IoLaptopOutline } from 'react-icons/io5';
 import { MdFullscreen, MdFullscreenExit, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
@@ -25,7 +25,6 @@ interface IMenu {
 interface IProps extends PropsWithChildren {}
 
 const AdminLayout: React.FC<IProps> = ({ children }) => {
-  const router = useRouter();
   const pathname = usePathname();
   const screens = Grid.useBreakpoint();
   const headerRef = useRef(null);
@@ -122,9 +121,11 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
           <Button type="text" size="large" onClick={() => setCollapsed((prev) => !prev)}>
             <MdOutlineKeyboardDoubleArrowRight size={24} className={isCollapsed ? 'rotate-0' : 'rotate-180'} />
           </Button>
-          <Button type="primary" icon={<IoLaptopOutline />} onClick={() => router.push(Paths.admin.pos)}>
-            POS
-          </Button>
+          <CustomLink href={Paths.admin.pos}>
+            <Button type="primary" icon={<IoLaptopOutline />}>
+              POS
+            </Button>
+          </CustomLink>
           <Button
             type="primary"
             className="ml-auto"

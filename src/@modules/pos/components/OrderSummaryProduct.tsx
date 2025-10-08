@@ -2,7 +2,7 @@ import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { removeFromCartFn, updateCartFn } from '@lib/redux/order/orderSlice';
-import { cartItemFn } from '@lib/redux/order/utils';
+import { cartItemFn, productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { productDiscountTypes } from '@modules/products/lib/enums';
@@ -26,6 +26,11 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
   const dispatch = useAppDispatch();
 
   const discount = cartItemFn(product?.id, product?.selectedVariation?.id, cart)?.discount;
+  const salePrice = productSalePriceWithDiscountFn(
+    product?.selectedVariation?.cost_price,
+    product?.selectedVariation?.sale_price,
+    discount,
+  );
 
   return (
     <div
@@ -68,7 +73,12 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Unit Price:</span>
           <span className="text-lg font-bold text-blue-500 dark:text-blue-300">
-            {Toolbox.withCurrency(product?.selectedVariation?.sale_price)}
+            {product?.selectedVariation?.sale_price !== salePrice ? (
+              <span className="line-through mr-1 text-sm">
+                {Toolbox.withCurrency(product?.selectedVariation?.sale_price)}
+              </span>
+            ) : null}
+            {Toolbox.withCurrency(salePrice || product?.selectedVariation?.sale_price)}
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-1">

@@ -1,20 +1,20 @@
 import { Env } from '.environments';
 import { Dayjs } from '@lib/constant/dayjs';
-import { usePosInv } from '@lib/context/PosInvContext';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import {
-  orderCouponSnap,
-  orderDiscountSnap,
   orderGrandTotalSnap,
+  orderRedeemSnap,
   orderRoundOffSnap,
   orderSubtotalSnap,
   orderTaxSnap,
   orderVatSnap,
 } from '@lib/redux/order/orderSelector';
 import { clearCartFn, setCartProducts } from '@lib/redux/order/orderSlice';
+import { productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { AuthServices } from '@modules/auth/lib/services';
+import Receipt from '@modules/orders/components/Receipt';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { UsersServices } from '@modules/users/lib/services';
@@ -24,19 +24,16 @@ import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { normalizeReceiptImageUrlFn } from '../lib/utils';
 import OrderSummaryProduct from './OrderSummaryProduct';
-import Receipt from './Receipt';
 
 interface IProps {
   className?: string;
 }
 
 const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
-  const { invId } = usePosInv();
   const [messageApi, messageHolder] = message.useMessage();
-  const [isReceiptPreviewLoading, setIsReceiptPreviewLoading] = useState(false);
-  const { customerId, cart, vat, tax, deliveryCharge, isRoundOff } = useAppSelector((store) => store.orderSlice);
-  const orderCoupon = useAppSelector(orderCouponSnap);
-  const orderDiscount = useAppSelector(orderDiscountSnap);
+  const [isReceiptPreviewLoading, setReceiptPreviewLoading] = useState(false);
+  const { invId, customerId, cart, vat, tax, deliveryCharge, isRoundOff } = useAppSelector((store) => store.orderSlice);
+  const orderRedeem = useAppSelector(orderRedeemSnap);
   const orderVat = useAppSelector(orderVatSnap);
   const orderTax = useAppSelector(orderTaxSnap);
   const orderSubtotal = useAppSelector(orderSubtotalSnap);
@@ -45,7 +42,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
   const dispatch = useAppDispatch();
 
   const handlePdfFn = async () => {
-    setIsReceiptPreviewLoading(true);
+    setReceiptPreviewLoading(true);
 
     try {
       const webLogo = await normalizeReceiptImageUrlFn(Env.webBrandLogo);
@@ -63,14 +60,21 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
             name: product?.name,
             specification: product?.specification,
             salePrice: variation?.sale_price,
+            saleDiscountPrice: productSalePriceWithDiscountFn(
+              variation?.cost_price,
+              variation?.sale_price,
+              cartItem?.discount,
+            ),
             quantity: cartItem?.selectedQuantity,
+            mfg: variation?.mfg,
+            exp: variation?.exp,
             color: variation?.color,
             size: variation?.size,
           };
         })
         .filter(Boolean);
 
-      const props = {
+      const order = {
         webLogo,
         webTitle: Env.webTitle,
         moneyReceiptDate: dayjs().format(Dayjs.dateTimeSecondsWithAmPm),
@@ -78,8 +82,8 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
         customerName: customer?.name,
         phone: customer?.phone,
         products,
-        coupon: orderCoupon,
-        discount: orderDiscount,
+        coupon: orderRedeem.couponAmount,
+        discount: orderRedeem.discountAmount,
         vat: orderVat,
         vatPercent: vat?.type === ENUM_SETTINGS_VAT_TYPES.PERCENTAGE ? vat?.amount : 0,
         tax: orderTax,
@@ -88,17 +92,16 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
         subTotal: orderSubtotal.subTotalSale,
         roundOff: isRoundOff ? orderRoundOff : 0,
         grandTotal: orderGrandTotal.totalSaleWithRoundOff,
-        isRedeemExceedingProfit: orderGrandTotal.isRedeemExceedingProfit,
         receivedBy: profile?.name,
       };
 
-      const blob = await pdf(<Receipt {...props} />).toBlob();
+      const blob = await pdf(<Receipt order={order} />).toBlob();
       Toolbox.printWindow('pdf', URL.createObjectURL(blob));
     } catch (error) {
       messageApi.error('Failed to generate receipt preview. Please try again.');
+    } finally {
+      setReceiptPreviewLoading(false);
     }
-
-    setIsReceiptPreviewLoading(false);
   };
 
   const productsBulkQuery = ProductsHooks.useFindBulk({

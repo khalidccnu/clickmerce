@@ -49,6 +49,11 @@ export const Permissions = {
   SUPPLIERS_UPDATE: 'suppliers:update',
   SUPPLIERS_DELETE: 'suppliers:delete',
 
+  ORDERS_READ: 'orders:read',
+  ORDERS_WRITE: 'orders:write',
+  ORDERS_UPDATE: 'orders:update',
+  ORDERS_DELETE: 'orders:delete',
+
   DELIVERY_SERVICE_TYPES_READ: 'delivery_service_types:read',
   DELIVERY_SERVICE_TYPES_WRITE: 'delivery_service_types:write',
   DELIVERY_SERVICE_TYPES_UPDATE: 'delivery_service_types:update',

@@ -7,7 +7,6 @@ import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { addToCartFn } from '@lib/redux/order/orderSlice';
-import { loadOrderCustomerId, loadOrderPaymentMethodId } from '@lib/redux/order/orderThunks';
 import { hasProductInCartFn, hasProductVariationInCartFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { AuthHooks } from '@modules/auth/lib/hooks';
@@ -16,7 +15,7 @@ import { ProductsHooks } from '@modules/products/lib/hooks';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { message } from 'antd';
 import dayjs from 'dayjs';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import ProductCatalogCard from './ProductCatalogCard';
 import ProductCatalogVariations from './ProductCatalogVariations';
@@ -145,12 +144,6 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
       search_field: 'name',
     },
   });
-
-  useEffect(() => {
-    dispatch(loadOrderCustomerId());
-    dispatch(loadOrderPaymentMethodId());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <React.Fragment>

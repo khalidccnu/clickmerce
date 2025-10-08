@@ -6,9 +6,11 @@ import { Menu } from 'antd';
 import { BiCollection } from 'react-icons/bi';
 import { BsBoxSeam } from 'react-icons/bs';
 import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons/fa';
+import { FiShoppingCart } from 'react-icons/fi';
 import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline } from 'react-icons/io5';
+import { LiaCartArrowDownSolid } from 'react-icons/lia';
 import { MdDashboard, MdLocalOffer, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
@@ -114,6 +116,20 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
                 <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.suppliers.list)}>Suppliers</CustomLink>
               ),
               allowedPermissions: ['suppliers:read'],
+            },
+          ],
+        },
+        {
+          key: Paths.admin.sale.root,
+          icon: <FiShoppingCart />,
+          label: 'Sale',
+          allowedPermissions: ['orders:read'],
+          children: [
+            {
+              key: Paths.admin.sale.orders.list,
+              icon: <LiaCartArrowDownSolid />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.sale.orders.list)}>Orders</CustomLink>,
+              allowedPermissions: ['orders:read'],
             },
           ],
         },

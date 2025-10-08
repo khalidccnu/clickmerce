@@ -5,7 +5,7 @@ import { IProductVariation } from '@modules/products/lib/interfaces';
 import { ISettingsTax, ISettingsVat } from '@modules/settings/lib/interfaces';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
-import { loadOrderCustomerId, loadOrderPaymentMethodId, loadOrderVatTax } from './orderThunks';
+import { loadOrderCustomerId, loadOrderInvId, loadOrderPaymentMethodId, loadOrderVatTax } from './orderThunks';
 import { cartItemIdxFn } from './utils';
 
 interface IOrderCartItem {
@@ -26,6 +26,7 @@ interface IOrderCartProduct {
 }
 
 export interface IOrderState {
+  invId: TId;
   customerId: TId;
   cart: IOrderCartItem[];
   cartProducts: IOrderCartProduct[];
@@ -41,6 +42,7 @@ export interface IOrderState {
 }
 
 const initialState: IOrderState = {
+  invId: null,
   customerId: null,
   cart: [],
   cartProducts: [],
@@ -59,6 +61,10 @@ const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
+    setInvId: (state, action: PayloadAction<TId>) => {
+      state.invId = action.payload;
+    },
+
     setCustomerId: (state, action: PayloadAction<TId>) => {
       state.customerId = action.payload;
     },
@@ -134,7 +140,13 @@ const orderSlice = createSlice({
 
     clearCartFn: (state) => {
       message.info('Cart cleared!');
-      return { ...initialState, customerId: state.customerId, paymentMethodId: state.paymentMethodId };
+      return {
+        ...initialState,
+        customerId: state.customerId,
+        vat: state.vat,
+        tax: state.tax,
+        paymentMethodId: state.paymentMethodId,
+      };
     },
 
     clearOrderFn: () => initialState,
@@ -175,6 +187,11 @@ const orderSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    builder.addCase(loadOrderInvId.fulfilled, (state, action) => {
+      const { invId } = action.payload;
+      state.invId = invId;
+    });
+
     builder.addCase(loadOrderCustomerId.fulfilled, (state, action) => {
       const { customerId } = action.payload;
       state.customerId = customerId;
@@ -195,6 +212,7 @@ const orderSlice = createSlice({
 });
 
 export const {
+  setInvId,
   setCustomerId,
   addToCartFn,
   updateCartFn,

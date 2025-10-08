@@ -172,6 +172,120 @@ export type Database = {
         };
         Relationships: [];
       };
+      orders: {
+        Row: {
+          code: string | null;
+          created_at: string;
+          created_by_id: string | null;
+          customer_id: string | null;
+          delivery_charge: number | null;
+          delivery_zone_id: string | null;
+          due_amount: number | null;
+          grand_total_amount: number | null;
+          id: string;
+          is_active: boolean;
+          is_draft: boolean;
+          pay_amount: number | null;
+          payment_method_id: string | null;
+          payment_status: string | null;
+          products: Json | null;
+          redeem_amount: number | null;
+          round_off_amount: number | null;
+          status: string | null;
+          sub_total_amount: number | null;
+          tax_amount: number | null;
+          updated_at: string;
+          updated_by_id: string | null;
+          vat_amount: number | null;
+        };
+        Insert: {
+          code?: string | null;
+          created_at?: string;
+          created_by_id?: string | null;
+          customer_id?: string | null;
+          delivery_charge?: number | null;
+          delivery_zone_id?: string | null;
+          due_amount?: number | null;
+          grand_total_amount?: number | null;
+          id?: string;
+          is_active?: boolean;
+          is_draft?: boolean;
+          pay_amount?: number | null;
+          payment_method_id?: string | null;
+          payment_status?: string | null;
+          products?: Json | null;
+          redeem_amount?: number | null;
+          round_off_amount?: number | null;
+          status?: string | null;
+          sub_total_amount?: number | null;
+          tax_amount?: number | null;
+          updated_at?: string;
+          updated_by_id?: string | null;
+          vat_amount?: number | null;
+        };
+        Update: {
+          code?: string | null;
+          created_at?: string;
+          created_by_id?: string | null;
+          customer_id?: string | null;
+          delivery_charge?: number | null;
+          delivery_zone_id?: string | null;
+          due_amount?: number | null;
+          grand_total_amount?: number | null;
+          id?: string;
+          is_active?: boolean;
+          is_draft?: boolean;
+          pay_amount?: number | null;
+          payment_method_id?: string | null;
+          payment_status?: string | null;
+          products?: Json | null;
+          redeem_amount?: number | null;
+          round_off_amount?: number | null;
+          status?: string | null;
+          sub_total_amount?: number | null;
+          tax_amount?: number | null;
+          updated_at?: string;
+          updated_by_id?: string | null;
+          vat_amount?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'orders_created_by_id_fkey';
+            columns: ['created_by_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'orders_customer_id_fkey';
+            columns: ['customer_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'orders_delivery_zone_id_fkey';
+            columns: ['delivery_zone_id'];
+            isOneToOne: false;
+            referencedRelation: 'delivery_zones';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'orders_payment_method_id_fkey';
+            columns: ['payment_method_id'];
+            isOneToOne: false;
+            referencedRelation: 'payment_methods';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'orders_updated_by_id_fkey';
+            columns: ['updated_by_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       payment_methods: {
         Row: {
           created_at: string;

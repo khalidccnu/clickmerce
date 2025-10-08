@@ -49,6 +49,13 @@ export const Paths = {
         list: '/admin/inventory/suppliers/list',
       },
     },
+    sale: {
+      root: '/admin/sale',
+      orders: {
+        root: '/admin/sale/orders',
+        list: '/admin/sale/orders/list',
+      },
+    },
     delivery: {
       root: '/admin/delivery',
       serviceTypes: {

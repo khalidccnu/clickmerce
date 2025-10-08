@@ -5,6 +5,7 @@ import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/setti
 import { createSelector } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import dayjs from 'dayjs';
+import { cartItemFn, productSalePriceWithDiscountFn } from './utils';
 
 const orderState = (state: RootState) => state.orderSlice;
 
@@ -15,20 +16,10 @@ export const orderSubtotalSnap = createSelector([orderState], (edge) => {
   );
 
   const subTotalSale = edge.cartProducts.reduce((sum, cartProduct) => {
-    let effectivePrice = cartProduct.salePrice;
-    const { type, amount } = cartProduct.discount;
+    const cartItem = cartItemFn(cartProduct.productId, cartProduct.productVariationId, edge.cart);
+    const price = productSalePriceWithDiscountFn(cartProduct.costPrice, cartProduct.salePrice, cartItem.discount);
 
-    if (amount) {
-      if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
-        effectivePrice = cartProduct.salePrice - amount;
-      } else if (type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
-        effectivePrice = cartProduct.salePrice * (1 - amount / 100);
-      }
-
-      effectivePrice = Math.max(cartProduct.costPrice, effectivePrice);
-    }
-
-    return sum + effectivePrice * cartProduct.selectedQuantity;
+    return sum + price * cartProduct.selectedQuantity;
   }, 0);
 
   return { subTotalCost, subTotalSale };
@@ -54,40 +45,74 @@ export const orderCouponSnap = createSelector([orderState, orderSubtotalSnap], (
     return 0;
   }
 
-  if (coupon.max_redeemable_amount) {
-    if (coupon.type === ENUM_COUPON_TYPES.FIXED && coupon.amount > coupon.max_redeemable_amount) {
-      message.info('Maximum redeemable amount exceeded!');
-      return coupon.max_redeemable_amount;
-    }
-
-    if (coupon.type === ENUM_COUPON_TYPES.PERCENTAGE) {
-      const percentAmount = (subTotalSale * coupon.amount) / 100;
-
-      if (percentAmount > coupon.max_redeemable_amount) {
-        message.info('Maximum redeemable amount exceeded!');
-        return coupon.max_redeemable_amount;
-      }
-    }
-  }
-
   if (coupon.usage_limit && coupon.usage_count >= coupon.usage_limit) {
     message.error('Coupon usage limit reached!');
     return 0;
   }
 
-  if (coupon.type === ENUM_COUPON_TYPES.FIXED) return coupon.amount;
-  return (subTotalSale * coupon.amount) / 100;
+  let couponAmount = 0;
+
+  if (coupon.type === ENUM_COUPON_TYPES.FIXED) {
+    couponAmount = coupon.amount;
+  } else {
+    couponAmount = (subTotalSale * coupon.amount) / 100;
+  }
+
+  if (coupon.max_redeemable_amount && couponAmount > coupon.max_redeemable_amount) {
+    couponAmount = coupon.max_redeemable_amount;
+  }
+
+  return couponAmount;
 });
 
 export const orderDiscountSnap = createSelector([orderState, orderSubtotalSnap], (edge, subtotalSnap) => {
   const { type, amount } = edge.discount;
 
   if (!amount) return 0;
-  if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) return amount;
 
   const { subTotalSale } = subtotalSnap;
-  return (subTotalSale * amount) / 100;
+
+  let discountAmount = 0;
+
+  if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
+    discountAmount = amount;
+  } else {
+    discountAmount = (subTotalSale * amount) / 100;
+  }
+
+  return discountAmount;
 });
+
+export const orderRedeemSnap = createSelector(
+  [orderSubtotalSnap, orderCouponSnap, orderDiscountSnap],
+  (subtotalSnap, couponSnap, discountSnap) => {
+    const { subTotalCost, subTotalSale } = subtotalSnap;
+    const profit = Math.max(0, subTotalSale - subTotalCost);
+    const totalRedeem = couponSnap + discountSnap;
+
+    if (totalRedeem <= profit) {
+      return {
+        couponAmount: couponSnap,
+        discountAmount: discountSnap,
+        redeemAmount: totalRedeem,
+        isAdjusted: false,
+      };
+    }
+
+    const couponProportion = totalRedeem ? couponSnap / totalRedeem : 0;
+    const discountProportion = totalRedeem ? discountSnap / totalRedeem : 0;
+
+    const couponAmount = profit * couponProportion;
+    const discountAmount = profit * discountProportion;
+
+    return {
+      couponAmount: Math.max(0, couponAmount),
+      discountAmount: Math.max(0, discountAmount),
+      redeemAmount: profit,
+      isAdjusted: true,
+    };
+  },
+);
 
 export const orderVatSnap = createSelector([orderState, orderSubtotalSnap], (edge, subtotalSnap) => {
   if (!edge.vat) return 0;
@@ -116,28 +141,48 @@ export const orderTaxSnap = createSelector([orderState, orderSubtotalSnap], (edg
 });
 
 export const orderGrandTotalSnap = createSelector(
-  [orderState, orderSubtotalSnap, orderCouponSnap, orderDiscountSnap, orderVatSnap, orderTaxSnap],
-  (edge, subtotalSnap, couponSnap, discountSnap, vatSnap, taxSnap) => {
+  [orderState, orderSubtotalSnap, orderRedeemSnap, orderVatSnap, orderTaxSnap],
+  (edge, subtotalSnap, redeemSnap, vatSnap, taxSnap) => {
     const { subTotalCost, subTotalSale } = subtotalSnap;
+    const { redeemAmount, isAdjusted } = redeemSnap;
 
     const profit = subTotalSale - subTotalCost;
-    let totalRedeem = couponSnap + discountSnap;
-    const isRedeemExceedingProfit = totalRedeem > profit;
+    const isRedeemExceedingProfit = isAdjusted;
 
-    if (isRedeemExceedingProfit) {
-      totalRedeem = profit;
-    }
-
-    const totalSale = subTotalSale - totalRedeem + vatSnap + taxSnap + edge.deliveryCharge;
+    const totalSale = subTotalSale - redeemAmount + vatSnap + taxSnap + edge.deliveryCharge;
     const totalSaleWithRoundOff = edge.isRoundOff ? Math.round(totalSale) : totalSale;
 
-    return { totalSale, totalSaleWithRoundOff, totalRedeem, isRedeemExceedingProfit };
+    return {
+      totalSale,
+      totalSaleWithRoundOff,
+      totalRedeem: redeemAmount,
+      isRedeemExceedingProfit,
+      availableProfit: profit,
+    };
   },
 );
 
 export const orderRoundOffSnap = createSelector([orderGrandTotalSnap], (grandTotalSnap) => {
   const { totalSale } = grandTotalSnap;
   return Math.round(totalSale) - totalSale;
+});
+
+export const orderProfitSnap = createSelector([orderSubtotalSnap, orderRedeemSnap], (subtotalSnap, redeemSnap) => {
+  const { subTotalCost, subTotalSale } = subtotalSnap;
+  const { redeemAmount, isAdjusted } = redeemSnap;
+
+  const profit = Math.max(0, subTotalSale - subTotalCost);
+  const remainingProfit = Math.max(0, profit - redeemAmount);
+  const profitUtilization = profit ? (redeemAmount / profit) * 100 : 0;
+
+  return {
+    profit,
+    totalRedeem: redeemAmount,
+    remainingProfit,
+    profitUtilization,
+    isProfitFullyUtilized: profitUtilization >= 100,
+    isAdjusted,
+  };
 });
 
 export const orderChangeAmountSnap = createSelector([orderState, orderGrandTotalSnap], (edge, grandTotalSnap) => {

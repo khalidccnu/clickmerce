@@ -1,7 +1,9 @@
 import { TId } from '@base/interfaces';
+import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { TProductSizeType } from '@modules/products/lib/enums';
 import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
+import dayjs from 'dayjs';
 import React from 'react';
 
 Font.register({
@@ -78,19 +80,6 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 8,
   },
-  warningBox: {
-    backgroundColor: '#fff3cd',
-    border: '1pt solid #ffeaa7',
-    borderRadius: 4,
-    padding: 4,
-    marginVertical: 4,
-  },
-  warningText: {
-    fontSize: 8,
-    color: '#856404',
-    textAlign: 'center',
-    fontWeight: 500,
-  },
   footer: {
     marginTop: 10,
     borderTop: '1pt dashed #bdbed1',
@@ -104,12 +93,15 @@ interface IProduct {
   name: string;
   specification: string;
   salePrice: number;
+  saleDiscountPrice: number;
   quantity: number;
+  mfg: string;
+  exp: string;
   color: string;
   size: TProductSizeType;
 }
 
-interface IProps {
+interface IOrder {
   webLogo: string;
   webTitle: string;
   moneyReceiptDate: string;
@@ -127,30 +119,36 @@ interface IProps {
   subTotal: number;
   roundOff: number;
   grandTotal: number;
-  isRedeemExceedingProfit: boolean;
   receivedBy: string;
 }
 
+interface IProps {
+  type?: 'PREVIEW' | 'PRINT';
+  order: IOrder;
+}
+
 const Receipt: React.FC<IProps> = ({
-  webLogo,
-  webTitle,
-  moneyReceiptDate,
-  trxId,
-  customerName,
-  phone,
-  products,
-  coupon,
-  discount,
-  vat,
-  vatPercent,
-  tax,
-  taxPercent,
-  deliveryCharge,
-  subTotal,
-  roundOff,
-  grandTotal,
-  isRedeemExceedingProfit,
-  receivedBy,
+  type = 'PREVIEW',
+  order: {
+    webLogo,
+    webTitle,
+    moneyReceiptDate,
+    trxId,
+    customerName,
+    phone,
+    products,
+    coupon,
+    discount,
+    vat,
+    vatPercent,
+    tax,
+    taxPercent,
+    deliveryCharge,
+    subTotal,
+    roundOff,
+    grandTotal,
+    receivedBy,
+  },
 }) => {
   return (
     <Document>
@@ -193,6 +191,16 @@ const Receipt: React.FC<IProps> = ({
                     {product.specification}
                   </Text>
                 )}
+                {product.mfg && (
+                  <Text style={{ fontSize: 8, fontWeight: 300, color: '#666885' }}>
+                    {'\n'}MFG: {dayjs(product.mfg).format(Dayjs.date)}
+                  </Text>
+                )}
+                {product.exp && (
+                  <Text style={{ fontSize: 8, fontWeight: 300, color: '#666885' }}>
+                    {'\n'}EXP: {dayjs(product.exp).format(Dayjs.date)}
+                  </Text>
+                )}
                 {product.color && (
                   <Text style={{ fontSize: 8, fontWeight: 300, color: '#666885' }}>
                     {'\n'}Color: {product.color}
@@ -204,24 +212,37 @@ const Receipt: React.FC<IProps> = ({
                   </Text>
                 )}
               </Text>
-              <Text>
-                {product.salePrice} ({product.quantity})
-              </Text>
+              <View>
+                <Text>
+                  {product.salePrice !== product.saleDiscountPrice ? (
+                    <Text style={{ textDecoration: 'line-through', marginRight: 4, fontSize: 8 }}>
+                      {product.salePrice}
+                    </Text>
+                  ) : null}
+                  <Text>
+                    {product.saleDiscountPrice || product.salePrice} ({product.quantity})
+                  </Text>
+                </Text>
+              </View>
             </View>
           ))}
           <View style={styles.dashed}></View>
-          <View style={styles.totalRow}>
-            <Text>Coupon</Text>
-            <Text>{Toolbox.truncateNumber(coupon)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text>Discount</Text>
-            <Text>{Toolbox.truncateNumber(discount)}</Text>
-          </View>
-          {isRedeemExceedingProfit && (
-            <View style={styles.warningBox}>
-              <Text style={styles.warningText}>⚠ Redeem limit applied</Text>
+          {type === 'PRINT' ? (
+            <View style={styles.totalRow}>
+              <Text>Redeem</Text>
+              <Text>{Toolbox.truncateNumber(discount)}</Text>
             </View>
+          ) : (
+            <React.Fragment>
+              <View style={styles.totalRow}>
+                <Text>Coupon</Text>
+                <Text>{Toolbox.truncateNumber(coupon)}</Text>
+              </View>
+              <View style={styles.totalRow}>
+                <Text>Discount</Text>
+                <Text>{Toolbox.truncateNumber(discount)}</Text>
+              </View>
+            </React.Fragment>
           )}
           <View style={styles.totalRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>

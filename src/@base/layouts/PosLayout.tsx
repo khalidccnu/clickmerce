@@ -2,15 +2,12 @@ import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
 import RealTimeClock from '@base/components/RealTimeClock';
 import { Paths } from '@lib/constant/paths';
-import PosInvContext from '@lib/context/PosInvContext';
 import useFullScreen from '@lib/hooks/useFullScreen';
 import useResize from '@lib/hooks/useResize';
 import useTheme from '@lib/hooks/useTheme';
-import { Toolbox } from '@lib/utils/toolbox';
 import { Button, FloatButton, Grid, Layout } from 'antd';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
-import React, { type PropsWithChildren, useMemo, useRef, useState } from 'react';
+import React, { type PropsWithChildren, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import { MdDashboard, MdFullscreen, MdFullscreenExit, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 
@@ -19,17 +16,12 @@ const OrderSummary = dynamic(() => import('@modules/pos/components/OrderSummary'
 interface IProps extends PropsWithChildren {}
 
 const PosLayout: React.FC<IProps> = ({ children }) => {
-  const router = useRouter();
   const screens = Grid.useBreakpoint();
   const [isCollapsed, setCollapsed] = useState(false);
   const { elemRef: siderRef, width: siderWidth } = useResize<HTMLDivElement>();
   const siderFloatButtonRef = useRef(null);
   const { isLight } = useTheme();
   const { isFullScreen, toggleFullScreenFn } = useFullScreen();
-
-  const invId = useMemo(() => {
-    return Toolbox.generateKey({ prefix: 'INV', type: 'upper' });
-  }, []);
 
   const styles: any = {
     sider: {
@@ -85,9 +77,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
         }}
       >
         <div style={styles.siderWrapper} className="designed_scrollbar overscroll-contain">
-          <PosInvContext.Provider value={{ invId }}>
-            <OrderSummary className="p-4 pt-0" />
-          </PosInvContext.Provider>
+          <OrderSummary className="p-4 pt-0" />
         </div>
       </Layout.Sider>
       <Layout style={styles.layout}>
@@ -96,14 +86,11 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
             <BrandLogo width={screens.md ? 220 : 160} />
           </CustomLink>
           {screens.lg && <RealTimeClock color="purple" />}
-          <Button
-            className="ml-auto"
-            type="primary"
-            icon={<MdDashboard />}
-            onClick={() => router.push(Paths.admin.root)}
-          >
-            {screens.md && 'Dashboard'}
-          </Button>
+          <CustomLink href={Paths.admin.root} className="ml-auto">
+            <Button type="primary" icon={<MdDashboard />}>
+              {screens.md && 'Dashboard'}
+            </Button>
+          </CustomLink>
           <Button
             type="primary"
             icon={isFullScreen ? <MdFullscreenExit /> : <MdFullscreen />}
@@ -115,9 +102,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
           </Button>
         </Layout.Header>
         <Layout.Content>
-          <div className="md:h-full container py-4">
-            <PosInvContext.Provider value={{ invId }}>{children}</PosInvContext.Provider>
-          </div>
+          <div className="md:h-full container py-4">{children}</div>
         </Layout.Content>
       </Layout>
       <FloatButton

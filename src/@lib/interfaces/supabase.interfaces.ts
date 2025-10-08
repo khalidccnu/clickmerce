@@ -97,5 +97,6 @@ export interface ISupabaseQueryOption {
 export interface ISupabaseSelectionOption {
   table: string;
   columns?: string[];
+  foreignKey?: string;
   nested?: Record<string, ISupabaseSelectionOption>;
 }

@@ -967,10 +967,10 @@ export const buildSelectionFn = ({
   };
 
   const buildRelationFn = (alias: string, rc: ISupabaseSelectionOption): string => {
-    const { table, columns = ['*'], nested } = rc;
+    const { table, columns = ['*'], foreignKey, nested } = rc;
 
     const shouldInner = hasFilterForRelationFn(alias, filters);
-    const relationKey = alias === table ? table : `${alias}:${table}`;
+    const relationKey = foreignKey ? `${alias}:${table}!${foreignKey}` : alias === table ? table : `${alias}:${table}`;
 
     if (nested && Object.keys(nested).length) {
       const nestedSelections = Object.entries(nested).map(([childAlias, childRc]) =>

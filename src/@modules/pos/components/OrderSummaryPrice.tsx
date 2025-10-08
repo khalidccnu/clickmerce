@@ -2,8 +2,8 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import {
   orderCouponSnap,
-  orderDiscountSnap,
   orderGrandTotalSnap,
+  orderRedeemSnap,
   orderRoundOffSnap,
   orderSubtotalSnap,
   orderTaxSnap,
@@ -30,7 +30,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
   const [isCouponModalOpen, setCouponModalOpen] = useState(false);
   const [isDiscountModalOpen, setDiscountModalOpen] = useState(false);
   const orderCoupon = useAppSelector(orderCouponSnap);
-  const orderDiscount = useAppSelector(orderDiscountSnap);
+  const orderRedeem = useAppSelector(orderRedeemSnap);
   const orderVat = useAppSelector(orderVatSnap);
   const orderTax = useAppSelector(orderTaxSnap);
   const orderSubtotal = useAppSelector(orderSubtotalSnap);
@@ -59,7 +59,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
               </Tag>
             )}
           </p>
-          <p className="font-semibold">{Toolbox.withCurrency(orderCoupon)}</p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderRedeem.couponAmount)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
           <p className="space-x-1">
@@ -69,7 +69,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
               onClick={() => setDiscountModalOpen(true)}
             />
           </p>
-          <p className="font-semibold">{Toolbox.withCurrency(orderDiscount)}</p>
+          <p className="font-semibold">{Toolbox.withCurrency(orderRedeem.discountAmount)}</p>
         </div>
         <div className="flex items-center justify-between gap-2">
           <p className="space-x-1">

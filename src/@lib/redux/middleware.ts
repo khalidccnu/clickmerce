@@ -1,5 +1,3 @@
-import orderMiddleware from './order/orderMiddleware';
-
-const middleware = [orderMiddleware];
+const middleware = [];
 
 export default middleware;
