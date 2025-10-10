@@ -224,14 +224,14 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
     const newPayAmount =
       pay_amount > order.due_amount ? order.pay_amount + order.due_amount : order.pay_amount + pay_amount;
 
-    const returnDueAmount = pay_amount > order.due_amount ? 0 : order.due_amount - pay_amount;
+    const dueAmount = pay_amount > order.due_amount ? 0 : order.due_amount - pay_amount;
 
     const newPaymentStatus =
       pay_amount >= order.due_amount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL : order.payment_status;
 
     const updateResult = await SupabaseAdapter.update<IOrder>(supabaseServerClient, Database.orders, id as string, {
       pay_amount: newPayAmount,
-      due_amount: returnDueAmount,
+      due_amount: dueAmount,
       payment_status: newPaymentStatus,
       updated_by_id: user?.id,
     });
@@ -464,16 +464,19 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       { subTotalPrice: 0 },
     );
 
-    const returnGrandTotal = subTotalPrice + (order.tax_amount || 0) + (order.vat_amount || 0) - adjustedRedeemAmount;
-    const total = order.round_off_amount ? Math.round(returnGrandTotal) : returnGrandTotal;
-    const returnDueAmount = order.pay_amount > total ? 0 : total - order.pay_amount;
+    const grandTotal =
+      subTotalPrice + order.vat_amount + order.tax_amount + order.delivery_charge - adjustedRedeemAmount;
+    const total = order.round_off_amount ? Math.round(grandTotal) : grandTotal;
+    const payAmount = order.pay_amount > total ? total : order.pay_amount;
+    const dueAmount = total - payAmount;
 
     const purifiedOrder = {
       products: purifiedProducts,
       sub_total_amount: subTotalPrice,
       grand_total_amount: total,
-      due_amount: returnDueAmount,
-      payment_status: returnDueAmount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIAL : ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL,
+      pay_amount: payAmount,
+      due_amount: dueAmount,
+      payment_status: dueAmount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIAL : ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL,
       redeem_amount: adjustedRedeemAmount,
     };
 

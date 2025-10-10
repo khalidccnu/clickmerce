@@ -16,8 +16,12 @@ export const orderSubtotalSnap = createSelector([orderState], (edge) => {
   );
 
   const subTotalSale = edge.cartProducts.reduce((sum, cartProduct) => {
+    let price = 0;
     const cartItem = cartItemFn(cartProduct.productId, cartProduct.productVariationId, edge.cart);
-    const price = productSalePriceWithDiscountFn(cartProduct.costPrice, cartProduct.salePrice, cartItem.discount);
+
+    if (cartItem) {
+      price = productSalePriceWithDiscountFn(cartProduct.costPrice, cartProduct.salePrice, cartItem.discount);
+    }
 
     return sum + price * cartProduct.selectedQuantity;
   }, 0);
@@ -149,7 +153,7 @@ export const orderGrandTotalSnap = createSelector(
     const profit = subTotalSale - subTotalCost;
     const isRedeemExceedingProfit = isAdjusted;
 
-    const totalSale = subTotalSale - redeemAmount + vatSnap + taxSnap + edge.deliveryCharge;
+    const totalSale = subTotalSale + vatSnap + taxSnap + edge.deliveryCharge - redeemAmount;
     const totalSaleWithRoundOff = edge.isRoundOff ? Math.round(totalSale) : totalSale;
 
     return {

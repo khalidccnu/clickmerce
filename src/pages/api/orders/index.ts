@@ -4,6 +4,7 @@ import { Database } from '@lib/constant/database';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { validate } from '@lib/utils/yup';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
+import { ICoupon } from '@modules/coupons/lib/interfaces';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
 import { orderCreateSchema, orderFilterSchema, TOrderCreateDto, TOrderFilterDto } from '@modules/orders/lib/dtos';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES, ENUM_ORDER_STATUS_TYPES } from '@modules/orders/lib/enums';
@@ -173,11 +174,12 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     code,
     products,
     redeem_amount,
-    round_off_amount,
     pay_amount,
     payment_method_id,
     delivery_zone_id,
     customer_id,
+    coupon_id,
+    is_round_off,
     ...rest
   } = data;
 
@@ -277,11 +279,14 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
       operations.push({
         table: Database.productVariations,
-        operation: 'update',
+        operation: variation.quantity - selected_quantity === 0 ? 'delete' : 'update',
         id: variation_id,
-        data: {
-          quantity: variation.quantity - selected_quantity,
-        },
+        data:
+          variation.quantity - selected_quantity === 0
+            ? undefined
+            : {
+                quantity: variation.quantity - selected_quantity,
+              },
       });
     }
 
@@ -337,8 +342,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       delivery_charge = deliveryZoneResponse.data.delivery_service_type?.amount || 0;
     }
 
-    const grand_total_amount = sub_total_amount + tax_amount + vat_amount + delivery_charge - total_redeem;
-    const total = round_off_amount ? Math.round(grand_total_amount) : grand_total_amount;
+    const grand_total_amount = sub_total_amount + vat_amount + tax_amount + delivery_charge - total_redeem;
+    const total = is_round_off ? Math.round(grand_total_amount) : grand_total_amount;
     const due_amount = pay_amount > total ? 0 : total - pay_amount;
 
     const purifiedOrder = {
@@ -366,7 +371,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       tax_amount,
       sub_total_amount,
       grand_total_amount: total,
-      round_off_amount: round_off_amount ? total - grand_total_amount : 0,
+      round_off_amount: is_round_off ? total - grand_total_amount : 0,
       pay_amount: Math.min(pay_amount, total),
       due_amount,
       delivery_charge,
@@ -393,7 +398,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     }
 
     for (const operation of operations) {
-      await SupabaseAdapter.update(supabaseServerClient, operation.table, operation.id, operation.data);
+      if (operation.operation === 'delete') {
+        await SupabaseAdapter.delete(supabaseServerClient, operation.table, operation.id);
+      } else {
+        await SupabaseAdapter.update(supabaseServerClient, operation.table, operation.id, operation.data);
+      }
     }
 
     const completeOrderResponse = await SupabaseAdapter.findOne<IOrder>(
@@ -454,10 +463,34 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       };
     }
 
+    if (coupon_id) {
+      const { success, data } = await SupabaseAdapter.findById<ICoupon>(
+        supabaseServerClient,
+        Database.coupons,
+        coupon_id,
+      );
+
+      const couponResponse = await SupabaseAdapter.update<ICoupon>(supabaseServerClient, Database.coupons, coupon_id, {
+        usage_count: data?.usage_count + 1,
+      });
+
+      if (!success || !couponResponse.success) {
+        const response: IBaseResponse = {
+          success: false,
+          statusCode: 500,
+          message: 'Failed to update coupon usage',
+          data: null,
+          meta: null,
+        };
+
+        return res.status(500).json(response);
+      }
+    }
+
     const response: IBaseResponse<IOrder> = {
       success: true,
       statusCode: 201,
-      message: 'Order created successfully',
+      message: 'Order placed successfully',
       data: enrichedOrder,
       meta: null,
     };

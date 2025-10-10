@@ -334,12 +334,8 @@ const OrdersReturnForm: React.FC<IProps> = ({ initialValues, isLoading, onFinish
             {(!activeProducts || !activeProducts.length) && (
               <div className="text-center py-12">
                 <div className="text-5xl mb-4">📦</div>
-                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  No products selected for return
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-300">
-                  All products have been removed from the return list.
-                </p>
+                <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">No products for return</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-300">All products have been removed.</p>
               </div>
             )}
           </div>

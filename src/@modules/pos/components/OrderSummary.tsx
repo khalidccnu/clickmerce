@@ -2,7 +2,7 @@ import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
-import { orderChangeAmountSnap, orderGrandTotalSnap, orderRoundOffSnap } from '@lib/redux/order/orderSelector';
+import { orderChangeAmountSnap, orderGrandTotalSnap, orderRedeemSnap } from '@lib/redux/order/orderSelector';
 import {
   clearOrderFn,
   setCustomerId,
@@ -44,12 +44,11 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const [paymentMethodsSearchTerm, setPaymentMethodsSearchTerm] = useState(null);
   const [deliveryZonesSearchTerm, setDeliveryZonesSearchTerm] = useState(null);
   const [isUserModalOpen, setUserModalOpen] = useState(false);
-  const { invId, customerId, cart, payableAmount, paymentMethodId, deliveryZoneId } = useAppSelector(
-    (store) => store.orderSlice,
-  );
-  const orderRoundOff = useAppSelector(orderRoundOffSnap);
-  const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
+  const { invId, customerId, cart, coupon, isRoundOff, payableAmount, paymentMethodId, deliveryZoneId } =
+    useAppSelector((store) => store.orderSlice);
+  const orderRedeem = useAppSelector(orderRedeemSnap);
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
+  const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const dispatch = useAppDispatch();
 
   const handleClearOrderFn = () => {
@@ -301,16 +300,17 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                     customer_id: customerId,
                     payment_method_id: paymentMethodId,
                     delivery_zone_id: deliveryZoneId,
+                    coupon_id: orderRedeem.couponAmount ? coupon?.id : null,
                     pay_amount: payableAmount,
                     redeem_amount: orderGrandTotal.totalRedeem,
-                    round_off_amount: orderRoundOff,
+                    is_round_off: isRoundOff,
                     products: cart.map((item) => ({
                       id: item.productId,
                       variation_id: item.productVariationId,
                       selected_quantity: item.selectedQuantity,
                       discount: item.discount,
                     })),
-                    is_draft: 'true',
+                    is_draft: true,
                   });
                 }}
               >
@@ -330,9 +330,10 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                     customer_id: customerId,
                     payment_method_id: paymentMethodId,
                     delivery_zone_id: deliveryZoneId,
+                    coupon_id: orderRedeem.couponAmount ? coupon?.id : null,
                     pay_amount: payableAmount,
                     redeem_amount: orderGrandTotal.totalRedeem,
-                    round_off_amount: orderRoundOff,
+                    is_round_off: isRoundOff,
                     products: cart.map((item) => ({
                       id: item.productId,
                       variation_id: item.productVariationId,

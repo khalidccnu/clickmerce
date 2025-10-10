@@ -147,8 +147,9 @@ const CouponsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
             className="!mb-0"
           >
             <FloatDatePicker
+              showTime
               placeholder="Valid From"
-              format={Dayjs.date}
+              format={Dayjs.dateTimeSecondsWithAmPm}
               suffixIcon={<IoCalendar />}
               disabledDate={(current) => current && current < dayjs().startOf('day')}
               defaultPickerValue={formValues?.valid_from ? dayjs(formValues?.valid_from) : dayjs().startOf('day')}
@@ -168,8 +169,9 @@ const CouponsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
             className="!mb-0"
           >
             <FloatDatePicker
+              showTime
               placeholder="Valid Until"
-              format={Dayjs.date}
+              format={Dayjs.dateTimeSecondsWithAmPm}
               suffixIcon={<IoCalendar />}
               disabledDate={(current) => current && current < dayjs().startOf('day')}
               defaultPickerValue={formValues?.valid_until ? dayjs(formValues?.valid_until) : dayjs().startOf('day')}

@@ -20,13 +20,13 @@ export const orderCreateSchema = yup.object({
     )
     .required(),
   redeem_amount: yup.number().min(0).required(),
-  round_off_amount: yup.number().required(),
   pay_amount: yup.number().min(0).required(),
   payment_method_id: yup.string().uuid().required(),
   delivery_zone_id: yup.string().uuid().required(),
   customer_id: yup.string().uuid().required(),
-  is_draft: yup.string().optional(),
-  is_active: yup.string().optional(),
+  coupon_id: yup.string().uuid().required().nullable(),
+  is_round_off: yup.boolean().required(),
+  is_draft: yup.boolean().optional(),
 });
 
 export const orderUpdateSchema = PartialType(PickType(orderCreateSchema, ['pay_amount']), true);

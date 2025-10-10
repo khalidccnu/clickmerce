@@ -31,16 +31,16 @@ export const CouponsServices = {
       if (Toolbox.toBool(is_valid)) {
         newFilters.dateFilters = {
           conditions: {
-            valid_from: { gte: now.toISOString() },
-            valid_until: { lte: now.toISOString() },
+            valid_from: { lte: now.toISOString() },
+            valid_until: { gte: now.toISOString() },
           },
         };
       } else {
         newFilters.dateFilters = {
           type: 'or',
           conditions: {
-            valid_from: { lt: now.toISOString() },
-            valid_until: { gt: now.toISOString() },
+            valid_from: { gt: now.toISOString() },
+            valid_until: { lt: now.toISOString() },
           },
         };
       }

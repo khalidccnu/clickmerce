@@ -1,7 +1,6 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import {
-  orderCouponSnap,
   orderGrandTotalSnap,
   orderRedeemSnap,
   orderRoundOffSnap,
@@ -29,7 +28,6 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
   const [discountFormInstance] = Form.useForm();
   const [isCouponModalOpen, setCouponModalOpen] = useState(false);
   const [isDiscountModalOpen, setDiscountModalOpen] = useState(false);
-  const orderCoupon = useAppSelector(orderCouponSnap);
   const orderRedeem = useAppSelector(orderRedeemSnap);
   const orderVat = useAppSelector(orderVatSnap);
   const orderTax = useAppSelector(orderTaxSnap);
@@ -49,7 +47,7 @@ const OrderSummaryPrice: React.FC<IProps> = ({ className }) => {
               className="inline-block -mt-1 cursor-pointer hover:text-[var(--color-primary)]"
               onClick={() => setCouponModalOpen(true)}
             />
-            {!orderCoupon || (
+            {!coupon?.code || (
               <Tag color="green" className="!mr-0">
                 {coupon?.code}{' '}
                 <IoClose

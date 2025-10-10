@@ -46,13 +46,13 @@ export interface IOrderCreate {
     discount: IProductVariation['discount'];
   }[];
   redeem_amount: number;
-  round_off_amount: number;
   pay_amount: number;
   payment_method_id: TId;
   delivery_zone_id: TId;
   customer_id: TId;
-  is_draft?: string;
-  is_active?: string;
+  coupon_id: TId;
+  is_round_off: boolean;
+  is_draft?: boolean;
 }
 
 export interface IOrderReturnUpdate {
