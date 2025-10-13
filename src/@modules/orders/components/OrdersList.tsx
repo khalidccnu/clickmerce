@@ -178,49 +178,49 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       render: (grand_total_amount) => Toolbox.withCurrency(grand_total_amount),
     },
     {
-      key: 'status',
-      dataIndex: 'status',
-      title: 'Status',
-      render: (status) => Toolbox.toPrettyText(status),
+      key: 'payment_status',
+      dataIndex: 'payment_status',
+      title: 'Payment Status',
+      render: (payment_status) => Toolbox.toPrettyText(payment_status),
     },
-    {
-      key: 'created_at',
-      dataIndex: 'created_at',
-      title: 'Created At',
-      render: (_, record) => {
-        return (
-          <React.Fragment>
-            {record?.created_at && (
-              <div className="flex justify-between gap-2">
-                <p className="font-medium">Created At:</p>
-                <p className="text-end">{dayjs(record?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}</p>
-              </div>
-            )}
+    // {
+    //   key: 'created_at',
+    //   dataIndex: 'created_at',
+    //   title: 'Created At',
+    //   render: (_, record) => {
+    //     return (
+    //       <React.Fragment>
+    //         {record?.created_at && (
+    //           <div className="flex justify-between gap-2">
+    //             <p className="font-medium">Created At:</p>
+    //             <p className="text-end">{dayjs(record?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}</p>
+    //           </div>
+    //         )}
 
-            {record?.created_by && (
-              <div className="flex justify-between gap-2">
-                <p className="font-medium">Created By:</p>
-                <p className="text-end">{record?.created_by?.name}</p>
-              </div>
-            )}
+    //         {record?.created_by && (
+    //           <div className="flex justify-between gap-2">
+    //             <p className="font-medium">Created By:</p>
+    //             <p className="text-end">{record?.created_by?.name}</p>
+    //           </div>
+    //         )}
 
-            {record?.updated_at && record?.updated_by && (
-              <div className="flex justify-between gap-2">
-                <p className="font-medium">Updated At:</p>
-                <p className="text-end">{dayjs(record?.updated_at).format(Dayjs.dateTimeSecondsWithAmPm)}</p>
-              </div>
-            )}
+    //         {record?.updated_at && record?.updated_by && (
+    //           <div className="flex justify-between gap-2">
+    //             <p className="font-medium">Updated At:</p>
+    //             <p className="text-end">{dayjs(record?.updated_at).format(Dayjs.dateTimeSecondsWithAmPm)}</p>
+    //           </div>
+    //         )}
 
-            {record?.updated_by && (
-              <div className="flex justify-between gap-2">
-                <p className="font-medium">Updated By:</p>
-                <p className="text-end">{record?.updated_by?.name}</p>
-              </div>
-            )}
-          </React.Fragment>
-        );
-      },
-    },
+    //         {record?.updated_by && (
+    //           <div className="flex justify-between gap-2">
+    //             <p className="font-medium">Updated By:</p>
+    //             <p className="text-end">{record?.updated_by?.name}</p>
+    //           </div>
+    //         )}
+    //       </React.Fragment>
+    //     );
+    //   },
+    // },
     {
       key: 'id',
       dataIndex: 'id',

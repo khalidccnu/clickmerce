@@ -55,6 +55,10 @@ export const Paths = {
         root: '/admin/sale/orders',
         list: '/admin/sale/orders/list',
       },
+      orderReturns: {
+        root: '/admin/sale/order-returns',
+        list: '/admin/sale/order-returns/list',
+      },
     },
     delivery: {
       root: '/admin/delivery',

@@ -15,6 +15,7 @@ export interface IProductsFilter extends IBaseFilter {
   dosage_form_id?: TId;
   generic_id?: TId;
   supplier_id?: TId;
+  is_expired?: string;
 }
 
 export interface IProductImage {

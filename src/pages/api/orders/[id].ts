@@ -2,6 +2,7 @@ import { IBaseResponse, TId } from '@base/interfaces';
 import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
 import { Database } from '@lib/constant/database';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { orderReturnSchema, orderUpdateSchema, TOrderReturnDto, TOrderUpdateDto } from '@modules/orders/lib/dtos';
@@ -77,6 +78,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
             payment_method: { table: Database.paymentMethods },
             delivery_zone: { table: Database.deliveryZones },
             created_by: { table: Database.users, foreignKey: 'created_by_id' },
+            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
           },
           filters: { id: { eq: id as string } },
         }),
@@ -255,10 +257,11 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            customer: { table: Database.users },
+            customer: { table: Database.users, foreignKey: 'customer_id' },
             payment_method: { table: Database.paymentMethods },
             delivery_zone: { table: Database.deliveryZones },
-            created_by: { table: Database.users },
+            created_by: { table: Database.users, foreignKey: 'created_by_id' },
+            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
           },
           filters: { id: { eq: id as string } },
         }),
@@ -302,7 +305,7 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json(response);
   }
 
-  const { token } = getServerAuthSession(req);
+  const { token, user } = getServerAuthSession(req);
 
   if (!token) {
     const response: IBaseResponse = {
@@ -406,7 +409,7 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
     const purifiedProducts = orderProducts
       .map((orderProduct) => {
         const sanitizedVariations = orderProduct.variations.map((orderVariation) => {
-          const returnQuantity = returnVariationsMap.get(String(orderVariation.id));
+          const returnQuantity = returnVariationsMap.get(orderVariation.id as string);
 
           if (returnQuantity) {
             const sanitizedVariation = {
@@ -478,6 +481,7 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       due_amount: dueAmount,
       payment_status: dueAmount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIAL : ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL,
       redeem_amount: adjustedRedeemAmount,
+      updated_by_id: user?.id,
     };
 
     const updateResult = await SupabaseAdapter.update<IOrder>(
@@ -499,6 +503,59 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json(response);
     }
 
+    const returnProductsMap = new Map<string, any>();
+
+    for (const orderProduct of orderProducts) {
+      const returnedVariations = (orderProduct.variations || [])
+        .map((orderVariation) => {
+          const returnQuantity = returnVariationsMap.get(orderVariation.id as string);
+          if (!returnQuantity) return null;
+
+          return {
+            ...orderVariation,
+            quantity: returnQuantity,
+            sale_discount_price: 0,
+          };
+        })
+        .filter(Boolean);
+
+      if (returnedVariations.length) {
+        const existingProduct = returnProductsMap.get(orderProduct.id as string);
+
+        if (existingProduct) {
+          existingProduct.variations.push(...returnedVariations);
+        } else {
+          returnProductsMap.set(orderProduct.id as string, {
+            ...orderProduct,
+            variations: returnedVariations,
+          });
+        }
+      }
+    }
+
+    const purifiedReturnProducts = Array.from(returnProductsMap.values());
+
+    const orderReturn = {
+      code: Toolbox.generateKey({ prefix: 'RTN', type: 'upper' }),
+      products: purifiedReturnProducts,
+      order_id: id,
+      created_by_id: user?.id,
+    };
+
+    const orderReturnResult = await SupabaseAdapter.create(supabaseServerClient, Database.orderReturns, orderReturn);
+
+    if (!orderReturnResult.success) {
+      const response: IBaseResponse = {
+        success: false,
+        statusCode: 500,
+        message: 'Failed to process order return',
+        data: null,
+        meta: null,
+      };
+
+      return res.status(500).json(response);
+    }
+
     const updatedOrder = await SupabaseAdapter.findOne<IOrder>(
       supabaseServerClient,
       Database.orders,
@@ -506,10 +563,11 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            customer: { table: Database.users },
+            customer: { table: Database.users, foreignKey: 'customer_id' },
             payment_method: { table: Database.paymentMethods },
             delivery_zone: { table: Database.deliveryZones },
-            created_by: { table: Database.users },
+            created_by: { table: Database.users, foreignKey: 'created_by_id' },
+            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
           },
           filters: { id: { eq: id as string } },
         }),

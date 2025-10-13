@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS delivery_zones (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
-    name VARCHAR NOT NULL UNIQUE,
-    delivery_service_type_id UUID REFERENCES delivery_service_types(id) ON DELETE CASCADE NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
+    delivery_service_type_id UUID NOT NULL REFERENCES delivery_service_types(id) ON DELETE CASCADE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 

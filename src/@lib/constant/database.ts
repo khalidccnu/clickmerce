@@ -12,6 +12,7 @@ export const Database = {
   generics: 'generics',
   suppliers: 'suppliers',
   orders: 'orders',
+  orderReturns: 'order_returns',
   deliveryServiceTypes: 'delivery_service_types',
   deliveryZones: 'delivery_zones',
   coupons: 'coupons',

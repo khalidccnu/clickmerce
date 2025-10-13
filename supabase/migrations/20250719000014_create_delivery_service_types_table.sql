@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS delivery_service_types (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
-    name VARCHAR NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );

@@ -7,7 +7,7 @@ import { GenericsHooks } from '@modules/generics/lib/hooks';
 import { IGeneric } from '@modules/generics/lib/interfaces';
 import { SuppliersHooks } from '@modules/suppliers/lib/hooks';
 import { ISupplier } from '@modules/suppliers/lib/interfaces';
-import { Button, Drawer, Form, Radio, Space } from 'antd';
+import { Button, Drawer, Form, Radio, Select, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -92,6 +92,7 @@ const ProductsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
 
     const values = {
       type: '',
+      is_expired: '',
       is_active: '',
       sort_order: '',
       date_range: [],
@@ -111,6 +112,38 @@ const ProductsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
 
   return (
     <div className="flex flex-wrap gap-3 justify-end mb-4">
+      <Select
+        allowClear
+        showSearch
+        virtual={false}
+        placeholder="Sort By"
+        value={initialValues?.sort_by}
+        options={[
+          { label: 'Name', value: 'name' },
+          { label: 'Quantity', value: 'quantity' },
+        ]}
+        filterOption={(input, option: any) => Toolbox.toLowerText(option?.label)?.includes(Toolbox.toLowerText(input))}
+        onChange={(value) =>
+          router.push({
+            query: Toolbox.toCleanObject({ ...router.query, sort_by: value }),
+          })
+        }
+        style={{ width: '8rem' }}
+      />
+      <Radio.Group
+        optionType="button"
+        buttonStyle="solid"
+        value={initialValues?.sort_order ?? ''}
+        options={[
+          { label: 'ASC', value: '' },
+          { label: 'DESC', value: 'DESC' },
+        ]}
+        onChange={(e) =>
+          router.push({
+            query: Toolbox.toCleanObject({ ...router.query, sort_order: e?.target?.value }),
+          })
+        }
+      />
       <Button type="primary" icon={<FaFilter />} onClick={() => setDrawerOpen(true)} ghost>
         Filter
       </Button>
@@ -197,6 +230,19 @@ const ProductsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
           <Form.Item name="date_range" className="!mb-0">
             <FloatRangePicker placeholder={['Start Date', 'End Date']} className="w-full" />
           </Form.Item>
+          {/* <Form.Item name="is_expired" className="!mb-0">
+            <Radio.Group buttonStyle="solid" className="w-full text-center">
+              {[
+                { label: 'All', value: '' },
+                { label: 'Expired', value: 'true' },
+                { label: 'Non Expired', value: 'false' },
+              ].map((elem, idx) => (
+                <Radio.Button key={idx} className="w-1/3" value={elem?.value}>
+                  {elem?.label}
+                </Radio.Button>
+              ))}
+            </Radio.Group>
+          </Form.Item> */}
           <Form.Item name="is_active" className="!mb-0">
             <Radio.Group buttonStyle="solid" className="w-full text-center">
               <Radio.Button className="w-1/3" value="">
@@ -210,7 +256,7 @@ const ProductsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
               </Radio.Button>
             </Radio.Group>
           </Form.Item>
-          <Form.Item name="sort_order" className="!mb-0">
+          {/* <Form.Item name="sort_order" className="!mb-0">
             <Radio.Group buttonStyle="solid" className="w-full text-center">
               <Radio.Button className="w-1/2" value="">
                 ASC
@@ -219,7 +265,7 @@ const ProductsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
                 DESC
               </Radio.Button>
             </Radio.Group>
-          </Form.Item>
+          </Form.Item> */}
           <Form.Item className="!mb-0">
             <Space.Compact>
               <Button type="primary" htmlType="submit">

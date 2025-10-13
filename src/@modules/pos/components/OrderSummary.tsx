@@ -1,6 +1,8 @@
+import { Env } from '.environments';
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import { Dayjs } from '@lib/constant/dayjs';
 import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { orderChangeAmountSnap, orderGrandTotalSnap, orderRedeemSnap } from '@lib/redux/order/orderSelector';
 import {
@@ -18,17 +20,23 @@ import {
   loadOrderVatTax,
 } from '@lib/redux/order/orderThunks';
 import { cn } from '@lib/utils/cn';
+import { Toolbox } from '@lib/utils/toolbox';
 import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
+import Receipt from '@modules/orders/components/Receipt';
 import { OrdersHooks } from '@modules/orders/lib/hooks';
+import { IOrder } from '@modules/orders/lib/interfaces';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
 import { IPaymentMethod } from '@modules/payment-methods/lib/interfaces';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
+import { pdf } from '@react-pdf/renderer';
 import { Alert, Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd';
+import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import { FaClipboardList, FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
+import { FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
+import { normalizeReceiptImageUrlFn } from '../lib/utils';
 import OrderSummaryPrice from './OrderSummaryPrice';
 import OrderSummaryProducts from './OrderSummaryProducts';
 
@@ -51,6 +59,53 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const dispatch = useAppDispatch();
 
+  const handlePdfFn = async (order: IOrder) => {
+    try {
+      const webLogo = await normalizeReceiptImageUrlFn(Env.webBrandLogo);
+      const products = order?.products
+        ?.flatMap((product) =>
+          (product?.variations || []).map((variation) => ({
+            name: product?.current_info?.name,
+            specification: product?.current_info?.specification,
+            salePrice: variation?.sale_price,
+            saleDiscountPrice: variation?.sale_discount_price,
+            quantity: variation?.quantity,
+            mfg: variation?.mfg,
+            exp: variation?.exp,
+            color: variation?.color,
+            size: variation?.size,
+          })),
+        )
+        .filter(Boolean);
+
+      const props = {
+        webLogo,
+        webTitle: Env.webTitle,
+        moneyReceiptDate: dayjs(order.created_at).format(Dayjs.dateTimeSecondsWithAmPm),
+        trxId: order?.code,
+        customerName: order?.customer?.name,
+        phone: order?.customer?.phone,
+        products,
+        coupon: 0,
+        discount: order?.redeem_amount,
+        vat: order?.vat_amount,
+        vatPercent: 0,
+        tax: order?.tax_amount,
+        taxPercent: 0,
+        deliveryCharge: order?.delivery_charge,
+        subTotal: order?.sub_total_amount,
+        roundOff: order?.round_off_amount,
+        grandTotal: order?.grand_total_amount,
+        receivedBy: order?.created_by?.name,
+      };
+
+      const blob = await pdf(<Receipt type="PRINT" order={props} />).toBlob();
+      Toolbox.printWindow('pdf', URL.createObjectURL(blob));
+    } catch (error) {
+      messageApi.error('Failed to generate receipt preview. Please try again.');
+    }
+  };
+
   const handleClearOrderFn = () => {
     modalApi.confirm({
       title: 'Clear Order',
@@ -59,8 +114,9 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
       cancelText: 'Cancel',
       okType: 'danger',
       onOk: () => {
-        dispatch(clearOrderFn());
         messageApi.success('Order cleared successfully');
+
+        dispatch(clearOrderFn());
         dispatch(loadOrderInvId());
         dispatch(loadOrderCustomerId());
         dispatch(loadOrderVatTax());
@@ -77,8 +133,10 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
           return;
         }
 
-        dispatch(clearOrderFn());
         messageApi.success('Order placed successfully');
+        handlePdfFn(res.data);
+
+        dispatch(clearOrderFn());
         dispatch(loadOrderInvId());
         dispatch(loadOrderCustomerId());
         dispatch(loadOrderVatTax());
@@ -286,14 +344,14 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 size="large"
               />
             </Col>
-            <Col xs={24} md={12}>
+            {/* <Col xs={24}>
               <Button
                 type="primary"
                 size="large"
                 block
                 disabled={!invId || !customerId || !cart?.length}
                 icon={<FaClipboardList />}
-                ghost
+                loading={orderCreateFn.isPending}
                 onClick={() => {
                   orderCreateFn.mutate({
                     code: invId,
@@ -313,17 +371,19 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                     is_draft: true,
                   });
                 }}
+                ghost
               >
                 Place Draft Order
               </Button>
-            </Col>
-            <Col xs={24} md={12}>
+            </Col> */}
+            <Col xs={24}>
               <Button
                 type="primary"
                 size="large"
                 block
                 disabled={!invId || !customerId || !cart?.length}
                 icon={<FaShoppingBag />}
+                loading={orderCreateFn.isPending}
                 onClick={() => {
                   orderCreateFn.mutate({
                     code: invId,

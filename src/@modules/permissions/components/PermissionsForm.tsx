@@ -1,5 +1,6 @@
 import FloatSelect from '@base/antd/components/FloatSelect';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import { Permissions } from '@lib/constant/permissions';
 import { PermissionTypesHooks } from '@modules/permission-types/lib/hooks';
 import { Button, Col, Form, FormInstance, Radio, Row } from 'antd';
 import React, { useEffect, useState } from 'react';

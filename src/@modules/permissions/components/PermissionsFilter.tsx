@@ -51,7 +51,7 @@ const PermissionsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
               label: permissionType?.name,
               value: permissionType?.id,
             })}
-            onChangeSearchTerm={(searchTerm) => setPermissionTypeSearchTerm(searchTerm)}
+            onChangeSearchTerm={setPermissionTypeSearchTerm}
             query={permissionTypesQuery}
             style={{ width: '13rem' }}
           />

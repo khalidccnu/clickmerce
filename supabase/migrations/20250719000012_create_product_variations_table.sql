@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS product_variations (
     color VARCHAR,
     size VARCHAR,
     discount JSONB,
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE NOT NULL,
+    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 

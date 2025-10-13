@@ -71,4 +71,16 @@ export const GenericsHooks = {
       ...config,
     });
   },
+
+  useDelete: ({ config }: { config?: MutationConfig<typeof GenericsServices.delete> } = {}) => {
+    return useMutation({
+      mutationFn: GenericsServices.delete,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        queryClient.invalidateQueries({ queryKey: [GenericsServices.NAME] });
+      },
+      ...config,
+    });
+  },
 };

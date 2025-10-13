@@ -1,40 +1,40 @@
 import FloatRangePicker from '@base/antd/components/FloatRangePicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { Toolbox } from '@lib/utils/toolbox';
-import { DeliveryServiceTypesHooks } from '@modules/delivery-service-types/lib/hooks';
-import { IDeliveryServiceType } from '@modules/delivery-service-types/lib/interfaces';
+import { UsersHooks } from '@modules/users/lib/hooks';
+import { IUser } from '@modules/users/lib/interfaces';
 import { Button, Drawer, Form, Radio, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
 import { MdClear } from 'react-icons/md';
-import { IDeliveryZonesFilter } from '../lib/interfaces';
+import { IOrderReturnsFilter } from '../lib/interfaces';
 
 interface IProps {
-  initialValues: IDeliveryZonesFilter;
-  onChange: (values: IDeliveryZonesFilter) => void;
+  initialValues: IOrderReturnsFilter;
+  onChange: (values: IOrderReturnsFilter) => void;
 }
 
-const DeliveryZonesFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
+const OrderReturnsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
   const router = useRouter();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [deliveryServiceTypeSearchTerm, setDeliveryServiceTypeSearchTerm] = useState(null);
+  const [customerSearchTerm, setCustomerSearchTerm] = useState(null);
 
-  const deliveryServiceTypeQuery = DeliveryServiceTypesHooks.useFindById({
-    id: initialValues?.delivery_service_type_id,
+  const customerQuery = UsersHooks.useFindById({
+    id: initialValues?.customer_id,
     config: {
       queryKey: [],
-      enabled: !!initialValues?.delivery_service_type_id,
+      enabled: !!initialValues?.customer_id,
     },
   });
 
-  const deliveryServiceTypesQuery = DeliveryServiceTypesHooks.useFindInfinite({
+  const customersQuery = UsersHooks.useFindInfinite({
     options: {
       limit: '20',
-      search_term: deliveryServiceTypeSearchTerm,
-      search_field: 'name',
+      search_term: customerSearchTerm,
+      search_fields: ['name', 'phone', 'email'],
     },
   });
 
@@ -42,7 +42,6 @@ const DeliveryZonesFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
     formInstance.resetFields();
 
     const values = {
-      is_active: '',
       sort_order: '',
       date_range: [],
       ...initialValues,
@@ -81,38 +80,25 @@ const DeliveryZonesFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
           }, 1000)}
           className="flex flex-col gap-3"
         >
-          <Form.Item name="delivery_service_type_id" className="!mb-0">
-            <InfiniteScrollSelect<IDeliveryServiceType>
+          <Form.Item name="customer_id" className="!mb-0">
+            <InfiniteScrollSelect<IUser>
               isFloat
               allowClear
               showSearch
               virtual={false}
-              placeholder="Delivery Service Type"
-              initialOptions={deliveryServiceTypeQuery.data?.data?.id ? [deliveryServiceTypeQuery.data?.data] : []}
-              option={({ item: serviceType }) => ({
-                key: serviceType?.id,
-                label: serviceType?.name,
-                value: serviceType?.id,
+              placeholder="Customer"
+              initialOptions={customerQuery.data?.data?.id ? [customerQuery.data?.data] : []}
+              option={({ item: customer }) => ({
+                key: customer?.id,
+                label: customer?.name,
+                value: customer?.id,
               })}
-              onChangeSearchTerm={setDeliveryServiceTypeSearchTerm}
-              query={deliveryServiceTypesQuery}
+              onChangeSearchTerm={setCustomerSearchTerm}
+              query={customersQuery}
             />
           </Form.Item>
           <Form.Item name="date_range" className="!mb-0">
             <FloatRangePicker placeholder={['Start Date', 'End Date']} className="w-full" />
-          </Form.Item>
-          <Form.Item name="is_active" className="!mb-0">
-            <Radio.Group buttonStyle="solid" className="w-full text-center">
-              <Radio.Button className="w-1/3" value="">
-                All
-              </Radio.Button>
-              <Radio.Button className="w-1/3" value="true">
-                Active
-              </Radio.Button>
-              <Radio.Button className="w-1/3" value="false">
-                Inactive
-              </Radio.Button>
-            </Radio.Group>
           </Form.Item>
           <Form.Item name="sort_order" className="!mb-0">
             <Radio.Group buttonStyle="solid" className="w-full text-center">
@@ -158,4 +144,4 @@ const DeliveryZonesFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
   );
 };
 
-export default DeliveryZonesFilter;
+export default OrderReturnsFilter;

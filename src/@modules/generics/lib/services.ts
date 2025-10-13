@@ -56,4 +56,13 @@ export const GenericsServices = {
       throw responseHandlerFn(error);
     }
   },
+
+  delete: async (id: TId): Promise<IBaseResponse<IGeneric>> => {
+    try {
+      const res = await SupabaseAdapter.delete<IGeneric>(supabaseBrowserClient, END_POINT, id);
+      return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
 };

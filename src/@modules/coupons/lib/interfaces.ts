@@ -2,6 +2,7 @@ import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
 import { TCouponType } from './enums';
 
 export interface ICouponsFilter extends IBaseFilter {
+  type?: TCouponType;
   is_valid?: string;
 }
 

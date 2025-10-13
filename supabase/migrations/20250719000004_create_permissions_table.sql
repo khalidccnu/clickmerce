@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS permissions (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     
-    name VARCHAR NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     permission_type_id UUID NOT NULL REFERENCES permission_types(id) ON DELETE CASCADE
 );

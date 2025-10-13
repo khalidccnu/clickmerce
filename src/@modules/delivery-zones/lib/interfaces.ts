@@ -1,7 +1,9 @@
 import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
 import { IDeliveryServiceType } from '@modules/delivery-service-types/lib/interfaces';
 
-export interface IDeliveryZonesFilter extends IBaseFilter {}
+export interface IDeliveryZonesFilter extends IBaseFilter {
+  delivery_service_type_id?: TId;
+}
 
 export interface IDeliveryZone extends IBaseEntity {
   name: string;

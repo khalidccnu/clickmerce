@@ -197,7 +197,7 @@ const OrdersReturnForm: React.FC<IProps> = ({ initialValues, isLoading, onFinish
                     </Tooltip>
                   </div>
                 </div>
-                <div className="space-y-4">
+                <div className="space-y-2 p-2">
                   {(product.variations || []).map((variation) => {
                     const key = kv(product.id, variation.id);
                     const expirationDate = variation.exp ? dayjs(variation.exp) : null;
@@ -216,7 +216,7 @@ const OrdersReturnForm: React.FC<IProps> = ({ initialValues, isLoading, onFinish
                     return (
                       <div
                         key={variation.id}
-                        className={cn('p-4 transition-colors duration-300 rounded-b-lg', {
+                        className={cn('p-4 transition-colors duration-300 rounded-b-lg rounded-lg', {
                           'bg-red-50 dark:bg-red-900/20': isExpired,
                           'bg-orange-50 dark:bg-orange-900/20': isExpiringSoon,
                         })}

@@ -15,15 +15,16 @@ CREATE TABLE IF NOT EXISTS orders (
     sub_total_amount DECIMAL(10,2) DEFAULT 0,
     grand_total_amount DECIMAL(10,2) DEFAULT 0,
     round_off_amount DECIMAL(10,2) DEFAULT 0,
+    payment_reference VARCHAR,
     payment_status VARCHAR,
     status VARCHAR DEFAULT 'PROCESSING',
-    
-    customer_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    payment_method_id UUID REFERENCES payment_methods(id) ON DELETE CASCADE,
-    delivery_zone_id UUID REFERENCES delivery_zones(id) ON DELETE CASCADE,
-    created_by_id UUID REFERENCES users(id) ON DELETE NO ACTION,
-    updated_by_id UUID REFERENCES users(id) ON DELETE NO ACTION,
-    
+
+    customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    payment_method_id UUID REFERENCES payment_methods(id) ON DELETE SET NULL,
+    delivery_zone_id UUID NOT NULL REFERENCES delivery_zones(id) ON DELETE CASCADE,
+    created_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
+    updated_by_id UUID REFERENCES users(id) ON DELETE SET NULL,
+
     is_draft BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
@@ -39,6 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_due_amount ON orders(due_amount);
 CREATE INDEX IF NOT EXISTS idx_orders_sub_total_amount ON orders(sub_total_amount);
 CREATE INDEX IF NOT EXISTS idx_orders_grand_total_amount ON orders(grand_total_amount);
 CREATE INDEX IF NOT EXISTS idx_orders_round_off_amount ON orders(round_off_amount);
+CREATE INDEX IF NOT EXISTS idx_orders_payment_reference ON orders(payment_reference);
 CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);

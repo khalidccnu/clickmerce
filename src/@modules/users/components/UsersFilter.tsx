@@ -2,7 +2,7 @@ import FloatRangePicker from '@base/antd/components/FloatRangePicker';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import { bloodGroups } from '@lib/data/bloodGroups';
 import { Toolbox } from '@lib/utils/toolbox';
-import { Button, Drawer, Form, Radio, Space } from 'antd';
+import { Button, Drawer, Form, Radio, Select, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -90,6 +90,18 @@ const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
                 Customer
               </Radio.Button>
             </Radio.Group>
+          </Form.Item>
+          <Form.Item name="is_default_customer" className="!mb-0">
+            <FloatSelect
+              allowClear
+              showSearch
+              virtual={false}
+              placeholder="Customer Type"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+            >
+              <Select.Option value="true">Default Customer</Select.Option>
+              <Select.Option value="false">Optional Customer</Select.Option>
+            </FloatSelect>
           </Form.Item>
           <Form.Item name="date_range" className="!mb-0">
             <FloatRangePicker placeholder={['Start Date', 'End Date']} className="w-full" />

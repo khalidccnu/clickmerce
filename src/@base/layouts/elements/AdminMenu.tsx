@@ -1,4 +1,5 @@
 import CustomLink from '@base/components/CustomLink';
+import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { Paths } from '@lib/constant/paths';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
@@ -9,7 +10,7 @@ import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons
 import { FiShoppingCart } from 'react-icons/fi';
 import { GiMedicines } from 'react-icons/gi';
 import { GrUserAdmin } from 'react-icons/gr';
-import { IoCubeOutline } from 'react-icons/io5';
+import { IoCubeOutline, IoReturnUpBack } from 'react-icons/io5';
 import { LiaCartArrowDownSolid } from 'react-icons/lia';
 import { MdDashboard, MdLocalOffer, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
@@ -128,8 +129,40 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
             {
               key: Paths.admin.sale.orders.list,
               icon: <LiaCartArrowDownSolid />,
-              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.sale.orders.list)}>Orders</CustomLink>,
+              label: (
+                <CustomLink
+                  href={{
+                    pathname: Paths.admin.sale.orders.list,
+                    query: {
+                      page: 1,
+                      limit: 10,
+                      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+                    },
+                  }}
+                >
+                  Orders
+                </CustomLink>
+              ),
               allowedPermissions: ['orders:read'],
+            },
+            {
+              key: Paths.admin.sale.orderReturns.list,
+              icon: <IoReturnUpBack />,
+              label: (
+                <CustomLink
+                  href={{
+                    pathname: Paths.admin.sale.orderReturns.list,
+                    query: {
+                      page: 1,
+                      limit: 10,
+                      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+                    },
+                  }}
+                >
+                  Order Returns
+                </CustomLink>
+              ),
+              allowedPermissions: ['order_returns:read'],
             },
           ],
         },

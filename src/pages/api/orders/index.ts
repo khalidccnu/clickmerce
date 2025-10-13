@@ -67,6 +67,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           payment_method: { table: Database.paymentMethods },
           delivery_zone: { table: Database.deliveryZones },
           created_by: { table: Database.users, foreignKey: 'created_by_id' },
+          updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
         },
         filters: data,
       }),
@@ -346,26 +347,38 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     const total = is_round_off ? Math.round(grand_total_amount) : grand_total_amount;
     const due_amount = pay_amount > total ? 0 : total - pay_amount;
 
+    const mergedProductsMap = new Map<string, any>();
+
+    for (const allocation of allocations) {
+      if (!mergedProductsMap.has(allocation.product_id)) {
+        mergedProductsMap.set(allocation.product_id, {
+          id: allocation.product_id,
+          variations: [],
+        });
+      }
+
+      const existingProduct = mergedProductsMap.get(allocation.product_id);
+
+      existingProduct.variations.push({
+        id: allocation.variation_id,
+        cost_price: allocation.cost_price,
+        sale_price: allocation.sale_price,
+        sale_discount_price: allocation.sale_discount_price,
+        discount: allocation.discount,
+        quantity: allocation.allocated_quantity,
+        mfg: allocation.mfg,
+        exp: allocation.exp,
+        color: allocation.color,
+        size: allocation.size,
+      });
+    }
+
+    const mergedProducts = Array.from(mergedProductsMap.values());
+
     const purifiedOrder = {
       ...rest,
       code,
-      products: allocations.map((allocation) => ({
-        id: allocation.product_id,
-        variations: [
-          {
-            id: allocation.variation_id,
-            cost_price: allocation.cost_price,
-            sale_price: allocation.sale_price,
-            sale_discount_price: allocation.sale_discount_price,
-            discount: allocation.discount,
-            quantity: allocation.allocated_quantity,
-            mfg: allocation.mfg,
-            exp: allocation.exp,
-            color: allocation.color,
-            size: allocation.size,
-          },
-        ],
-      })),
+      products: mergedProducts,
       redeem_amount: total_redeem,
       vat_amount,
       tax_amount,
@@ -416,6 +429,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
             payment_method: { table: Database.paymentMethods, foreignKey: 'payment_method_id' },
             delivery_zone: { table: Database.deliveryZones, foreignKey: 'delivery_zone_id' },
             created_by: { table: Database.users, foreignKey: 'created_by_id' },
+            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
           },
           filters: { id: orderResponse.data.id as string },
         }),

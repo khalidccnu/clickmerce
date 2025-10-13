@@ -1,4 +1,5 @@
 import FloatRangePicker from '@base/antd/components/FloatRangePicker';
+import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Drawer, Form, Radio, Space } from 'antd';
 import dayjs from 'dayjs';
@@ -6,6 +7,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FaFilter } from 'react-icons/fa';
 import { MdClear } from 'react-icons/md';
+import { couponTypes } from '../lib/enums';
 import { ICouponsFilter } from '../lib/interfaces';
 
 interface IProps {
@@ -61,6 +63,20 @@ const CouponsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
           }, 1000)}
           className="flex flex-col gap-3"
         >
+          <Form.Item name="type" className="!mb-0">
+            <FloatSelect
+              allowClear
+              showSearch
+              virtual={false}
+              placeholder="Type"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+              options={couponTypes.map((couponType) => ({
+                key: couponType,
+                label: Toolbox.toPrettyText(couponType),
+                value: couponType,
+              }))}
+            />
+          </Form.Item>
           <Form.Item name="date_range" className="!mb-0">
             <FloatRangePicker placeholder={['Start Date', 'End Date']} className="w-full" />
           </Form.Item>

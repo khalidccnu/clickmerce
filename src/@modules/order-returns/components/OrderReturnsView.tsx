@@ -1,38 +1,30 @@
 import { Dayjs } from '@lib/constant/dayjs';
-import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
-import { Card, Descriptions, Tag } from 'antd';
+import { Card, Descriptions } from 'antd';
 import dayjs from 'dayjs';
 import React from 'react';
-import { IOrder } from '../lib/interfaces';
-import { OrderPaymentStatusColorFn, OrderStatusColorFn } from '../lib/utils';
+import { IOrderReturn } from '../lib/interfaces';
 
 interface IProps {
-  order: IOrder;
+  orderReturn: IOrderReturn;
 }
 
-const OrdersView: React.FC<IProps> = ({ order }) => {
+const OrderReturnsView: React.FC<IProps> = ({ orderReturn }) => {
   return (
     <div className="space-y-4">
-      <Card title="Order Information" size="small">
+      <Card title="Order Return Information" size="small">
         <Descriptions
           bordered
           size="small"
           layout="vertical"
-          column={{ xs: 1, sm: 2, md: 3, lg: 3, xl: 4, xxl: 4 }}
+          column={{ xs: 1, sm: 1, md: 1, lg: 1, xl: 1, xxl: 1 }}
           labelStyle={{ fontWeight: 600 }}
         >
-          <Descriptions.Item label="Code" span={2}>
-            <span className="font-mono text-[var(--color-primary)]">{order?.code}</span>
+          <Descriptions.Item label="Code">
+            <span className="font-mono text-[var(--color-primary)]">{orderReturn?.code}</span>
           </Descriptions.Item>
-          <Descriptions.Item label="Date" span={2}>
-            {dayjs(order?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
-          </Descriptions.Item>
-          <Descriptions.Item label="Payment Status">
-            <Tag color={OrderPaymentStatusColorFn(order?.payment_status)}>{order?.payment_status}</Tag>
-          </Descriptions.Item>
-          <Descriptions.Item label="Status">
-            <Tag color={OrderStatusColorFn(order?.status)}>{order?.status}</Tag>
+          <Descriptions.Item label="Date">
+            {dayjs(orderReturn?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
           </Descriptions.Item>
         </Descriptions>
       </Card>
@@ -45,64 +37,19 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
           labelStyle={{ fontWeight: 600 }}
         >
           <Descriptions.Item label="Name" span={2}>
-            {order?.customer?.name}
+            {orderReturn?.order?.customer?.name}
           </Descriptions.Item>
           <Descriptions.Item label="Phone" span={2}>
-            {order?.customer?.phone}
+            {orderReturn?.order?.customer?.phone}
           </Descriptions.Item>
           <Descriptions.Item label="Email" span={4}>
-            {order?.customer?.email || 'N/A'}
-          </Descriptions.Item>
-        </Descriptions>
-      </Card>
-      <Card title="Payment & Delivery Information" size="small">
-        <Descriptions
-          bordered
-          size="small"
-          layout="vertical"
-          column={{ xs: 1, sm: 2, md: 2, lg: 2, xl: 2, xxl: 2 }}
-          labelStyle={{ fontWeight: 600 }}
-        >
-          <Descriptions.Item label="Payment Method">{order?.payment_method?.name || 'N/A'}</Descriptions.Item>
-          <Descriptions.Item label="Delivery Zone">{order?.delivery_zone?.name}</Descriptions.Item>
-        </Descriptions>
-      </Card>
-      <Card title="Financial Summary" size="small">
-        <Descriptions
-          bordered
-          size="small"
-          layout="vertical"
-          column={{ xs: 1, sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 }}
-          labelStyle={{ fontWeight: 600 }}
-        >
-          <Descriptions.Item label="Redeem">
-            <span className="text-red-500">{Toolbox.withCurrency(order?.redeem_amount)}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="Vat">{Toolbox.withCurrency(order?.vat_amount)}</Descriptions.Item>
-          <Descriptions.Item label="Tax">{Toolbox.withCurrency(order?.tax_amount)}</Descriptions.Item>
-          <Descriptions.Item label="Delivery Charge">{Toolbox.withCurrency(order?.delivery_charge)}</Descriptions.Item>
-          <Descriptions.Item label="Subtotal">
-            <span className="font-semibold">{Toolbox.withCurrency(order?.sub_total_amount)}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="Grand Total">
-            <span className="font-semibold text-green-500 text-lg">
-              {Toolbox.withCurrency(order?.grand_total_amount)}
-            </span>
-          </Descriptions.Item>
-          <Descriptions.Item label="Round Off">{Toolbox.withCurrency(order?.round_off_amount)}</Descriptions.Item>
-          <Descriptions.Item label="Paid Amount">
-            <span className="font-semibold text-blue-500">{Toolbox.withCurrency(order?.pay_amount || 0)}</span>
-          </Descriptions.Item>
-          <Descriptions.Item label="Due Amount">
-            <span className={cn('font-semibold', order?.due_amount ? 'text-red-500' : 'text-green-500')}>
-              {Toolbox.withCurrency(order?.due_amount)}
-            </span>
+            {orderReturn?.order?.customer?.email || 'N/A'}
           </Descriptions.Item>
         </Descriptions>
       </Card>
       <Card title="Products" size="small">
         <div className="space-y-2">
-          {order?.products?.map((product) => {
+          {orderReturn?.products?.map((product) => {
             return (
               <div key={product?.id} className="border dark:border-gray-700/50 rounded-lg p-4">
                 <div className="mb-2">
@@ -160,25 +107,16 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
           labelStyle={{ fontWeight: 600 }}
         >
           <Descriptions.Item label="Created By" span={2}>
-            <span>{order?.created_by?.name}</span>
+            <span>{orderReturn?.created_by?.name}</span>
             <br />
             <span className="text-xs text-gray-500">
-              {dayjs(order?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
+              {dayjs(orderReturn?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
             </span>
           </Descriptions.Item>
-          {order?.updated_by && (
-            <Descriptions.Item label="Updated By" span={2}>
-              <span>{order?.updated_by?.name}</span>
-              <br />
-              <span className="text-xs text-gray-500">
-                {dayjs(order?.updated_at).format(Dayjs.dateTimeSecondsWithAmPm)}
-              </span>
-            </Descriptions.Item>
-          )}
         </Descriptions>
       </Card>
     </div>
   );
 };
 
-export default OrdersView;
+export default OrderReturnsView;

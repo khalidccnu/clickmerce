@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS suppliers (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     
-    name VARCHAR NOT NULL,
+    name VARCHAR UNIQUE NOT NULL,
     phone VARCHAR,
     email VARCHAR,
     address TEXT,

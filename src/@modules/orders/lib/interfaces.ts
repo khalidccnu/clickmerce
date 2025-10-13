@@ -6,6 +6,9 @@ import { IUser } from '@modules/users/lib/interfaces';
 import { TOrderPaymentStatusType, TOrderStatusType } from './enums';
 
 export interface IOrdersFilter extends IBaseFilter {
+  customer_id?: TId;
+  payment_method_id?: TId;
+  delivery_zone_id?: TId;
   payment_status?: TOrderPaymentStatusType;
   status?: TOrderStatusType;
 }

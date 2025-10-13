@@ -77,4 +77,16 @@ export const DosageFormsHooks = {
       ...config,
     });
   },
+
+  useDelete: ({ config }: { config?: MutationConfig<typeof DosageFormsServices.delete> } = {}) => {
+    return useMutation({
+      mutationFn: DosageFormsServices.delete,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        queryClient.invalidateQueries({ queryKey: [DosageFormsServices.NAME] });
+      },
+      ...config,
+    });
+  },
 };

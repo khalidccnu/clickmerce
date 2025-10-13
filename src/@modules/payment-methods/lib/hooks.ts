@@ -77,4 +77,16 @@ export const PaymentMethodsHooks = {
       ...config,
     });
   },
+
+  useDelete: ({ config }: { config?: MutationConfig<typeof PaymentMethodsServices.delete> } = {}) => {
+    return useMutation({
+      mutationFn: PaymentMethodsServices.delete,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        queryClient.invalidateQueries({ queryKey: [PaymentMethodsServices.NAME] });
+      },
+      ...config,
+    });
+  },
 };

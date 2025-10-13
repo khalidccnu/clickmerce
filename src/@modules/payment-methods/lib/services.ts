@@ -61,4 +61,13 @@ export const PaymentMethodsServices = {
       throw responseHandlerFn(error);
     }
   },
+
+  delete: async (id: TId): Promise<IBaseResponse<IPaymentMethod>> => {
+    try {
+      const res = await SupabaseAdapter.delete<IPaymentMethod>(supabaseBrowserClient, END_POINT, id);
+      return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
 };

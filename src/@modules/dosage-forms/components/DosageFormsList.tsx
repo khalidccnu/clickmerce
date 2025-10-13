@@ -2,10 +2,10 @@ import CustomSwitch from '@base/components/CustomSwitch';
 import { Dayjs } from '@lib/constant/dayjs';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Drawer, Form, Table, message } from 'antd';
+import { Button, Drawer, Form, Popconfirm, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { AiFillEdit } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
 import { DosageFormsHooks } from '../lib/hooks';
 import { IDosageForm } from '../lib/interfaces';
 import DosageFormsForm from './DosageFormsForm';
@@ -30,6 +30,19 @@ const DosageFormsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         }
 
         setUpdateItem(null);
+        messageApi.success(res.message);
+      },
+    },
+  });
+
+  const dosageFormDeleteFn = DosageFormsHooks.useDelete({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
         messageApi.success(res.message);
       },
     },
@@ -90,18 +103,33 @@ const DosageFormsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         const item = data?.find((item) => item.id === id);
 
         return (
-          <Button
-            type="primary"
-            onClick={() => {
-              getAccess({
-                allowedPermissions: ['dosage_forms:update'],
-                func: () => setUpdateItem(item),
-              });
-            }}
-            ghost
-          >
-            <AiFillEdit />
-          </Button>
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => {
+                getAccess({
+                  allowedPermissions: ['dosage_forms:update'],
+                  func: () => setUpdateItem(item),
+                });
+              }}
+              ghost
+            >
+              <AiFillEdit />
+            </Button>
+            <Popconfirm
+              title="Are you sure to delete this dosage form?"
+              onConfirm={() => {
+                getAccess({
+                  allowedPermissions: ['dosage_forms:delete'],
+                  func: () => dosageFormDeleteFn.mutate(id),
+                });
+              }}
+            >
+              <Button type="primary" danger ghost>
+                <AiFillDelete />
+              </Button>
+            </Popconfirm>
+          </Space>
         );
       },
     },

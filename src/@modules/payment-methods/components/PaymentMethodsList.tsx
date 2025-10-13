@@ -3,10 +3,10 @@ import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Drawer, Form, Table, message } from 'antd';
+import { Button, Drawer, Form, Popconfirm, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { AiFillEdit } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
 import { PaymentMethodsHooks } from '../lib/hooks';
 import { IPaymentMethod } from '../lib/interfaces';
 import PaymentMethodsForm from './PaymentMethodsForm';
@@ -31,6 +31,19 @@ const PaymentMethodsList: React.FC<IProps> = ({ isLoading, data, pagination }) =
         }
 
         setUpdateItem(null);
+        messageApi.success(res.message);
+      },
+    },
+  });
+
+  const paymentMethodDeleteFn = PaymentMethodsHooks.useDelete({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
         messageApi.success(res.message);
       },
     },
@@ -104,18 +117,33 @@ const PaymentMethodsList: React.FC<IProps> = ({ isLoading, data, pagination }) =
         const item = data?.find((item) => item.id === id);
 
         return (
-          <Button
-            type="primary"
-            onClick={() => {
-              getAccess({
-                allowedPermissions: ['payment_methods:update'],
-                func: () => setUpdateItem(item),
-              });
-            }}
-            ghost
-          >
-            <AiFillEdit />
-          </Button>
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => {
+                getAccess({
+                  allowedPermissions: ['payment_methods:update'],
+                  func: () => setUpdateItem(item),
+                });
+              }}
+              ghost
+            >
+              <AiFillEdit />
+            </Button>
+            <Popconfirm
+              title="Are you sure to delete this payment method?"
+              onConfirm={() => {
+                getAccess({
+                  allowedPermissions: ['payment_methods:delete'],
+                  func: () => paymentMethodDeleteFn.mutate(id),
+                });
+              }}
+            >
+              <Button type="primary" danger ghost>
+                <AiFillDelete />
+              </Button>
+            </Popconfirm>
+          </Space>
         );
       },
     },

@@ -2,10 +2,10 @@ import CustomSwitch from '@base/components/CustomSwitch';
 import { Dayjs } from '@lib/constant/dayjs';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Drawer, Form, Table, message } from 'antd';
+import { Button, Drawer, Form, Popconfirm, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
-import { AiFillEdit } from 'react-icons/ai';
+import { AiFillDelete, AiFillEdit } from 'react-icons/ai';
 import { GenericsHooks } from '../lib/hooks';
 import { IGeneric } from '../lib/interfaces';
 import GenericsForm from './GenericsForm';
@@ -30,6 +30,19 @@ const GenericsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         }
 
         setUpdateItem(null);
+        messageApi.success(res.message);
+      },
+    },
+  });
+
+  const genericDeleteFn = GenericsHooks.useDelete({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
         messageApi.success(res.message);
       },
     },
@@ -90,18 +103,33 @@ const GenericsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         const item = data?.find((item) => item.id === id);
 
         return (
-          <Button
-            type="primary"
-            onClick={() => {
-              getAccess({
-                allowedPermissions: ['generics:update'],
-                func: () => setUpdateItem(item),
-              });
-            }}
-            ghost
-          >
-            <AiFillEdit />
-          </Button>
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => {
+                getAccess({
+                  allowedPermissions: ['generics:update'],
+                  func: () => setUpdateItem(item),
+                });
+              }}
+              ghost
+            >
+              <AiFillEdit />
+            </Button>
+            <Popconfirm
+              title="Are you sure to delete this generic?"
+              onConfirm={() => {
+                getAccess({
+                  allowedPermissions: ['generics:delete'],
+                  func: () => genericDeleteFn.mutate(id),
+                });
+              }}
+            >
+              <Button type="primary" danger ghost>
+                <AiFillDelete />
+              </Button>
+            </Popconfirm>
+          </Space>
         );
       },
     },
