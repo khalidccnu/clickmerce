@@ -37,10 +37,11 @@ export const ProductsServices = {
 
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
     const relations = {
-      dosage_form: { table: 'dosage_forms' },
-      generic: { table: 'generics' },
-      supplier: { table: 'suppliers' },
-      variations: { table: 'product_variations' },
+      dosage_form: { table: Database.dosageForms },
+      generic: { table: Database.generics },
+      supplier: { table: Database.suppliers },
+      variations: { table: Database.productVariations },
+      categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
     };
 
     const { start_date, end_date, ...restFilters } = filters;
@@ -65,7 +66,7 @@ export const ProductsServices = {
   },
 
   create: async (payload: IProductCreate): Promise<IBaseResponse<IProduct>> => {
-    const { variations, ...rest } = payload;
+    const { variations, categories, ...rest } = payload;
 
     try {
       const { success, data } = await SupabaseAdapter.create<IProduct>(supabaseBrowserClient, END_POINT, rest);
@@ -75,6 +76,14 @@ export const ProductsServices = {
           supabaseBrowserClient,
           Database.productVariations,
           variations.map((variation) => ({ ...variation, product_id: data?.id })),
+        );
+      }
+
+      if (success && Toolbox.isNotEmpty(categories)) {
+        await SupabaseAdapter.batchCreate(
+          supabaseBrowserClient,
+          Database.productCategories,
+          categories.map((category) => ({ ...category, category_id: category.id, product_id: data?.id })),
         );
       }
 
@@ -89,7 +98,7 @@ export const ProductsServices = {
   },
 
   update: async (payload: { id: TId; data: Partial<IProductCreate> }): Promise<IBaseResponse<IProduct>> => {
-    const { variations, ...rest } = payload.data;
+    const { variations, categories, ...rest } = payload.data;
 
     try {
       if (Toolbox.isNotEmpty(rest)) {
@@ -125,6 +134,27 @@ export const ProductsServices = {
             supabaseBrowserClient,
             Database.productVariations,
             newVariations.map((variation) => ({ ...variation, product_id: payload.id })),
+          );
+        }
+      }
+
+      if (Toolbox.isNotEmpty(categories)) {
+        const deletedCategories = categories.filter((category) => category.is_deleted);
+        const updatedCategories = categories.filter((category) => !category.is_deleted);
+
+        if (Toolbox.isNotEmpty(deletedCategories)) {
+          await SupabaseAdapter.batchDelete(
+            supabaseBrowserClient,
+            Database.productCategories,
+            deletedCategories.map((category) => category.id),
+          );
+        }
+
+        if (Toolbox.isNotEmpty(updatedCategories)) {
+          await SupabaseAdapter.batchCreate(
+            supabaseBrowserClient,
+            Database.productCategories,
+            updatedCategories.map((category) => ({ ...category, category_id: category.id, product_id: payload.id })),
           );
         }
       }

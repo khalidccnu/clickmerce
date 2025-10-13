@@ -1,4 +1,5 @@
 import { IBaseEntity, IBaseFilter, IBaseResponse, TId } from '@base/interfaces';
+import { ICategory } from '@modules/categories/lib/interfaces';
 import { IDosageForm } from '@modules/dosage-forms/lib/interfaces';
 import { IGeneric } from '@modules/generics/lib/interfaces';
 import { ISupplier } from '@modules/suppliers/lib/interfaces';
@@ -30,6 +31,7 @@ export interface IProductVariation {
   exp: string;
   color: string;
   size: TProductSizeType;
+  weight: string;
   discount: {
     type: TProductDiscountType;
     amount: number;
@@ -51,6 +53,7 @@ export interface IProduct extends IBaseEntity {
   supplier: ISupplier;
   durability: TProductDurabilityType;
   variations: (IProductVariation & IBaseEntity)[];
+  categories: ({ category_id: TId; product_id: TId; category: ICategory } & IBaseEntity)[];
   description: string;
 }
 
@@ -71,6 +74,7 @@ export interface IProductCreate {
   supplier_id: TId;
   durability: TProductDurabilityType;
   variations: Partial<IProductVariation & { id?: TId; is_deleted?: boolean }>[];
+  categories: { id?: TId; is_deleted?: boolean }[];
   description: string;
   is_active: string;
 }

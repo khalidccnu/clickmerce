@@ -7,10 +7,14 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomUploader from '@base/components/CustomUploader';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import RichTextEditor from '@base/components/RichTextEditor';
+import { TId } from '@base/interfaces';
 import { Dayjs } from '@lib/constant/dayjs';
 import { Messages } from '@lib/constant/messages';
 import useTheme from '@lib/hooks/useTheme';
 import { Toolbox } from '@lib/utils/toolbox';
+import CategoriesForm from '@modules/categories/components/CategoriesForm';
+import { CategoriesHooks } from '@modules/categories/lib/hooks';
+import { ICategory } from '@modules/categories/lib/interfaces';
 import DosageFormsForm from '@modules/dosage-forms/components/DosageFormsForm';
 import { DosageFormsHooks } from '@modules/dosage-forms/lib/hooks';
 import { IDosageForm } from '@modules/dosage-forms/lib/interfaces';
@@ -63,18 +67,21 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const { isDark } = useTheme();
   const [messageApi, messageHolder] = message.useMessage();
   const formValues = Form.useWatch([], form);
+  const [categoriesFormInstance] = Form.useForm();
   const [dfFormInstance] = Form.useForm();
   const [suppliersFormInstance] = Form.useForm();
   const [genericsFormInstance] = Form.useForm();
   const [durability, setDurability] = useState(
     initialValues?.durability || ENUM_PRODUCT_DURABILITY_TYPES.NON_PERISHABLE,
   );
+  const [isCategoriesModalOpen, setCategoriesModalOpen] = useState(false);
   const [isDFModalOpen, setDFModalOpen] = useState(false);
   const [isGenericsModalOpen, setGenericsModalOpen] = useState(false);
   const [isSuppliersModalOpen, setSuppliersModalOpen] = useState(false);
   const [dosageFormsSearchTerm, setDosageFormsSearchTerm] = useState(null);
   const [genericsSearchTerm, setGenericsSearchTerm] = useState(null);
   const [suppliersSearchTerm, setSuppliersSearchTerm] = useState(null);
+  const [categoriesSearchTerm, setCategoriesSearchTerm] = useState(null);
 
   const handleFinishFn = (values) => {
     const currentSanitizedVariations = values?.variations?.map((variation) => {
@@ -88,18 +95,40 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
         quantity,
       };
     });
+    const currentSanitizedCategories = values?.categories?.map((categoryId: TId) => ({ id: categoryId }));
 
     const sanitizedVariations = Toolbox.computeArrayDiffs(initialValues?.variations, currentSanitizedVariations, 'id');
+    const sanitizedCategories = Toolbox.computeArrayDiffs(initialValues?.categories, currentSanitizedCategories, 'id');
 
     const purifiedValues = {
       ...values,
       durability:
         formValues?.type === ENUM_PRODUCT_TYPES.MEDICINE ? ENUM_PRODUCT_DURABILITY_TYPES.PERISHABLE : durability,
       variations: sanitizedVariations,
+      categories: sanitizedCategories,
     };
 
     onFinish(purifiedValues);
   };
+
+  const categoriesSpecificQuery = CategoriesHooks.useFindSpecifics({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+      },
+    },
+  });
+
+  const categoriesQuery = CategoriesHooks.useFindInfinite({
+    options: {
+      limit: '20',
+      search_term: categoriesSearchTerm,
+      search_field: 'name',
+    },
+  });
 
   const dosageFormQuery = DosageFormsHooks.useFindById({
     id: formValues?.dosage_form_id,
@@ -154,6 +183,22 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     },
   });
 
+  const categoryCreateFn = CategoriesHooks.useCreate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        setCategoriesModalOpen(false);
+        categoriesFormInstance.resetFields();
+        messageApi.success(Messages.create);
+        form.setFieldValue('categories', [...(formValues?.categories || []), res.data.id]);
+      },
+    },
+  });
+
   const dosageFormCreateFn = DosageFormsHooks.useCreate({
     config: {
       onSuccess: (res) => {
@@ -204,7 +249,15 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
 
   useEffect(() => {
     form.resetFields();
-  }, [form, initialValues]);
+
+    if (formType === 'update') {
+      if (Toolbox.isNotEmpty(initialValues?.categories)) {
+        const categories = initialValues?.categories?.map((category) => category?.id);
+        categoriesSpecificQuery.mutate(categories);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formType, form, initialValues]);
 
   return (
     <React.Fragment>
@@ -226,6 +279,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                 };
               })
             : [{}],
+          categories: initialValues?.categories?.map((category) => category?.id),
         }}
         onFinish={handleFinishFn}
       >
@@ -272,7 +326,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                                 makePublic
                                 listType="picture-card"
                                 initialValues={[formValues?.images?.[name]?.url]}
-                                onChange={(urls) => form.setFieldValue(['images', name, 'url'], urls[0])}
+                                onChange={(urls) => form.setFieldValue(['images', name, 'url'], urls[0] || null)}
                               />
                             </Form.Item>
                           </Col>
@@ -402,6 +456,35 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           <Col xs={24}>
             <Form.Item name="rack" className="!mb-0">
               <FloatInput placeholder="Rack" />
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <Form.Item className="!mb-0" name="categories">
+              <InfiniteScrollSelect<ICategory>
+                isFloat
+                allowClear
+                showSearch
+                mode="multiple"
+                virtual={false}
+                placeholder="Categories"
+                initialOptions={categoriesSpecificQuery.data?.data}
+                option={({ item: category }) => ({
+                  key: category?.id,
+                  label: category?.name,
+                  value: category?.id,
+                })}
+                onChangeSearchTerm={setCategoriesSearchTerm}
+                query={categoriesQuery}
+                popupRender={(options) => (
+                  <React.Fragment>
+                    {options}
+                    <Divider style={{ marginBlock: '8px' }} />
+                    <Button type="text" block onClick={() => setCategoriesModalOpen(true)}>
+                      Add New
+                    </Button>
+                  </React.Fragment>
+                )}
+              />
             </Form.Item>
           </Col>
           {formValues?.type === ENUM_PRODUCT_TYPES.GENERAL || (
@@ -669,6 +752,11 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                                   />
                                 </Form.Item>
                               </Col>
+                              <Col xs={24}>
+                                <Form.Item {...rest} name={[name, 'weight']} className="!mb-0">
+                                  <FloatInput placeholder="Weight" />
+                                </Form.Item>
+                              </Col>
                             </React.Fragment>
                           )}
                           <Col xs={24} md={12}>
@@ -799,6 +887,21 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           </Col>
         </Row>
       </Form>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title="Create a new category"
+        footer={null}
+        open={isCategoriesModalOpen}
+        onCancel={() => setCategoriesModalOpen(false)}
+      >
+        <CategoriesForm
+          form={categoriesFormInstance}
+          initialValues={{ is_active: 'true' }}
+          isLoading={categoryCreateFn.isPending}
+          onFinish={(values) => categoryCreateFn.mutate(values)}
+        />
+      </BaseModalWithoutClicker>
       <BaseModalWithoutClicker
         destroyOnHidden
         width={540}

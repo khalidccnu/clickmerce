@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS payment_methods (
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
     name VARCHAR UNIQUE NOT NULL,
-    image VARCHAR NOT NULL,
+    image VARCHAR,
     type VARCHAR NOT NULL,
     reference_type VARCHAR NOT NULL,
     description TEXT,

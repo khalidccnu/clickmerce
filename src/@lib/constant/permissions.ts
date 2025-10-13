@@ -34,6 +34,11 @@ export const Permissions = {
   PRODUCTS_UPDATE: 'products:update',
   PRODUCTS_DELETE: 'products:delete',
 
+  CATEGORIES_READ: 'categories:read',
+  CATEGORIES_WRITE: 'categories:write',
+  CATEGORIES_UPDATE: 'categories:update',
+  CATEGORIES_DELETE: 'categories:delete',
+
   DOSAGE_FORMS_READ: 'dosage_forms:read',
   DOSAGE_FORMS_WRITE: 'dosage_forms:write',
   DOSAGE_FORMS_UPDATE: 'dosage_forms:update',

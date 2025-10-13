@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS product_variations (
     exp TIMESTAMPTZ,
     color VARCHAR,
     size VARCHAR,
+    weight VARCHAR,
     discount JSONB,
     product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
@@ -22,6 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_product_variations_sale_price ON product_variatio
 CREATE INDEX IF NOT EXISTS idx_product_variations_quantity ON product_variations(quantity);
 CREATE INDEX IF NOT EXISTS idx_product_variations_color ON product_variations(color);
 CREATE INDEX IF NOT EXISTS idx_product_variations_size ON product_variations(size);
+CREATE INDEX IF NOT EXISTS idx_product_variations_weight ON product_variations(weight);
 CREATE INDEX IF NOT EXISTS idx_product_variations_mfg ON product_variations(mfg);
 CREATE INDEX IF NOT EXISTS idx_product_variations_exp ON product_variations(exp);
 CREATE INDEX IF NOT EXISTS idx_product_variations_discount ON product_variations USING GIN (discount);

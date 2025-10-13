@@ -264,18 +264,23 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       total_cost_amount += variationCostPrice;
       sub_total_amount += variationDiscountPrice;
 
+      const {
+        id: _,
+        is_active: __,
+        created_at: ___,
+        created_by: ____,
+        updated_at: _____,
+        updated_by: ______,
+        ...restVariation
+      } = variation;
+
       allocations.push({
+        ...restVariation,
         product_id,
         variation_id,
         allocated_quantity: selected_quantity,
-        cost_price: variation.cost_price,
-        sale_price: variation.sale_price,
         sale_discount_price: discountPrice,
         discount,
-        mfg: variation.mfg,
-        exp: variation.exp,
-        color: variation.color,
-        size: variation.size,
       });
 
       operations.push({
@@ -356,21 +361,10 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
           variations: [],
         });
       }
+      const { product_id, ...restAllocation } = allocation;
 
-      const existingProduct = mergedProductsMap.get(allocation.product_id);
-
-      existingProduct.variations.push({
-        id: allocation.variation_id,
-        cost_price: allocation.cost_price,
-        sale_price: allocation.sale_price,
-        sale_discount_price: allocation.sale_discount_price,
-        discount: allocation.discount,
-        quantity: allocation.allocated_quantity,
-        mfg: allocation.mfg,
-        exp: allocation.exp,
-        color: allocation.color,
-        size: allocation.size,
-      });
+      const existingProduct = mergedProductsMap.get(product_id);
+      existingProduct.variations.push(restAllocation);
     }
 
     const mergedProducts = Array.from(mergedProductsMap.values());

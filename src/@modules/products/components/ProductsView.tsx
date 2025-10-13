@@ -21,6 +21,15 @@ const ProductsView: React.FC<IProps> = ({ data }) => {
       </Descriptions.Item>
       <Descriptions.Item label="Specification">{data?.specification || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Rack">{data?.rack || 'N/A'}</Descriptions.Item>
+      <Descriptions.Item label="Categories" span={2}>
+        {Toolbox.isEmpty(data?.categories)
+          ? 'N/A'
+          : data?.categories.map((category) => (
+              <Tag key={category.id} color="cyan">
+                {Toolbox.toPrettyText(category?.category?.name)}
+              </Tag>
+            ))}
+      </Descriptions.Item>
       <Descriptions.Item label="Dosage Form">{data?.dosage_form?.name || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Generic">{data?.generic?.name || 'N/A'}</Descriptions.Item>
       <Descriptions.Item label="Supplier">{data?.supplier?.name}</Descriptions.Item>

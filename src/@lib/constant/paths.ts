@@ -36,6 +36,10 @@ export const Paths = {
         root: '/admin/inventory/products',
         list: '/admin/inventory/products/list',
       },
+      categories: {
+        root: '/admin/inventory/categories',
+        list: '/admin/inventory/categories/list',
+      },
       dosageForms: {
         root: '/admin/inventory/dosage-forms',
         list: '/admin/inventory/dosage-forms/list',

@@ -379,17 +379,12 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
           }
 
           if (orderVariation) {
+            const { sale_discount_price: _, ...rest } = orderVariation;
+
             await SupabaseAdapter.create(supabaseServerClient, Database.productVariations, {
-              id: variation.id,
-              product_id: returnProduct.id,
-              cost_price: orderVariation.cost_price,
-              sale_price: orderVariation.sale_price,
+              ...rest,
               quantity: variation.return_quantity,
-              mfg: orderVariation.mfg || null,
-              exp: orderVariation.exp || null,
-              color: orderVariation.color || null,
-              size: orderVariation.size || null,
-              discount: orderVariation.discount,
+              product_id: returnProduct.id,
             });
           }
         }

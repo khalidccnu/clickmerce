@@ -184,7 +184,7 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
             </Form.Item>
           </Col>
           <Authorization allowedPermissions={['roles:read']}>
-            <Col xs={24} md={24}>
+            <Col xs={24}>
               <Form.Item className="!mb-0" name="roles">
                 <InfiniteScrollSelect<IRole>
                   isFloat
@@ -199,7 +199,7 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
                     label: role?.name,
                     value: role?.id,
                   })}
-                  onChangeSearchTerm={(searchTerm) => setRoleSearchTerm(searchTerm)}
+                  onChangeSearchTerm={setRoleSearchTerm}
                   query={rolesQuery}
                 />
               </Form.Item>

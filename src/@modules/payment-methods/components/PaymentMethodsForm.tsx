@@ -47,22 +47,13 @@ const PaymentMethodsForm: React.FC<IProps> = ({ isLoading, form, formType = 'cre
           </Form.Item>
         </Col>
         <Col xs={24}>
-          <Form.Item
-            name="image"
-            rules={[
-              {
-                required: true,
-                message: 'Image is required!',
-              },
-            ]}
-            className="!mb-0"
-          >
+          <Form.Item name="image" className="!mb-0">
             <CustomUploader
               isCrop
               makePublic
               listType="picture-card"
               initialValues={[formValues?.image]}
-              onChange={(urls) => form.setFieldValue('image', urls[0])}
+              onChange={(urls) => form.setFieldValue('image', urls[0] || null)}
             />
           </Form.Item>
         </Col>

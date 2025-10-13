@@ -4,7 +4,7 @@ import { Paths } from '@lib/constant/paths';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
-import { BiCollection } from 'react-icons/bi';
+import { BiCategory, BiCollection } from 'react-icons/bi';
 import { BsBoxSeam } from 'react-icons/bs';
 import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons/fa';
 import { FiShoppingCart } from 'react-icons/fi';
@@ -91,6 +91,16 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
                 <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.products.list)}>Products</CustomLink>
               ),
               allowedPermissions: ['products:read'],
+            },
+            {
+              key: Paths.admin.inventory.categories.list,
+              icon: <BiCategory />,
+              label: (
+                <CustomLink href={Toolbox.appendPagination(Paths.admin.inventory.categories.list)}>
+                  Categories
+                </CustomLink>
+              ),
+              allowedPermissions: ['categories:read'],
             },
             {
               key: Paths.admin.inventory.dosageForms.list,
