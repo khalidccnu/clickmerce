@@ -1,6 +1,8 @@
 import FloatRangePicker from '@base/antd/components/FloatRangePicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { Toolbox } from '@lib/utils/toolbox';
+import { OrdersHooks } from '@modules/orders/lib/hooks';
+import { IOrder } from '@modules/orders/lib/interfaces';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
 import { Button, Drawer, Form, Radio, Space } from 'antd';
@@ -21,6 +23,7 @@ const OrderReturnsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [customerSearchTerm, setCustomerSearchTerm] = useState(null);
+  const [orderSearchTerm, setOrderSearchTerm] = useState(null);
 
   const customerQuery = UsersHooks.useFindById({
     id: initialValues?.customer_id,
@@ -35,6 +38,22 @@ const OrderReturnsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
       limit: '20',
       search_term: customerSearchTerm,
       search_fields: ['name', 'phone', 'email'],
+    },
+  });
+
+  const orderQuery = OrdersHooks.useFindById({
+    id: initialValues?.order_id,
+    config: {
+      queryKey: [],
+      enabled: !!initialValues?.order_id,
+    },
+  });
+
+  const ordersQuery = OrdersHooks.useFindInfinite({
+    options: {
+      limit: '20',
+      search_term: orderSearchTerm,
+      search_field: 'code',
     },
   });
 
@@ -95,6 +114,23 @@ const OrderReturnsFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
               })}
               onChangeSearchTerm={setCustomerSearchTerm}
               query={customersQuery}
+            />
+          </Form.Item>
+          <Form.Item name="order_id" className="!mb-0">
+            <InfiniteScrollSelect<IOrder>
+              isFloat
+              allowClear
+              showSearch
+              virtual={false}
+              placeholder="Order"
+              initialOptions={orderQuery.data?.data?.id ? [orderQuery.data?.data] : []}
+              option={({ item: order }) => ({
+                key: order?.id,
+                label: order?.code,
+                value: order?.id,
+              })}
+              onChangeSearchTerm={setOrderSearchTerm}
+              query={ordersQuery}
             />
           </Form.Item>
           <Form.Item name="date_range" className="!mb-0">

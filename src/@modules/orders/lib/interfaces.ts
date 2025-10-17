@@ -54,6 +54,7 @@ export interface IOrderCreate {
   delivery_zone_id: TId;
   customer_id: TId;
   coupon_id: TId;
+  status: TOrderStatusType;
   is_round_off: boolean;
   is_draft?: boolean;
 }

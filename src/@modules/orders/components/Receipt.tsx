@@ -214,7 +214,7 @@ const Receipt: React.FC<IProps> = ({
               </Text>
               <View>
                 <Text>
-                  {product.salePrice !== product.saleDiscountPrice ? (
+                  {product.saleDiscountPrice ? (
                     <Text style={{ textDecoration: 'line-through', marginRight: 4, fontSize: 8 }}>
                       {product.salePrice}
                     </Text>

@@ -39,43 +39,17 @@ const OrderReturnsList: React.FC<IProps> = ({ isLoading, data, pagination }) => 
       title: 'Code',
     },
     {
-      key: 'customer',
-      dataIndex: ['order', 'customer'],
+      key: 'name',
+      dataIndex: ['order', 'customer', 'name'],
       title: 'Customer',
-      render: (customer) => (
-        <React.Fragment>
-          <div className="flex justify-between gap-2 items-center">
-            <p className="font-medium">Name:</p>
-            <p className="text-end">{customer?.name}</p>
-          </div>
-          <div className="flex justify-between gap-2 items-center">
-            <p className="font-medium">Phone:</p>
-            <p className="text-end">{customer?.phone}</p>
-          </div>
-        </React.Fragment>
-      ),
+      render: (name, record) => `${name} (${record?.order?.customer?.phone})`,
     },
     {
       key: 'history',
       dataIndex: 'created_at',
       title: 'History',
-      render: (_, record) => {
-        return (
-          <React.Fragment>
-            <div className="flex justify-between gap-2">
-              <p className="font-medium">Created At:</p>
-              <p className="text-end">{dayjs(record?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}</p>
-            </div>
-
-            {record?.created_by && (
-              <div className="flex justify-between gap-2">
-                <p className="font-medium">Created By:</p>
-                <p className="text-end">{record?.created_by?.name}</p>
-              </div>
-            )}
-          </React.Fragment>
-        );
-      },
+      render: (_, record) =>
+        `${record?.created_by?.name} (${dayjs(record?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)})`,
     },
     {
       key: 'id',
@@ -102,7 +76,7 @@ const OrderReturnsList: React.FC<IProps> = ({ isLoading, data, pagination }) => 
               }}
               ghost
             >
-              Order
+              Ref Order
             </Button>
             <Button type="dashed" onClick={() => setViewItem(item)}>
               <AiFillEye />

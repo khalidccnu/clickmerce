@@ -13,6 +13,7 @@ import {
 
 export interface IProductsFilter extends IBaseFilter {
   type?: TProductType;
+  category_id?: TId;
   dosage_form_id?: TId;
   generic_id?: TId;
   supplier_id?: TId;

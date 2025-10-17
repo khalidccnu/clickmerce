@@ -7,15 +7,21 @@ import { getAccess } from '@modules/auth/lib/utils/client';
 import { normalizeReceiptImageUrlFn } from '@modules/pos/lib/utils';
 import { pdf } from '@react-pdf/renderer';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Form, message, Space, Table } from 'antd';
+import { Button, Drawer, Dropdown, Form, message, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { AiFillEye } from 'react-icons/ai';
-import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '../lib/enums';
+import { BiCaretDown } from 'react-icons/bi';
+import { FaEdit } from 'react-icons/fa';
+import { IoReturnUpBack } from 'react-icons/io5';
+import { TbInvoice, TbTruckDelivery } from 'react-icons/tb';
+import { ENUM_ORDER_STATUS_TYPES } from '../lib/enums';
 import { OrdersHooks } from '../lib/hooks';
 import { IOrder } from '../lib/interfaces';
 import OrdersPayForm from './OrdersPayForm';
 import OrdersReturnForm from './OrdersReturnForm';
+import OrdersStatusForm from './OrdersStatusForm';
+import OrdersStatusTracker from './OrdersStatusTracker';
 import OrdersView from './OrdersView';
 import Receipt from './Receipt';
 
@@ -28,9 +34,12 @@ interface IProps {
 const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const [payFormInstance] = Form.useForm();
+  const [updateFormInstance] = Form.useForm();
   const [payItem, setPayItem] = useState<IOrder>(null);
   const [viewItem, setViewItem] = useState<IOrder>(null);
+  const [updateItem, setUpdateItem] = useState<IOrder>(null);
   const [returnItem, setReturnItem] = useState<IOrder>(null);
+  const [statusTrackerItem, setStatusTrackerItem] = useState<IOrder>(null);
   const [orderInvoiceId, setOrderInvoiceId] = useState<TId>(null);
 
   const handlePdfFn = async (order: IOrder) => {
@@ -91,6 +100,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         }
 
         setPayItem(null);
+        setUpdateItem(null);
         messageApi.success(res.message);
       },
     },
@@ -143,21 +153,10 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       title: 'Code',
     },
     {
-      key: 'customer',
-      dataIndex: 'customer',
+      key: 'name',
+      dataIndex: ['customer', 'name'],
       title: 'Customer',
-      render: (_, record) => (
-        <React.Fragment>
-          <div className="flex justify-between gap-2 items-center">
-            <p className="font-medium">Name:</p>
-            <p className="text-end">{record?.customer?.name}</p>
-          </div>
-          <div className="flex justify-between gap-2 items-center">
-            <p className="font-medium">Phone:</p>
-            <p className="text-end">{record?.customer?.phone}</p>
-          </div>
-        </React.Fragment>
-      ),
+      render: (name, record) => `${name} (${record?.customer?.phone})`,
     },
     {
       key: 'pay_amount',
@@ -174,7 +173,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
     {
       key: 'grand_total_amount',
       dataIndex: 'grand_total_amount',
-      title: 'Grand Total Amount',
+      title: 'Grand Amount',
       render: (grand_total_amount) => Toolbox.withCurrency(grand_total_amount),
     },
     {
@@ -182,6 +181,12 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       dataIndex: 'payment_status',
       title: 'Payment Status',
       render: (payment_status) => Toolbox.toPrettyText(payment_status),
+    },
+    {
+      key: 'status',
+      dataIndex: 'status',
+      title: 'Status',
+      render: (status) => Toolbox.toPrettyText(status),
     },
     // {
     //   key: 'created_at',
@@ -231,8 +236,9 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
 
         return (
           <Space>
-            {record?.payment_status === ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIAL && (
+            {!record?.due_amount || (
               <Button
+                disabled={record?.status === ENUM_ORDER_STATUS_TYPES.CANCELLED}
                 type="primary"
                 onClick={() => {
                   getAccess({
@@ -246,32 +252,60 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
                 Pay
               </Button>
             )}
-            <Button
-              type="primary"
-              loading={id === orderInvoiceId}
-              onClick={() => {
-                setOrderInvoiceId(id);
-                handlePdfFn(item);
-              }}
-              ghost
-            >
-              Invoice
-            </Button>
             <Button type="dashed" onClick={() => setViewItem(item)}>
               <AiFillEye />
             </Button>
-            <Button
-              type="primary"
-              onClick={() => {
-                getAccess({
-                  allowedPermissions: ['orders:update'],
-                  func: () => setReturnItem(item),
-                });
+            <Dropdown
+              placement="bottomRight"
+              menu={{
+                items: [
+                  {
+                    key: 'invoice',
+                    icon: <TbInvoice />,
+                    onClick: () => {
+                      setOrderInvoiceId(id);
+                      handlePdfFn(item);
+                    },
+                    label: 'Invoice',
+                  },
+                  {
+                    key: 'track',
+                    icon: <TbTruckDelivery />,
+                    onClick: () => setStatusTrackerItem(item),
+                    label: 'Track',
+                  },
+                  {
+                    key: 'status',
+                    icon: <FaEdit />,
+                    onClick: () => {
+                      getAccess({
+                        allowedPermissions: ['orders:update'],
+                        func: () => setUpdateItem(item),
+                      });
+                    },
+                    label: 'Status',
+                    disabled: record?.status === ENUM_ORDER_STATUS_TYPES.CANCELLED,
+                  },
+                  {
+                    key: 'return',
+                    icon: <IoReturnUpBack />,
+                    onClick: () => {
+                      getAccess({
+                        allowedPermissions: ['order_returns:write'],
+                        func: () => setReturnItem(item),
+                      });
+                    },
+                    label: 'Return',
+                    disabled: record?.status !== ENUM_ORDER_STATUS_TYPES.DELIVERED,
+                  },
+                ],
               }}
-              ghost
+              trigger={['click']}
             >
-              Return
-            </Button>
+              <Button loading={orderInvoiceId === id} icon={<BiCaretDown />}>
+                Action
+              </Button>
+            </Dropdown>
           </Space>
         );
       },
@@ -297,6 +331,14 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       >
         <OrdersView order={viewItem} />
       </BaseModalWithoutClicker>
+      <Drawer
+        width={640}
+        title={`Status Tracking (${statusTrackerItem?.code})`}
+        open={!!statusTrackerItem?.id}
+        onClose={() => setStatusTrackerItem(null)}
+      >
+        <OrdersStatusTracker order={statusTrackerItem} />
+      </Drawer>
       <BaseModalWithoutClicker
         destroyOnHidden
         width={540}
@@ -312,6 +354,26 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
           onFinish={(values) =>
             orderUpdateFn.mutate({
               id: payItem?.id,
+              data: values,
+            })
+          }
+        />
+      </BaseModalWithoutClicker>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title={`Change Status for ${updateItem?.code}`}
+        footer={null}
+        open={!!updateItem?.id}
+        onCancel={() => setUpdateItem(null)}
+      >
+        <OrdersStatusForm
+          form={updateFormInstance}
+          initialValues={{ status: updateItem?.status }}
+          isLoading={orderUpdateFn.isPending}
+          onFinish={(values) =>
+            orderUpdateFn.mutate({
+              id: updateItem?.id,
               data: values,
             })
           }

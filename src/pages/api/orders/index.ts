@@ -180,6 +180,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     delivery_zone_id,
     customer_id,
     coupon_id,
+    status,
     is_round_off,
     ...rest
   } = data;
@@ -247,7 +248,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         return res.status(404).json(response);
       }
 
-      let discountPrice = variation.sale_price;
+      let discountPrice = 0;
 
       if (discount && discount.amount) {
         if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
@@ -259,13 +260,14 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       }
 
       const variationCostPrice = variation.cost_price * selected_quantity;
+      const variationSalePrice = variation.sale_price * selected_quantity;
       const variationDiscountPrice = discountPrice * selected_quantity;
 
       total_cost_amount += variationCostPrice;
-      sub_total_amount += variationDiscountPrice;
+      sub_total_amount += variationDiscountPrice || variationSalePrice;
 
       const {
-        id: _,
+        quantity: _,
         is_active: __,
         created_at: ___,
         created_by: ____,
@@ -276,11 +278,10 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
       allocations.push({
         ...restVariation,
-        product_id,
-        variation_id,
-        allocated_quantity: selected_quantity,
+        quantity: selected_quantity,
         sale_discount_price: discountPrice,
         discount,
+        product_id,
       });
 
       operations.push({
@@ -368,6 +369,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const mergedProducts = Array.from(mergedProductsMap.values());
+    const paymentStatus = pay_amount
+      ? due_amount
+        ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIALLY_PAID
+        : ENUM_ORDER_PAYMENT_STATUS_TYPES.PAID
+      : ENUM_ORDER_PAYMENT_STATUS_TYPES.PENDING;
 
     const purifiedOrder = {
       ...rest,
@@ -382,8 +388,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       pay_amount: Math.min(pay_amount, total),
       due_amount,
       delivery_charge,
-      payment_status: due_amount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIAL : ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL,
-      status: ENUM_ORDER_STATUS_TYPES.COMPLETED,
+      payment_status: paymentStatus,
+      status: status || ENUM_ORDER_STATUS_TYPES.PENDING,
       customer_id,
       payment_method_id,
       delivery_zone_id,

@@ -9,14 +9,18 @@ import { useAppDispatch, useAppSelector } from '@lib/redux/hooks';
 import { addToCartFn } from '@lib/redux/order/orderSlice';
 import { hasProductInCartFn, hasProductVariationInCartFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
+import { Toolbox } from '@lib/utils/toolbox';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
+import ProductsFilterDrawer from '@modules/products/components/ProductsFilterDrawer';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { IProduct } from '@modules/products/lib/interfaces';
-import { message } from 'antd';
+import { Button, message, Space } from 'antd';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/router';
 import React, { useRef, useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { IoFilterSharp } from 'react-icons/io5';
 import ProductCatalogCard from './ProductCatalogCard';
 import ProductCatalogVariations from './ProductCatalogVariations';
 
@@ -25,6 +29,7 @@ interface IProps {
 }
 
 const ProductCatalog: React.FC<IProps> = ({ className }) => {
+  const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const { isAuthenticate } = useAuthSession();
   const [headerHeight] = useSessionState(States.headerHeight);
@@ -36,6 +41,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
   const [product, setProduct] = useState<IProduct>(null);
   const { cart } = useAppSelector((store) => store.orderSlice);
   const dispatch = useAppDispatch();
+  const [isFilterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
   const handleProductNavigationFn = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (!products.length || !productsSearchRef.current) return;
@@ -138,6 +144,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
 
   const productsQuery = ProductsHooks.useFindInfinite({
     options: {
+      ...router.query,
       limit: '20',
       search_term: productsSearchTerm,
       is_active: 'true',
@@ -157,16 +164,19 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
             <p className="text-lg font-semibold dark:text-white">Welcome, {profileQuery.data?.data?.name}</p>
             <p className="text-gray-500 dark:text-gray-200">{dayjs().format(Dayjs.monthDateYear)}</p>
           </div>
-          <BaseStateSearch
-            allowClear
-            autoComplete="off"
-            size="large"
-            ref={productsSearchRef}
-            onSearch={setProductsSearchTerm}
-            addonBefore={<FaSearch size={16} />}
-            onKeyDown={handleProductNavigationFn}
-            style={{ width: 340 }}
-          />
+          <Space>
+            <BaseStateSearch
+              allowClear
+              autoComplete="off"
+              size="large"
+              ref={productsSearchRef}
+              onSearch={setProductsSearchTerm}
+              addonBefore={<FaSearch size={16} />}
+              onKeyDown={handleProductNavigationFn}
+              style={{ width: 340 }}
+            />
+            <Button type="dashed" size="large" icon={<IoFilterSharp />} onClick={() => setFilterDrawerOpen(true)} />
+          </Space>
         </div>
         <div
           className="product_catalog_wrapper"
@@ -207,6 +217,17 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
       >
         <ProductCatalogVariations product={product} onAddToCart={handleAddToCartWithVariationFn} />
       </BaseModalWithoutClicker>
+      <ProductsFilterDrawer
+        isOpen={isFilterDrawerOpen}
+        onChangeOpen={setFilterDrawerOpen}
+        isShowActiveFilter={false}
+        initialValues={Toolbox.toCleanObject(router.query)}
+        onChange={(values) => {
+          router.push({
+            query: Toolbox.toCleanObject({ ...router.query, ...values }),
+          });
+        }}
+      />
     </React.Fragment>
   );
 };

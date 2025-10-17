@@ -188,7 +188,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { pay_amount } = data;
+  const { pay_amount, status } = data;
 
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
@@ -210,44 +210,82 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const order = orderResponse.data;
+    let updateResult: IBaseResponse<IOrder>;
 
-    if (!pay_amount) {
-      const response: IBaseResponse = {
-        success: false,
-        statusCode: 400,
-        message: 'Payment amount is required',
-        data: null,
-        meta: null,
-      };
+    if (pay_amount) {
+      const newPayAmount =
+        pay_amount > order.due_amount ? order.pay_amount + order.due_amount : order.pay_amount + pay_amount;
 
-      return res.status(400).json(response);
+      const dueAmount = pay_amount > order.due_amount ? 0 : order.due_amount - pay_amount;
+
+      const newPaymentStatus =
+        pay_amount >= order.due_amount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PAID : order.payment_status;
+
+      updateResult = await SupabaseAdapter.update<IOrder>(supabaseServerClient, Database.orders, id as string, {
+        pay_amount: newPayAmount,
+        due_amount: dueAmount,
+        payment_status: newPaymentStatus,
+        updated_by_id: user?.id,
+      });
+
+      if (!updateResult.success) {
+        const response: IBaseResponse = {
+          success: false,
+          statusCode: 500,
+          message: 'Failed to update order',
+          data: null,
+          meta: null,
+        };
+
+        return res.status(500).json(response);
+      }
     }
 
-    const newPayAmount =
-      pay_amount > order.due_amount ? order.pay_amount + order.due_amount : order.pay_amount + pay_amount;
+    if (status) {
+      if (status === ENUM_ORDER_PAYMENT_STATUS_TYPES.CANCELLED) {
+        const products = order.products || [];
 
-    const dueAmount = pay_amount > order.due_amount ? 0 : order.due_amount - pay_amount;
+        for (const orderProduct of products) {
+          for (const variation of orderProduct.variations) {
+            const existingVariation = await SupabaseAdapter.findById(
+              supabaseServerClient,
+              Database.productVariations,
+              variation.id,
+            );
 
-    const newPaymentStatus =
-      pay_amount >= order.due_amount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL : order.payment_status;
+            if (existingVariation.success && existingVariation.data) {
+              await SupabaseAdapter.update(supabaseServerClient, Database.productVariations, variation.id, {
+                quantity: existingVariation.data.quantity + variation.quantity,
+              });
+            } else {
+              const { sale_discount_price: _, ...rest } = variation;
 
-    const updateResult = await SupabaseAdapter.update<IOrder>(supabaseServerClient, Database.orders, id as string, {
-      pay_amount: newPayAmount,
-      due_amount: dueAmount,
-      payment_status: newPaymentStatus,
-      updated_by_id: user?.id,
-    });
+              await SupabaseAdapter.create(supabaseServerClient, Database.productVariations, {
+                ...rest,
+                quantity: variation.quantity,
+                product_id: orderProduct.id,
+              });
+            }
+          }
+        }
+      }
 
-    if (!updateResult.success) {
-      const response: IBaseResponse = {
-        success: false,
-        statusCode: 500,
-        message: 'Failed to update order',
-        data: null,
-        meta: null,
-      };
+      updateResult = await SupabaseAdapter.update<IOrder>(supabaseServerClient, Database.orders, id as string, {
+        status: status,
+        updated_by_id: user?.id,
+      });
 
-      return res.status(500).json(response);
+      if (!updateResult.success) {
+        const response: IBaseResponse = {
+          success: false,
+          statusCode: 500,
+          message: 'Failed to update order',
+          data: null,
+          meta: null,
+        };
+
+        return res.status(500).json(response);
+      }
     }
 
     const updatedOrder = await SupabaseAdapter.findOne<IOrder>(
@@ -467,6 +505,11 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
     const total = order.round_off_amount ? Math.round(grandTotal) : grandTotal;
     const payAmount = order.pay_amount > total ? total : order.pay_amount;
     const dueAmount = total - payAmount;
+    const paymentStatus = payAmount
+      ? dueAmount
+        ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIALLY_PAID
+        : ENUM_ORDER_PAYMENT_STATUS_TYPES.PAID
+      : ENUM_ORDER_PAYMENT_STATUS_TYPES.PENDING;
 
     const purifiedOrder = {
       products: purifiedProducts,
@@ -474,7 +517,7 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       grand_total_amount: total,
       pay_amount: payAmount,
       due_amount: dueAmount,
-      payment_status: dueAmount ? ENUM_ORDER_PAYMENT_STATUS_TYPES.PARTIAL : ENUM_ORDER_PAYMENT_STATUS_TYPES.FULL,
+      payment_status: paymentStatus,
       redeem_amount: adjustedRedeemAmount,
       updated_by_id: user?.id,
     };

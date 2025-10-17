@@ -44,8 +44,13 @@ export const ProductsServices = {
       categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
     };
 
-    const { start_date, end_date, ...restFilters } = filters;
+    const { category_id, start_date, end_date, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
+
+    if (category_id) {
+      if (!newFilters.textFilters) newFilters.textFilters = {};
+      newFilters.textFilters = { conditions: { categories: { category_id: { eq: category_id } } } };
+    }
 
     if (start_date) {
       newFilters.start_date = decodeURIComponent(start_date);

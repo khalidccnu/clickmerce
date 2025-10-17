@@ -24,6 +24,7 @@ export const orderReturnCreateSchema = yup.object({
 export const orderReturnFilterSchema = yup
   .object({
     customer_id: yup.string().uuid().optional(),
+    order_id: yup.string().uuid().optional(),
   })
   .concat(baseFilterSchema);
 

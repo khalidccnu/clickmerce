@@ -1,5 +1,6 @@
 import { Env } from '.environments';
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
+import FloatSelect from '@base/antd/components/FloatSelect';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { Dayjs } from '@lib/constant/dayjs';
@@ -24,6 +25,7 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
 import Receipt from '@modules/orders/components/Receipt';
+import { ENUM_ORDER_STATUS_TYPES, orderStatusTypes, TOrderStatusType } from '@modules/orders/lib/enums';
 import { OrdersHooks } from '@modules/orders/lib/hooks';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
@@ -58,6 +60,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
   const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const dispatch = useAppDispatch();
+  const [status, setStatus] = useState<TOrderStatusType>(ENUM_ORDER_STATUS_TYPES.DELIVERED);
 
   const handlePdfFn = async (order: IOrder) => {
     try {
@@ -344,6 +347,23 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 size="large"
               />
             </Col>
+            <Col xs={24}>
+              <FloatSelect
+                showSearch
+                virtual={false}
+                placeholder="Status"
+                filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+                options={orderStatusTypes.map((orderStatusType) => ({
+                  key: orderStatusType,
+                  label: Toolbox.toPrettyText(orderStatusType),
+                  value: orderStatusType,
+                }))}
+                value={status}
+                onChange={setStatus}
+                style={{ width: '100%' }}
+                size="large"
+              />
+            </Col>
             {/* <Col xs={24}>
               <Button
                 type="primary"
@@ -359,6 +379,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                     payment_method_id: paymentMethodId,
                     delivery_zone_id: deliveryZoneId,
                     coupon_id: orderRedeem.couponAmount ? coupon?.id : null,
+                    status,
                     pay_amount: payableAmount,
                     redeem_amount: orderGrandTotal.totalRedeem,
                     is_round_off: isRoundOff,
@@ -391,6 +412,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                     payment_method_id: paymentMethodId,
                     delivery_zone_id: deliveryZoneId,
                     coupon_id: orderRedeem.couponAmount ? coupon?.id : null,
+                    status,
                     pay_amount: payableAmount,
                     redeem_amount: orderGrandTotal.totalRedeem,
                     is_round_off: isRoundOff,

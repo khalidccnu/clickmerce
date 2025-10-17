@@ -2,6 +2,7 @@ import { baseFilterSchema } from '@base/dtos';
 import { PartialType, PickType } from '@lib/utils/yup';
 import { productDiscountTypes } from '@modules/products/lib/enums';
 import * as yup from 'yup';
+import { orderStatusTypes } from './enums';
 
 export const orderCreateSchema = yup.object({
   code: yup.string().required(),
@@ -25,11 +26,12 @@ export const orderCreateSchema = yup.object({
   delivery_zone_id: yup.string().uuid().required(),
   customer_id: yup.string().uuid().required(),
   coupon_id: yup.string().uuid().required().nullable(),
+  status: yup.string().oneOf(orderStatusTypes).optional(),
   is_round_off: yup.boolean().required(),
   is_draft: yup.boolean().optional(),
 });
 
-export const orderUpdateSchema = PartialType(PickType(orderCreateSchema, ['pay_amount']), true);
+export const orderUpdateSchema = PartialType(PickType(orderCreateSchema, ['pay_amount', 'status']), true);
 
 export const orderReturnSchema = yup.object({
   products: yup

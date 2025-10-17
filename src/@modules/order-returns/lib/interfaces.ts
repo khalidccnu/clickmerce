@@ -3,6 +3,7 @@ import { IOrder, IOrderCreate } from '@modules/orders/lib/interfaces';
 
 export interface IOrderReturnsFilter extends IBaseFilter {
   customer_id?: TId;
+  order_id?: TId;
 }
 
 export interface IOrderReturn extends IBaseEntity {

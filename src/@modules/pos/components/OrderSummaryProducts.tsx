@@ -152,7 +152,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
           size="small"
           type="dashed"
           loading={isReceiptPreviewLoading}
-          disabled={!cart?.length}
+          disabled={!customerId || !cart?.length}
           onClick={handlePdfFn}
         >
           Preview
