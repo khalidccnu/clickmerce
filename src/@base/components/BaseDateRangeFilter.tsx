@@ -16,27 +16,27 @@ const selectOptions = [
   {
     value: JSON.stringify({
       startDate: dayjs().subtract(1, 'day').startOf('day').toISOString(),
-      endDate: dayjs().endOf('day').toISOString(),
+      endDate: dayjs().subtract(1, 'day').endOf('day').toISOString(),
     }),
     label: 'Yesterday',
   },
   {
     value: JSON.stringify({
-      startDate: dayjs().subtract(7, 'days').startOf('day').toISOString(),
+      startDate: dayjs().subtract(6, 'days').startOf('day').toISOString(),
       endDate: dayjs().endOf('day').toISOString(),
     }),
     label: 'Last 7 days',
   },
   {
     value: JSON.stringify({
-      startDate: dayjs().subtract(15, 'days').startOf('day').toISOString(),
+      startDate: dayjs().subtract(14, 'days').startOf('day').toISOString(),
       endDate: dayjs().endOf('day').toISOString(),
     }),
     label: 'Last 15 days',
   },
   {
     value: JSON.stringify({
-      startDate: dayjs().subtract(30, 'days').startOf('day').toISOString(),
+      startDate: dayjs().subtract(29, 'days').startOf('day').toISOString(),
       endDate: dayjs().endOf('day').toISOString(),
     }),
     label: 'Last 30 days',
