@@ -18,6 +18,7 @@ export interface IProductsFilter extends IBaseFilter {
   generic_id?: TId;
   supplier_id?: TId;
   is_expired?: string;
+  is_low_stock?: string;
 }
 
 export interface IProductImage {

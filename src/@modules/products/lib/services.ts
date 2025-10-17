@@ -44,8 +44,26 @@ export const ProductsServices = {
       categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
     };
 
-    const { category_id, start_date, end_date, ...restFilters } = filters;
+    const { category_id, is_low_stock, start_date, end_date, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
+
+    if (is_low_stock) {
+      if (!newFilters.numericFilters) newFilters.numericFilters = {};
+
+      if (Toolbox.toBool(is_low_stock)) {
+        newFilters.numericFilters = {
+          conditions: {
+            quantity: { lte: 24 },
+          },
+        };
+      } else {
+        newFilters.numericFilters = {
+          conditions: {
+            quantity: { gt: 24 },
+          },
+        };
+      }
+    }
 
     if (category_id) {
       if (!newFilters.textFilters) newFilters.textFilters = {};

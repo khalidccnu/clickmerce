@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
   barcodeContainer: {
     width: '31%',
     textAlign: 'center',
+    marginBottom: 10,
   },
   barcodeImage: {
     width: '100%',
@@ -49,7 +50,7 @@ const Barcode: React.FC<IProps> = ({ code, count }) => (
   <Document>
     <Page size="A4" style={styles.page}>
       {Array.from({ length: count }).map((_, idx) => (
-        <View key={idx} style={[styles.barcodeContainer, { marginBottom: count === idx + 1 ? 0 : 10 }]}>
+        <View key={idx} style={styles.barcodeContainer}>
           {
             // eslint-disable-next-line jsx-a11y/alt-text
             <Image style={styles.barcodeImage} src={generateBarcodeUrlFn(code)} />

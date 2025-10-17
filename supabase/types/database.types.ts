@@ -565,7 +565,6 @@ export type Database = {
       };
       products: {
         Row: {
-          category_id: string | null;
           created_at: string;
           description: string | null;
           dosage_form_id: string | null;
@@ -585,7 +584,6 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          category_id?: string | null;
           created_at?: string;
           description?: string | null;
           dosage_form_id?: string | null;
@@ -605,7 +603,6 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          category_id?: string | null;
           created_at?: string;
           description?: string | null;
           dosage_form_id?: string | null;
@@ -625,13 +622,6 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
-          {
-            foreignKeyName: 'products_category_id_fkey';
-            columns: ['category_id'];
-            isOneToOne: false;
-            referencedRelation: 'categories';
-            referencedColumns: ['id'];
-          },
           {
             foreignKeyName: 'products_dosage_form_id_fkey';
             columns: ['dosage_form_id'];
@@ -942,7 +932,6 @@ export type Database = {
       get_expired_products: {
         Args: Record<PropertyKey, never>;
         Returns: {
-          category_id: string | null;
           created_at: string;
           description: string | null;
           dosage_form_id: string | null;
@@ -965,7 +954,6 @@ export type Database = {
       get_non_expired_products: {
         Args: Record<PropertyKey, never>;
         Returns: {
-          category_id: string | null;
           created_at: string;
           description: string | null;
           dosage_form_id: string | null;

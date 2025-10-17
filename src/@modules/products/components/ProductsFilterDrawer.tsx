@@ -119,6 +119,7 @@ const ProductsFilterDrawer: React.FC<IProps> = ({
     const values = {
       type: '',
       is_expired: '',
+      is_low_stock: '',
       is_active: '',
       sort_order: '',
       date_range: [],
@@ -137,7 +138,7 @@ const ProductsFilterDrawer: React.FC<IProps> = ({
   }, [formInstance, initialValues]);
 
   return (
-    <Drawer width={380} title="Filter" open={isOpen} onClose={() => onChangeOpen(false)}>
+    <Drawer width={500} title="Filter" open={isOpen} onClose={() => onChangeOpen(false)}>
       <Form
         form={formInstance}
         onFinish={Toolbox.debounce((values) => {
@@ -250,6 +251,19 @@ const ProductsFilterDrawer: React.FC<IProps> = ({
               ))}
             </Radio.Group>
           </Form.Item> */}
+        <Form.Item name="is_low_stock" className="!mb-0">
+          <Radio.Group buttonStyle="solid" className="w-full text-center">
+            <Radio.Button className="w-1/3" value="">
+              All
+            </Radio.Button>
+            <Radio.Button className="w-1/3" value="true">
+              Low Stock
+            </Radio.Button>
+            <Radio.Button className="w-1/3" value="false">
+              Sufficient Stock
+            </Radio.Button>
+          </Radio.Group>
+        </Form.Item>
         {isShowActiveFilter && (
           <Form.Item name="is_active" className="!mb-0">
             <Radio.Group buttonStyle="solid" className="w-full text-center">
