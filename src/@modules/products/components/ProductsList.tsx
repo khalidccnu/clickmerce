@@ -1,14 +1,18 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
 import { Dayjs } from '@lib/constant/dayjs';
+import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
+import { pdf } from '@react-pdf/renderer';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, Drawer, Form, Space, Table, message } from 'antd';
+import { Button, Drawer, Form, InputNumber, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { AiFillEdit, AiFillEye } from 'react-icons/ai';
+import { FaBarcode } from 'react-icons/fa';
 import { ProductsHooks } from '../lib/hooks';
 import { IProduct } from '../lib/interfaces';
+import Barcode from './Barcode';
 import ProductsForm from './ProductsForm';
 import ProductsView from './ProductsView';
 
@@ -23,6 +27,20 @@ const ProductsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [formInstance] = Form.useForm();
   const [viewItem, setViewItem] = useState<IProduct>(null);
   const [updateItem, setUpdateItem] = useState<IProduct>(null);
+  const [barcodeProduct, setBarcodeProduct] = useState<IProduct>(null);
+  const [barcodeProductCount, setBarcodeProductCount] = useState(0);
+
+  const handleBarcodeFn = async (product: IProduct) => {
+    try {
+      const blob = await pdf(<Barcode code={product?.id} count={barcodeProductCount} />).toBlob();
+      Toolbox.printWindow('pdf', URL.createObjectURL(blob));
+    } catch (error) {
+      messageApi.error('Failed to generate barcode preview. Please try again.');
+    } finally {
+      setBarcodeProduct(null);
+      setBarcodeProductCount(0);
+    }
+  };
 
   const productUpdateFn = ProductsHooks.useUpdate({
     config: {
@@ -114,6 +132,9 @@ const ProductsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
 
         return (
           <Space>
+            <Button type="primary" onClick={() => setBarcodeProduct(item)} ghost>
+              <FaBarcode />
+            </Button>
             <Button type="dashed" onClick={() => setViewItem(item)}>
               <AiFillEye />
             </Button>
@@ -145,6 +166,30 @@ const ProductsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         pagination={pagination}
         scroll={{ x: true }}
       />
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={420}
+        title={`Barcode for ${barcodeProduct?.name}`}
+        open={!!barcodeProduct}
+        onCancel={() => {
+          setBarcodeProduct(null);
+          setBarcodeProductCount(0);
+        }}
+        onOk={() => handleBarcodeFn(barcodeProduct)}
+        okButtonProps={{ disabled: !barcodeProductCount }}
+      >
+        <Form.Item label="Number of Barcode" layout="vertical">
+          <InputNumber
+            size="large"
+            placeholder="Number of Barcode"
+            min={0}
+            value={barcodeProductCount}
+            onChange={(value) => setBarcodeProductCount(value)}
+            className="w-full"
+            max={360}
+          />
+        </Form.Item>
+      </BaseModalWithoutClicker>
       <BaseModalWithoutClicker
         width={640}
         title={viewItem?.name}

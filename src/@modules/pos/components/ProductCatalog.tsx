@@ -15,10 +15,12 @@ import { useAuthSession } from '@modules/auth/lib/utils/client';
 import ProductsFilterDrawer from '@modules/products/components/ProductsFilterDrawer';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { IProduct } from '@modules/products/lib/interfaces';
+import { ProductsServices } from '@modules/products/lib/services';
 import { Button, message, Space } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import React, { useRef, useState } from 'react';
+import BarcodeReader from 'react-barcode-reader';
 import { FaSearch } from 'react-icons/fa';
 import { IoFilterSharp } from 'react-icons/io5';
 import ProductCatalogCard from './ProductCatalogCard';
@@ -155,6 +157,20 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
   return (
     <React.Fragment>
       {messageHolder}
+      <BarcodeReader
+        preventDefault
+        stopPropagation
+        minLength={32}
+        onScan={async (v: string) => {
+          const productQuery = await ProductsServices.findById(v);
+
+          if (productQuery.success) {
+            handleAddToCartFn(productQuery.data);
+          } else {
+            messageApi.error(productQuery.message);
+          }
+        }}
+      />
       <div className={cn('product_catalog space-y-8', className)}>
         <div
           className="product_catalog_header flex flex-col md:flex-row md:items-center justify-between gap-4"

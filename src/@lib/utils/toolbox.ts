@@ -271,7 +271,18 @@ export const Toolbox = {
     document.body.removeChild(a);
   },
 
-  generateSlug: function (selector: string, separator: string = '-'): string {
+  generateSlug: function (
+    selector: string,
+    options: {
+      separator?: string;
+      isRandom?: boolean;
+      maxLength?: number;
+      randomLength?: number;
+      preserveCase?: boolean;
+    } = {},
+  ): string {
+    const { separator = '-', isRandom = true, maxLength = 100, randomLength = 8, preserveCase = false } = options;
+
     const bnToEnMap: Record<string, string> = {
       অ: 'o',
       আ: 'a',
@@ -284,6 +295,7 @@ export const Toolbox = {
       ঐ: 'oi',
       ও: 'o',
       ঔ: 'ou',
+
       ক: 'k',
       খ: 'kh',
       গ: 'g',
@@ -316,19 +328,10 @@ export const Toolbox = {
       ষ: 'sh',
       স: 's',
       হ: 'h',
-      ড়: 'r',
-      ঢ়: 'rh',
-      য়: 'y',
-      '০': '0',
-      '১': '1',
-      '২': '2',
-      '৩': '3',
-      '৪': '4',
-      '৫': '5',
-      '৬': '6',
-      '৭': '7',
-      '৮': '8',
-      '৯': '9',
+      ড়: 'r',
+      ঢ়: 'rh',
+      য়: 'y',
+
       'া': 'a',
       'ি': 'i',
       'ী': 'ee',
@@ -339,36 +342,80 @@ export const Toolbox = {
       'ৈ': 'oi',
       'ো': 'o',
       'ৌ': 'ou',
+
       'ং': 'ng',
       'ঃ': 'h',
       'ঁ': '',
+      '্': '',
+
+      '০': '0',
+      '১': '1',
+      '২': '2',
+      '৩': '3',
+      '৪': '4',
+      '৫': '5',
+      '৬': '6',
+      '৭': '7',
+      '৮': '8',
+      '৯': '9',
+
+      '।': '.',
+      '॥': '..',
+      '৺': '',
+      'ঃঃ': 'h',
+      '\u2018': '',
+      '\u2019': '',
+      '\u201C': '',
+      '\u201D': '',
+      '\u2013': '-',
+      '\u2026': '...',
+      '৲': 'rs',
+      '৳': 'tk',
     };
 
-    if (!selector) return '';
+    if (!selector || typeof selector !== 'string') return '';
 
-    const type = /[\u0980-\u09FF]/.test(selector) ? 'bn' : 'en';
-    const key = this.generateKey(8, 'key');
-    let sanitizedSelector = selector;
+    const hasBengali = /[\u0980-\u09FF]/.test(selector);
+    const hasArabic = /[\u0600-\u06FF]/.test(selector);
+    const hasHindi = /[\u0900-\u097F]/.test(selector);
 
-    if (type === 'bn') {
-      sanitizedSelector = sanitizedSelector
-        .split('')
-        .map((char) => bnToEnMap[char] || char)
-        .join('')
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '');
+    let processed = selector.trim();
+
+    if (hasBengali) {
+      processed = processed.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+      processed = processed.replace(/./g, (char) => bnToEnMap[char] || char);
+      processed = processed.replace(/[^a-zA-Z0-9\s]/g, '');
+    } else if (hasArabic || hasHindi) {
+      processed = processed.replace(/[^\u0000-\u007F\s]/g, '');
     } else {
-      sanitizedSelector = sanitizedSelector.replace(/[^a-zA-Z0-9\s-]+/g, '');
+      processed = processed.replace(/[^a-zA-Z0-9\s\-_]/g, '');
     }
 
-    sanitizedSelector = sanitizedSelector
+    processed = processed
       .trim()
-      .replace(/\s+/g, separator)
-      .replace(/-+/g, separator)
-      .replace(new RegExp(`^${separator}+|${separator}+$`, 'g'), '')
-      .toLowerCase();
+      .replace(/\s+/g, ' ')
+      .replace(/\s/g, separator)
+      .replace(new RegExp(`[${this.escapeRegex(separator)}]+`, 'g'), separator)
+      .replace(new RegExp(`^[${this.escapeRegex(separator)}]+|[${this.escapeRegex(separator)}]+$`, 'g'), '');
 
-    return `${sanitizedSelector}${separator}${key}`;
+    if (!preserveCase) {
+      processed = processed.toLowerCase();
+    }
+
+    const randomSuffix = isRandom ? separator + this.generateKey({ length: randomLength, type: 'key' }) : '';
+    const availableLength = maxLength - randomSuffix.length;
+
+    if (processed.length > availableLength && availableLength) {
+      const truncated = processed.substring(0, availableLength);
+      const lastSeparatorIdx = truncated.lastIndexOf(separator);
+      processed = lastSeparatorIdx ? truncated.substring(0, lastSeparatorIdx) : truncated;
+    }
+
+    return processed + randomSuffix;
+  },
+
+  escapeRegex: function (string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   },
 
   toDeepProperty: function (data: { [key: string]: any } | any[], propertyPath: string): any {
