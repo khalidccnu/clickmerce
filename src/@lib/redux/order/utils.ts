@@ -28,15 +28,14 @@ export const productSalePriceWithDiscountFn = (
 ) => {
   if (!discount?.amount) return salePrice;
 
+  const profit = salePrice - costPrice;
   let discountSalePrice = 0;
   const { type, amount } = discount;
 
-  if (type && amount) {
-    if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
-      discountSalePrice = salePrice - amount;
-    } else if (type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
-      discountSalePrice = salePrice * (1 - amount / 100);
-    }
+  if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
+    discountSalePrice = salePrice - amount;
+  } else if (type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
+    discountSalePrice = costPrice + profit * (1 - amount / 100);
   }
 
   return Math.max(costPrice, discountSalePrice || salePrice);

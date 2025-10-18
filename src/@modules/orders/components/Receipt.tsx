@@ -5,6 +5,7 @@ import { TProductSizeType } from '@modules/products/lib/enums';
 import { Document, Font, Image, Page, StyleSheet, Text, View } from '@react-pdf/renderer';
 import dayjs from 'dayjs';
 import React from 'react';
+import { ENUM_ORDER_PAYMENT_STATUS_TYPES, TOrderPaymentStatusType } from '../lib/enums';
 
 Font.register({
   family: 'Alan Sans',
@@ -41,6 +42,7 @@ Font.register({
 
 const styles = StyleSheet.create({
   body: {
+    position: 'relative',
     fontFamily: 'Alan Sans',
     fontSize: 10,
     padding: 16,
@@ -48,6 +50,23 @@ const styles = StyleSheet.create({
     margin: '0 auto',
     border: '1pt dashed #222',
     borderRadius: 8,
+  },
+  watermark: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%) rotate(-20deg)',
+    fontSize: 24,
+    fontWeight: 'ultrabold',
+    color: 'rgba(0, 0, 0, 0.1)',
+    opacity: 0.3,
+    transformOrigin: 'center',
+  },
+  watermarkPaid: {
+    color: 'rgba(34, 197, 94, 0.15)',
+  },
+  watermarkNotPaid: {
+    color: 'rgba(239, 68, 68, 0.15)',
   },
   header: {
     alignItems: 'center',
@@ -99,6 +118,7 @@ interface IProduct {
   exp: string;
   color: string;
   size: TProductSizeType;
+  weight: string;
 }
 
 interface IOrder {
@@ -119,6 +139,7 @@ interface IOrder {
   subTotal: number;
   roundOff: number;
   grandTotal: number;
+  paymentStatus: TOrderPaymentStatusType;
   receivedBy: string;
 }
 
@@ -147,13 +168,22 @@ const Receipt: React.FC<IProps> = ({
     subTotal,
     roundOff,
     grandTotal,
+    paymentStatus,
     receivedBy,
   },
 }) => {
   return (
     <Document>
-      <Page size="A4" style={{ padding: 20 }}>
+      <Page size="A4" style={{ padding: 20, position: 'relative' }}>
         <View style={styles.body}>
+          <Text
+            style={[
+              styles.watermark,
+              paymentStatus === ENUM_ORDER_PAYMENT_STATUS_TYPES.PAID ? styles.watermarkPaid : styles.watermarkNotPaid,
+            ]}
+          >
+            {Toolbox.toPrettyText(paymentStatus)}
+          </Text>
           <View style={styles.header}>
             {webLogo ? (
               // eslint-disable-next-line jsx-a11y/alt-text
@@ -209,6 +239,11 @@ const Receipt: React.FC<IProps> = ({
                 {product.size && (
                   <Text style={{ fontSize: 8, fontWeight: 300, color: '#666885' }}>
                     {'\n'}Size: {product.size}
+                  </Text>
+                )}
+                {product.weight && (
+                  <Text style={{ fontSize: 8, fontWeight: 300, color: '#666885' }}>
+                    {'\n'}Weight: {product.weight}
                   </Text>
                 )}
               </Text>

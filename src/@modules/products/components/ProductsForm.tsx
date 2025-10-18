@@ -641,7 +641,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                               ]}
                               className="!mb-0"
                             >
-                              <FloatInputNumber placeholder="Cost Price" className="w-full" />
+                              <FloatInputNumber min={0} placeholder="Cost Price" className="w-full" />
                             </Form.Item>
                           </Col>
                           <Col xs={24} md={12}>
@@ -671,7 +671,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                               ]}
                               className="!mb-0"
                             >
-                              <FloatInputNumber placeholder="Sale Price" className="w-full" />
+                              <FloatInputNumber min={0} placeholder="Sale Price" className="w-full" />
                             </Form.Item>
                           </Col>
                           <Col xs={24} md={12}>
@@ -772,7 +772,6 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                               className="!mb-0"
                             >
                               <FloatSelect
-                                allowClear
                                 showSearch
                                 virtual={false}
                                 placeholder="Discount Type"
@@ -823,6 +822,8 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                                           className="!mb-0"
                                         >
                                           <QuantityInput
+                                            min={0}
+                                            precision={0}
                                             nestedName={nestedName}
                                             nestedFields={nestedFields}
                                             nestedAdd={() => nestedAdd()}

@@ -1,5 +1,5 @@
 import { IBaseResponse } from '@base/interfaces';
-import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
@@ -44,7 +44,6 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       return res.status(401).json(response);
     }
 
-    const supabaseServerClient = createSupabaseServerClient(req, res);
     const payload = jwtVerify(token);
 
     if (!payload) {
@@ -60,7 +59,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const user = await SupabaseAdapter.findById<IUser & { password: string }>(
-      supabaseServerClient,
+      supabaseServiceClient,
       Database.users,
       payload.user.id,
       {

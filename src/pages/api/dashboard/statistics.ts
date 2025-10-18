@@ -1,5 +1,5 @@
 import { IBaseResponse } from '@base/interfaces';
-import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -58,10 +58,8 @@ async function handleStatistics(req: NextApiRequest, res: NextApiResponse) {
   const { start_date = dayjs().startOf('day').toISOString(), end_date = dayjs().endOf('day').toISOString() } = data;
   const newFilters: any = { start_date, end_date };
 
-  const supabaseServerClient = createSupabaseServerClient(req, res);
-
   try {
-    const ordersResult = await SupabaseAdapter.find<IOrder>(supabaseServerClient, Database.orders, newFilters);
+    const ordersResult = await SupabaseAdapter.find<IOrder>(supabaseServiceClient, Database.orders, newFilters);
 
     if (!ordersResult.success) {
       const response: IBaseResponse<[]> = {

@@ -77,6 +77,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
             exp: variation?.exp,
             color: variation?.color,
             size: variation?.size,
+            weight: variation?.weight,
           })),
         )
         .filter(Boolean);
@@ -99,6 +100,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
         subTotal: order?.sub_total_amount,
         roundOff: order?.round_off_amount,
         grandTotal: order?.grand_total_amount,
+        paymentStatus: order?.payment_status,
         receivedBy: order?.created_by?.name,
       };
 
@@ -353,11 +355,17 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 virtual={false}
                 placeholder="Status"
                 filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
-                options={orderStatusTypes.map((orderStatusType) => ({
-                  key: orderStatusType,
-                  label: Toolbox.toPrettyText(orderStatusType),
-                  value: orderStatusType,
-                }))}
+                options={orderStatusTypes
+                  .map((orderStatusType) => {
+                    if (orderStatusType === ENUM_ORDER_STATUS_TYPES.CANCELLED) return;
+
+                    return {
+                      key: orderStatusType,
+                      label: Toolbox.toPrettyText(orderStatusType),
+                      value: orderStatusType,
+                    };
+                  })
+                  .filter(Boolean)}
                 value={status}
                 onChange={setStatus}
                 style={{ width: '100%' }}

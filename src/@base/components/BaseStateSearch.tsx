@@ -3,6 +3,7 @@ import { Form, FormInstance, Input, InputProps } from 'antd';
 import React, { useImperativeHandle, useState } from 'react';
 
 interface IProps extends InputProps {
+  formProps?: Partial<React.ComponentProps<typeof Form>>;
   onSearch: (value: string) => void;
 }
 
@@ -11,7 +12,7 @@ interface IRefProps {
   clearSearch: () => void;
 }
 
-const BaseStateSearch = React.forwardRef<IRefProps, IProps>(({ placeholder, onSearch, ...rest }, ref) => {
+const BaseStateSearch = React.forwardRef<IRefProps, IProps>(({ placeholder, onSearch, formProps, ...rest }, ref) => {
   const [formInstance] = Form.useForm();
   const [searchTerm, setSearchTerm] = useState(null);
 
@@ -23,15 +24,15 @@ const BaseStateSearch = React.forwardRef<IRefProps, IProps>(({ placeholder, onSe
   const debounceSearchFn = Toolbox.debounce(handleChangeFn, 1000);
 
   useImperativeHandle(ref, () => ({
+    formInstance,
     clearSearch: () => {
       formInstance.resetFields();
       setSearchTerm(null);
     },
-    formInstance,
   }));
 
   return (
-    <Form form={formInstance}>
+    <Form form={formInstance} layout="vertical" {...formProps}>
       <Form.Item name="search_term" className="!mb-0">
         <Input
           {...rest}

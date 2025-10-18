@@ -216,10 +216,13 @@ const OrdersReturnForm: React.FC<IProps> = ({ initialValues, isLoading, onFinish
                     return (
                       <div
                         key={variation.id}
-                        className={cn('p-4 transition-colors duration-300 rounded-b-lg rounded-lg', {
-                          'bg-red-50 dark:bg-red-900/20': isExpired,
-                          'bg-orange-50 dark:bg-orange-900/20': isExpiringSoon,
-                        })}
+                        className={cn(
+                          'p-4 transition-colors duration-300 rounded-b-lg rounded-lg bg-gray-50 dark:bg-[var(--color-dark-gray)]',
+                          {
+                            'bg-red-50 dark:bg-red-900/20': isExpired,
+                            'bg-orange-50 dark:bg-orange-900/20': isExpiringSoon,
+                          },
+                        )}
                       >
                         <div className="flex flex-col md:flex-row items-start justify-between gap-4">
                           <div className="flex-1 space-y-2">
@@ -268,7 +271,7 @@ const OrdersReturnForm: React.FC<IProps> = ({ initialValues, isLoading, onFinish
                                 )}
                               </div>
                             )}
-                            {(variation.color || variation.size) && (
+                            {(variation.color || variation.size || variation.weight) && (
                               <div className="flex items-center gap-2">
                                 {variation.color && (
                                   <div className="inline-flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-700 text-xs">
@@ -287,6 +290,14 @@ const OrdersReturnForm: React.FC<IProps> = ({ initialValues, isLoading, onFinish
                                     <span className="text-gray-500 dark:text-gray-300">Size:</span>
                                     <span className="font-medium text-gray-700 dark:text-gray-300">
                                       {variation.size}
+                                    </span>
+                                  </div>
+                                )}
+                                {variation.weight && (
+                                  <div className="inline-flex items-center gap-1 px-2 py-1 bg-white dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-700 text-xs">
+                                    <span className="text-gray-500 dark:text-gray-300">Weight:</span>
+                                    <span className="font-medium text-gray-700 dark:text-gray-300">
+                                      {variation.weight}
                                     </span>
                                   </div>
                                 )}

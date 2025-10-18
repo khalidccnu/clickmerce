@@ -1,5 +1,5 @@
 import { IBaseResponse } from '@base/interfaces';
-import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -45,14 +45,12 @@ async function handleAnalyses(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json(response);
   }
 
-  const supabaseServerClient = createSupabaseServerClient(req, res);
-
   try {
     const now = dayjs();
     const elevenMonthsAgo = now.subtract(11, 'month').startOf('month').toISOString();
     const currentMonthEnd = now.endOf('month').toISOString();
 
-    const ordersResult = await SupabaseAdapter.find<IOrder>(supabaseServerClient, Database.orders, {
+    const ordersResult = await SupabaseAdapter.find<IOrder>(supabaseServiceClient, Database.orders, {
       dateFilters: {
         conditions: {
           created_at: { gte: elevenMonthsAgo, lte: currentMonthEnd },

@@ -48,11 +48,56 @@ BEGIN
 END;
 $$;
 
--- Create helper function for RLS policies
+-- Helper function to check permissions with dependencies
+CREATE OR REPLACE FUNCTION current_user_has_permission_with_dependencies(
+    permission_name VARCHAR,
+    dependent_permissions text[] DEFAULT NULL
+)
+RETURNS BOOLEAN AS $$
+DECLARE
+    dep_permission text;
+    main_action text;
+BEGIN
+    -- Super Admin has access to everything
+    IF current_user_is_super_admin() THEN
+        RETURN TRUE;
+    END IF;
+    
+    -- Check if user has the direct permission
+    IF user_has_permission(get_current_user_id(), permission_name) THEN
+        RETURN TRUE;
+    END IF;
+    
+    -- Extract the action from the main permission
+    main_action := split_part(permission_name, ':', 2);
+    
+    -- Only apply dependencies for read permissions
+    IF main_action = 'read' AND dependent_permissions IS NOT NULL THEN
+        FOREACH dep_permission IN ARRAY dependent_permissions
+        LOOP
+            DECLARE
+                dep_permission_with_action text;
+            BEGIN
+                dep_permission_with_action := dep_permission || ':read';
+                
+                -- Check if user has the dependent permission with read action
+                IF user_has_permission(get_current_user_id(), dep_permission_with_action) THEN
+                    RETURN TRUE;
+                END IF;
+            END;
+        END LOOP;
+    END IF;
+    
+    RETURN FALSE;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Create helper function for RLS policies with dependency support
 CREATE OR REPLACE FUNCTION create_table_rls_policies(
     table_name text,
     id_column text DEFAULT NULL,
-    permission_prefix text DEFAULT NULL
+    permission_prefix text DEFAULT NULL,
+    dependent_permissions text[] DEFAULT NULL
 )
 RETURNS void
 LANGUAGE plpgsql
@@ -61,6 +106,7 @@ DECLARE
     policy_sql text;
     ownership_check text;
     policy_exists BOOLEAN;
+    dep_array_literal text;
 BEGIN
     -- Prepare ownership check if id_column is provided
     IF id_column IS NOT NULL THEN
@@ -69,54 +115,58 @@ BEGIN
         ownership_check := '';
     END IF;
     
+    -- Prepare dependent permissions array literal
+    IF dependent_permissions IS NOT NULL AND array_length(dependent_permissions, 1) > 0 THEN
+        dep_array_literal := 'ARRAY[' || array_to_string(
+            ARRAY(SELECT '''' || unnest(dependent_permissions) || '''' ), 
+            ', '
+        ) || ']';
+    ELSE
+        dep_array_literal := 'NULL';
+    END IF;
+    
     -- Enable RLS on the table
     EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', table_name);
     
-    -- Create SELECT policy (only if it doesn't exist)
-    SELECT EXISTS(SELECT 1 FROM pg_policies WHERE tablename = table_name AND policyname = table_name || '_select_policy') INTO policy_exists;
-    IF NOT policy_exists THEN
-        policy_sql := format(
-            'CREATE POLICY "%s_select_policy" ON %I FOR SELECT USING (current_user_has_permission(''%s:read'')%s)',
-            table_name, table_name, permission_prefix, ownership_check
-        );
-        EXECUTE policy_sql;
-        RAISE NOTICE 'Created SELECT policy for % using % permissions', table_name, permission_prefix;
-    END IF;
+    -- Drop existing policies first to avoid conflicts when updating
+    EXECUTE format('DROP POLICY IF EXISTS "%s_select_policy" ON %I', table_name, table_name);
+    EXECUTE format('DROP POLICY IF EXISTS "%s_insert_policy" ON %I', table_name, table_name);
+    EXECUTE format('DROP POLICY IF EXISTS "%s_update_policy" ON %I', table_name, table_name);
+    EXECUTE format('DROP POLICY IF EXISTS "%s_delete_policy" ON %I', table_name, table_name);
     
-    -- Create INSERT policy (only if it doesn't exist)
-    SELECT EXISTS(SELECT 1 FROM pg_policies WHERE tablename = table_name AND policyname = table_name || '_insert_policy') INTO policy_exists;
-    IF NOT policy_exists THEN
-        policy_sql := format(
-            'CREATE POLICY "%s_insert_policy" ON %I FOR INSERT WITH CHECK (current_user_has_permission(''%s:write'')%s)',
-            table_name, table_name, permission_prefix, ownership_check
-        );
-        EXECUTE policy_sql;
-        RAISE NOTICE 'Created INSERT policy for % using % permissions', table_name, permission_prefix;
-    END IF;
+    -- Create SELECT policy with dependencies
+    policy_sql := format(
+        'CREATE POLICY "%s_select_policy" ON %I FOR SELECT USING (current_user_has_permission_with_dependencies(''%s:read'', %s)%s)',
+        table_name, table_name, permission_prefix, dep_array_literal, ownership_check
+    );
+    EXECUTE policy_sql;
+    RAISE NOTICE 'Created SELECT policy for % using % permissions with dependencies: %', table_name, permission_prefix, dependent_permissions;
     
-    -- Create UPDATE policy (only if it doesn't exist)
-    SELECT EXISTS(SELECT 1 FROM pg_policies WHERE tablename = table_name AND policyname = table_name || '_update_policy') INTO policy_exists;
-    IF NOT policy_exists THEN
-        policy_sql := format(
-            'CREATE POLICY "%s_update_policy" ON %I FOR UPDATE USING (current_user_has_permission(''%s:update'')%s)',
-            table_name, table_name, permission_prefix, ownership_check
-        );
-        EXECUTE policy_sql;
-        RAISE NOTICE 'Created UPDATE policy for % using % permissions', table_name, permission_prefix;
-    END IF;
+    -- Create INSERT policy without dependencies
+    policy_sql := format(
+        'CREATE POLICY "%s_insert_policy" ON %I FOR INSERT WITH CHECK (current_user_has_permission(''%s:write'')%s)',
+        table_name, table_name, permission_prefix, ownership_check
+    );
+    EXECUTE policy_sql;
+    RAISE NOTICE 'Created INSERT policy for % using % permissions (no dependencies)', table_name, permission_prefix;
     
-    -- Create DELETE policy (only if it doesn't exist)
-    SELECT EXISTS(SELECT 1 FROM pg_policies WHERE tablename = table_name AND policyname = table_name || '_delete_policy') INTO policy_exists;
-    IF NOT policy_exists THEN
-        policy_sql := format(
-            'CREATE POLICY "%s_delete_policy" ON %I FOR DELETE USING (current_user_has_permission(''%s:delete''))',
-            table_name, table_name, permission_prefix
-        );
-        EXECUTE policy_sql;
-        RAISE NOTICE 'Created DELETE policy for % using % permissions', table_name, permission_prefix;
-    END IF;
+    -- Create UPDATE policy without dependencies
+    policy_sql := format(
+        'CREATE POLICY "%s_update_policy" ON %I FOR UPDATE USING (current_user_has_permission(''%s:update'')%s)',
+        table_name, table_name, permission_prefix, ownership_check
+    );
+    EXECUTE policy_sql;
+    RAISE NOTICE 'Created UPDATE policy for % using % permissions (no dependencies)', table_name, permission_prefix;
     
-    RAISE NOTICE 'Completed RLS policies for table: % with permission prefix: %', table_name, permission_prefix;
+    -- Create DELETE policy without dependencies
+    policy_sql := format(
+        'CREATE POLICY "%s_delete_policy" ON %I FOR DELETE USING (current_user_has_permission(''%s:delete''))',
+        table_name, table_name, permission_prefix
+    );
+    EXECUTE policy_sql;
+    RAISE NOTICE 'Created DELETE policy for % using % permissions (no dependencies)', table_name, permission_prefix;
+    
+    RAISE NOTICE 'Completed RLS policies with dependencies for table: % with permission prefix: %', table_name, permission_prefix;
 END;
 $$;
 
@@ -126,6 +176,7 @@ CREATE OR REPLACE FUNCTION setup_table_security(
     table_name text,
     id_column text DEFAULT NULL,
     permission_prefix text DEFAULT NULL,
+    dependent_permissions text[] DEFAULT NULL,
     permission_actions text[] DEFAULT ARRAY['read', 'write', 'update', 'delete']
 )
 RETURNS void
@@ -140,10 +191,259 @@ BEGIN
     -- Create permissions first (using the permission type name and actual prefix as table name)
     PERFORM create_table_permissions(permission_type_name, actual_prefix, permission_actions);
     
-    -- Then create RLS policies (using the same prefix)
-    PERFORM create_table_rls_policies(table_name, id_column, actual_prefix);
+    -- Then create RLS policies with dependencies (using the same prefix)
+    PERFORM create_table_rls_policies(table_name, id_column, actual_prefix, dependent_permissions);
     
-    RAISE NOTICE 'Security setup completed for table: % with permission type: % and prefix: %', table_name, permission_type_name, actual_prefix;
+    RAISE NOTICE 'Security setup completed for table: % with permission type: %, prefix: %, and dependencies: %', 
+        table_name, permission_type_name, actual_prefix, dependent_permissions;
+END;
+$$;
+
+-- Create specific permission dependency RLS policy utility
+-- This creates an RLS policy for a specific permission with dependencies
+CREATE OR REPLACE FUNCTION create_permission_dependency_policy(
+    dependent_permissions text[],
+    table_name text,
+    actions text[]
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    action text;
+    policy_name text;
+    policy_sql text;
+    dep_permission text;
+    permission_checks text[];
+    all_checks text;
+BEGIN
+    -- Loop through each action
+    FOREACH action IN ARRAY actions
+    LOOP
+        policy_name := table_name || '_' || action || '_dependency_policy';
+        permission_checks := ARRAY[]::text[];
+        
+        -- Add the direct permission check
+        permission_checks := array_append(permission_checks, 
+            format('current_user_has_permission(''%s:%s'')', table_name, action));
+        
+        -- Add dependency permission checks
+        FOREACH dep_permission IN ARRAY dependent_permissions
+        LOOP
+            permission_checks := array_append(permission_checks, 
+                format('current_user_has_permission(''%s:%s'')', dep_permission, action));
+        END LOOP;
+        
+        -- Combine all permission checks with OR
+        all_checks := array_to_string(permission_checks, ' OR ');
+        
+        -- Enable RLS if not already enabled
+        EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', table_name);
+        
+        -- Drop existing policy if it exists
+        EXECUTE format('DROP POLICY IF EXISTS "%s" ON %I', policy_name, table_name);
+        
+        -- Create the appropriate policy based on action
+        CASE action
+            WHEN 'read' THEN
+                policy_sql := format(
+                    'CREATE POLICY "%s" ON %I FOR SELECT USING (%s)',
+                    policy_name, table_name, all_checks
+                );
+            WHEN 'write' THEN
+                policy_sql := format(
+                    'CREATE POLICY "%s" ON %I FOR INSERT WITH CHECK (%s)',
+                    policy_name, table_name, all_checks
+                );
+            WHEN 'update' THEN
+                policy_sql := format(
+                    'CREATE POLICY "%s" ON %I FOR UPDATE USING (%s)',
+                    policy_name, table_name, all_checks
+                );
+            WHEN 'delete' THEN
+                policy_sql := format(
+                    'CREATE POLICY "%s" ON %I FOR DELETE USING (%s)',
+                    policy_name, table_name, all_checks
+                );
+            ELSE
+                RAISE EXCEPTION 'Unsupported action: %', action;
+        END CASE;
+        
+        -- Execute the policy creation
+        EXECUTE policy_sql;
+        
+        RAISE NOTICE 'Created % policy for %:% with dependencies: %', 
+            action, table_name, action, dependent_permissions;
+    END LOOP;
+    
+    RAISE NOTICE 'Completed dependency policies for table: % with dependencies: %', 
+        table_name, dependent_permissions;
+END;
+$$;
+
+-- Create specific permission-to-permission dependency mapping
+-- This creates a function that checks if a user has a source permission and grants target permission access
+CREATE OR REPLACE FUNCTION create_permission_mapping(
+    source_permission text,
+    target_permission text
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    target_table text;
+    target_action text;
+    policy_name text;
+    policy_sql text;
+BEGIN
+    -- Extract table and action from target permission
+    target_table := split_part(target_permission, ':', 1);
+    target_action := split_part(target_permission, ':', 2);
+    
+    -- Validate that we have both parts
+    IF target_table = '' OR target_action = '' THEN
+        RAISE EXCEPTION 'Invalid target permission format. Expected format: table:action, got: %', target_permission;
+    END IF;
+    
+    -- Validate that we have source permission in correct format
+    IF split_part(source_permission, ':', 1) = '' OR split_part(source_permission, ':', 2) = '' THEN
+        RAISE EXCEPTION 'Invalid source permission format. Expected format: table:action, got: %', source_permission;
+    END IF;
+    
+    -- Create policy name
+    policy_name := target_table || '_' || target_action || '_mapping_policy';
+    
+    -- Enable RLS if not already enabled
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', target_table);
+    
+    -- Drop existing mapping policy if it exists
+    EXECUTE format('DROP POLICY IF EXISTS "%s" ON %I', policy_name, target_table);
+    
+    -- Create the appropriate policy based on target action
+    CASE target_action
+        WHEN 'read' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR SELECT USING (current_user_has_permission(''%s'') OR current_user_has_permission(''%s''))',
+                policy_name, target_table, target_permission, source_permission
+            );
+        WHEN 'write' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR INSERT WITH CHECK (current_user_has_permission(''%s'') OR current_user_has_permission(''%s''))',
+                policy_name, target_table, target_permission, source_permission
+            );
+        WHEN 'update' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR UPDATE USING (current_user_has_permission(''%s'') OR current_user_has_permission(''%s''))',
+                policy_name, target_table, target_permission, source_permission
+            );
+        WHEN 'delete' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR DELETE USING (current_user_has_permission(''%s'') OR current_user_has_permission(''%s''))',
+                policy_name, target_table, target_permission, source_permission
+            );
+        ELSE
+            RAISE EXCEPTION 'Unsupported target action: %. Supported actions: read, write, update, delete', target_action;
+    END CASE;
+    
+    -- Execute the policy creation
+    EXECUTE policy_sql;
+    
+    RAISE NOTICE 'Created permission mapping: % -> % (Policy: %)', 
+        source_permission, target_permission, policy_name;
+END;
+$$;
+
+-- Create multiple permission mappings at once
+CREATE OR REPLACE FUNCTION create_multiple_permission_mappings(
+    source_permissions text[],
+    target_permission text
+)
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    target_table text;
+    target_action text;
+    policy_name text;
+    policy_sql text;
+    permission_checks text[];
+    all_checks text;
+    source_perm text;
+BEGIN
+    -- Extract table and action from target permission
+    target_table := split_part(target_permission, ':', 1);
+    target_action := split_part(target_permission, ':', 2);
+    
+    -- Validate target permission format
+    IF target_table = '' OR target_action = '' THEN
+        RAISE EXCEPTION 'Invalid target permission format. Expected format: table:action, got: %', target_permission;
+    END IF;
+    
+    -- Validate source permissions
+    FOREACH source_perm IN ARRAY source_permissions
+    LOOP
+        IF split_part(source_perm, ':', 1) = '' OR split_part(source_perm, ':', 2) = '' THEN
+            RAISE EXCEPTION 'Invalid source permission format. Expected format: table:action, got: %', source_perm;
+        END IF;
+    END LOOP;
+    
+    -- Create policy name
+    policy_name := target_table || '_' || target_action || '_multi_mapping_policy';
+    
+    -- Build permission checks array
+    permission_checks := ARRAY[]::text[];
+    
+    -- Add the direct target permission check
+    permission_checks := array_append(permission_checks, 
+        format('current_user_has_permission(''%s'')', target_permission));
+    
+    -- Add all source permission checks
+    FOREACH source_perm IN ARRAY source_permissions
+    LOOP
+        permission_checks := array_append(permission_checks, 
+            format('current_user_has_permission(''%s'')', source_perm));
+    END LOOP;
+    
+    -- Combine all permission checks with OR
+    all_checks := array_to_string(permission_checks, ' OR ');
+    
+    -- Enable RLS if not already enabled
+    EXECUTE format('ALTER TABLE %I ENABLE ROW LEVEL SECURITY', target_table);
+    
+    -- Drop existing mapping policy if it exists
+    EXECUTE format('DROP POLICY IF EXISTS "%s" ON %I', policy_name, target_table);
+    
+    -- Create the appropriate policy based on target action
+    CASE target_action
+        WHEN 'read' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR SELECT USING (%s)',
+                policy_name, target_table, all_checks
+            );
+        WHEN 'write' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR INSERT WITH CHECK (%s)',
+                policy_name, target_table, all_checks
+            );
+        WHEN 'update' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR UPDATE USING (%s)',
+                policy_name, target_table, all_checks
+            );
+        WHEN 'delete' THEN
+            policy_sql := format(
+                'CREATE POLICY "%s" ON %I FOR DELETE USING (%s)',
+                policy_name, target_table, all_checks
+            );
+        ELSE
+            RAISE EXCEPTION 'Unsupported target action: %. Supported actions: read, write, update, delete', target_action;
+    END CASE;
+    
+    -- Execute the policy creation
+    EXECUTE policy_sql;
+    
+    RAISE NOTICE 'Created multiple permission mapping: % -> % (Policy: %)', 
+        source_permissions, target_permission, policy_name;
 END;
 $$;
 

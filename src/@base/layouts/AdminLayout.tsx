@@ -8,6 +8,7 @@ import useLocalState from '@lib/hooks/useLocalState';
 import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
 import useTheme from '@lib/hooks/useTheme';
+import Authorization from '@modules/auth/components/Authorization';
 import { Button, FloatButton, Grid, Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
@@ -121,11 +122,13 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
           <Button type="text" size="large" onClick={() => setCollapsed((prev) => !prev)}>
             <MdOutlineKeyboardDoubleArrowRight size={24} className={isCollapsed ? 'rotate-0' : 'rotate-180'} />
           </Button>
-          <CustomLink href={Paths.admin.pos}>
-            <Button type="primary" icon={<IoLaptopOutline />}>
-              POS
-            </Button>
-          </CustomLink>
+          <Authorization allowedPermissions={['pos:read']}>
+            <CustomLink href={Paths.admin.pos}>
+              <Button type="primary" icon={<IoLaptopOutline />}>
+                POS
+              </Button>
+            </CustomLink>
+          </Authorization>
           <Button
             type="primary"
             className="ml-auto"

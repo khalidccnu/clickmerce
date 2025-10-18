@@ -1,5 +1,5 @@
 import { IBaseResponse } from '@base/interfaces';
-import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
+import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { validate } from '@lib/utils/yup';
@@ -66,10 +66,8 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json(response);
   }
 
-  const supabaseServerClient = createSupabaseServerClient(req, res);
-
   const user = await SupabaseAdapter.findById<IUser & { password: string }>(
-    supabaseServerClient,
+    supabaseServiceClient,
     Database.users,
     payload.user.id,
   );
@@ -102,7 +100,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
   const hashedPassword = await bcrypt.hash(new_password, 12);
 
-  const updateResult = await SupabaseAdapter.update<IUser>(supabaseServerClient, Database.users, payload.user.id, {
+  const updateResult = await SupabaseAdapter.update<IUser>(supabaseServiceClient, Database.users, payload.user.id, {
     password: hashedPassword,
   });
 

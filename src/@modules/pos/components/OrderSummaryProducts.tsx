@@ -15,6 +15,7 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { AuthServices } from '@modules/auth/lib/services';
 import Receipt from '@modules/orders/components/Receipt';
+import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { UsersServices } from '@modules/users/lib/services';
@@ -70,6 +71,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
             exp: variation?.exp,
             color: variation?.color,
             size: variation?.size,
+            weight: variation?.weight,
           };
         })
         .filter(Boolean);
@@ -92,6 +94,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
         subTotal: orderSubtotal.subTotalSale,
         roundOff: isRoundOff ? orderRoundOff : 0,
         grandTotal: orderGrandTotal.totalSaleWithRoundOff,
+        paymentStatus: ENUM_ORDER_PAYMENT_STATUS_TYPES.PROCESSING,
         receivedBy: profile?.name,
       };
 

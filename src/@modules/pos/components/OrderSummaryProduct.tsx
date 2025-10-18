@@ -138,6 +138,7 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
             autoFocus={idx === 0}
             min={1}
             max={product?.selectedVariation?.quantity}
+            precision={0}
             value={product?.selectedQuantity}
             onChange={(value: number) => {
               dispatch(

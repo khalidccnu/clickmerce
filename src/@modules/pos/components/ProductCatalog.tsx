@@ -16,10 +16,10 @@ import ProductsFilterDrawer from '@modules/products/components/ProductsFilterDra
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ProductsServices } from '@modules/products/lib/services';
-import { Button, message, Space } from 'antd';
+import { Button, message } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import BarcodeReader from 'react-barcode-reader';
 import { FaSearch } from 'react-icons/fa';
 import { IoFilterSharp } from 'react-icons/io5';
@@ -39,6 +39,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
   const productsSearchRef = useRef(null);
   const [productsSearchTerm, setProductsSearchTerm] = useState<string>(null);
   const [focusedProductIdx, setFocusedProductIdx] = useState<number>(null);
+  const focusedProductRef = useRef<HTMLDivElement>(null);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [product, setProduct] = useState<IProduct>(null);
   const { cart } = useAppSelector((store) => store.orderSlice);
@@ -154,6 +155,15 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
     },
   });
 
+  useEffect(() => {
+    if (focusedProductRef.current) {
+      focusedProductRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+      });
+    }
+  }, [focusedProductIdx]);
+
   return (
     <React.Fragment>
       {messageHolder}
@@ -180,19 +190,23 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
             <p className="text-lg font-semibold dark:text-white">Welcome, {profileQuery.data?.data?.name}</p>
             <p className="text-gray-500 dark:text-gray-200">{dayjs().format(Dayjs.monthDateYear)}</p>
           </div>
-          <Space>
+          <div className="flex items-center gap-2">
             <BaseStateSearch
               allowClear
-              autoComplete="off"
-              size="large"
               ref={productsSearchRef}
               onSearch={setProductsSearchTerm}
               addonBefore={<FaSearch size={16} />}
               onKeyDown={handleProductNavigationFn}
-              style={{ width: 340 }}
+              formProps={{ autoComplete: 'off', size: 'large', style: { width: '100%', maxWidth: 340 } }}
             />
-            <Button type="dashed" size="large" icon={<IoFilterSharp />} onClick={() => setFilterDrawerOpen(true)} />
-          </Space>
+            <Button
+              type="dashed"
+              size="large"
+              icon={<IoFilterSharp />}
+              onClick={() => setFilterDrawerOpen(true)}
+              style={{ flexShrink: 0 }}
+            />
+          </div>
         </div>
         <div
           className="product_catalog_wrapper"
@@ -211,6 +225,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
 
               return (
                 <ProductCatalogCard
+                  ref={focusedProductIdx === idx ? focusedProductRef : null}
                   isFocused={isFocused}
                   hasInCart={hasInCart}
                   isOutOfStock={isOutOfStock}

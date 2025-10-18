@@ -901,6 +901,22 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      create_multiple_permission_mappings: {
+        Args: { source_permissions: string[]; target_permission: string };
+        Returns: undefined;
+      };
+      create_permission_dependency_policy: {
+        Args: {
+          actions: string[];
+          dependent_permissions: string[];
+          table_name: string;
+        };
+        Returns: undefined;
+      };
+      create_permission_mapping: {
+        Args: { source_permission: string; target_permission: string };
+        Returns: undefined;
+      };
       create_table_permissions: {
         Args: {
           permission_actions?: string[];
@@ -911,6 +927,7 @@ export type Database = {
       };
       create_table_rls_policies: {
         Args: {
+          dependent_permissions?: string[];
           id_column?: string;
           permission_prefix?: string;
           table_name: string;
@@ -919,6 +936,10 @@ export type Database = {
       };
       current_user_has_permission: {
         Args: { permission_name: string };
+        Returns: boolean;
+      };
+      current_user_has_permission_with_dependencies: {
+        Args: { dependent_permissions?: string[]; permission_name: string };
         Returns: boolean;
       };
       current_user_is_super_admin: {
@@ -975,6 +996,7 @@ export type Database = {
       };
       setup_table_security: {
         Args: {
+          dependent_permissions?: string[];
           id_column?: string;
           permission_actions?: string[];
           permission_prefix?: string;

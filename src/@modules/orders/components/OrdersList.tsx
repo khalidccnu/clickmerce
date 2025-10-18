@@ -57,6 +57,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
             exp: variation?.exp,
             color: variation?.color,
             size: variation?.size,
+            weight: variation?.weight,
           })),
         )
         .filter(Boolean);
@@ -79,6 +80,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         subTotal: order?.sub_total_amount,
         roundOff: order?.round_off_amount,
         grandTotal: order?.grand_total_amount,
+        paymentStatus: order?.payment_status,
         receivedBy: order?.created_by?.name,
       };
 

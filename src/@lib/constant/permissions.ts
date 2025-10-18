@@ -4,6 +4,7 @@ export const Permissions = {
   FORBIDDEN: 'FORBIDDEN',
 
   POS_READ: 'pos:read',
+  POS_WRITE: 'pos:write',
 
   DASHBOARD_ADVANCE_READ: 'dashboard-advance:read',
 

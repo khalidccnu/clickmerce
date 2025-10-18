@@ -120,7 +120,7 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
                   />
                 </div>
               </div>
-              {(variation.color || variation.size) && (
+              {(variation.color || variation.size || variation.weight) && (
                 <div className="flex items-center gap-2 text-xs">
                   {variation.color && (
                     <p className="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
@@ -139,6 +139,11 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
                   {variation.size && (
                     <p className="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
                       Size: {variation.size}
+                    </p>
+                  )}
+                  {variation.weight && (
+                    <p className="px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200">
+                      Weight: {variation.weight}
                     </p>
                   )}
                 </div>

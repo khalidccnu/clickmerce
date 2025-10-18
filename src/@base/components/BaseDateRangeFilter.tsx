@@ -98,7 +98,6 @@ const BaseDateRangeFilter: React.FC<IProps> = ({
   return (
     <Form
       form={formInstance}
-      size="middle"
       layout="vertical"
       onValuesChange={(values) => {
         const changedValues: { startDate: string; endDate: string } = {

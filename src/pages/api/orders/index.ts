@@ -254,8 +254,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
           discountPrice = Math.max(variation.cost_price, variation.sale_price - discount.amount);
         } else if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
-          const discountAmount = (variation.sale_price * discount.amount) / 100;
-          discountPrice = Math.max(variation.cost_price, variation.sale_price - discountAmount);
+          const profit = variation.sale_price - variation.cost_price;
+          discountPrice = variation.cost_price + profit * (1 - discount.amount / 100);
         }
       }
 

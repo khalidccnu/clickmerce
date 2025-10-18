@@ -687,4 +687,67 @@ export const Toolbox = {
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
   },
+
+  generateCharacterSvg: function (options: {
+    type?: 'svg' | 'url';
+    character: string;
+    size?: number;
+    backgroundColor?: string;
+    textColor?: string;
+    fontSize?: number;
+    fontFamily?: string;
+    fontWeight?: string | number;
+  }): string {
+    const {
+      type = 'svg',
+      character,
+      size = 100,
+      backgroundColor = 'transparent',
+      textColor = '#000',
+      fontSize = size * 0.5,
+      fontFamily = 'inherit',
+      fontWeight = 'bold',
+    } = options;
+
+    const displayChar = character.charAt(0).toUpperCase();
+
+    const textX = size / 2;
+    const textY = size / 2;
+
+    const svg = `
+      <svg 
+        width="${size}" 
+        height="${size}" 
+        viewBox="0 0 ${size} ${size}" 
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <rect 
+          x="0" 
+          y="0" 
+          width="${size}" 
+          height="${size}" 
+          fill="${backgroundColor}"
+        />
+        <text 
+          x="${textX}" 
+          y="${textY}" 
+          font-family="${fontFamily}"
+          font-size="${fontSize}"
+          font-weight="${fontWeight}"
+          fill="${textColor}"
+          text-anchor="middle"
+          dominant-baseline="central"
+        >
+          ${displayChar}
+        </text>
+      </svg>
+    `.trim();
+
+    if (type === 'url') {
+      const svgBlob = new Blob([svg], { type: 'image/svg+xml' });
+      return URL.createObjectURL(svgBlob);
+    }
+
+    return svg;
+  },
 };
