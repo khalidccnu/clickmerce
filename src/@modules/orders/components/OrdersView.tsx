@@ -135,6 +135,31 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
                             {variation?.exp && <span>EXP: {dayjs(variation.exp).format(Dayjs.date)}</span>}
                           </div>
                         )}
+                        {(variation?.color || variation?.size || variation?.weight) && (
+                          <div className="text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                            {variation?.color && (
+                              <span className="inline-flex items-center gap-1">
+                                <span className="font-medium">Color:</span> {variation.color}
+                                <div
+                                  className="w-3 h-3 rounded-full border border-gray-300"
+                                  style={{ backgroundColor: variation.color }}
+                                />
+                              </span>
+                            )}
+                            {variation?.color && (variation?.size || variation?.weight) && <span> • </span>}
+                            {variation?.size && (
+                              <span className="inline-flex items-center gap-1">
+                                <span className="font-medium">Size:</span> {variation.size}
+                              </span>
+                            )}
+                            {variation?.size && variation?.weight && <span> • </span>}
+                            {variation?.weight && (
+                              <span className="inline-flex items-center gap-1">
+                                <span className="font-medium">Weight:</span> {variation.weight}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="text-right">
                         <div className="font-semibold text-green-600">

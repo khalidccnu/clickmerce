@@ -51,16 +51,22 @@ const styles = StyleSheet.create({
     border: '1pt dashed #222',
     borderRadius: 8,
   },
-  watermark: {
+  watermarkContainer: {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%) rotate(-20deg)',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  watermark: {
+    transform: 'rotate(-20deg)',
     fontSize: 24,
     fontWeight: 'ultrabold',
     color: 'rgba(0, 0, 0, 0.1)',
     opacity: 0.3,
-    transformOrigin: 'center',
   },
   watermarkPaid: {
     color: 'rgba(34, 197, 94, 0.15)',
@@ -86,9 +92,18 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginVertical: 2,
   },
-  itemTitle: { maxWidth: 90 },
+  itemTitle: {
+    width: 60,
+    fontSize: 10,
+  },
+  itemValue: {
+    flex: 1,
+    textAlign: 'right',
+    fontSize: 10,
+  },
   dashed: {
     borderBottom: '1pt dashed #bdbed1',
     marginVertical: 5,
@@ -174,16 +189,18 @@ const Receipt: React.FC<IProps> = ({
 }) => {
   return (
     <Document>
-      <Page size="A4" style={{ padding: 20, position: 'relative' }}>
+      <Page size="A4" style={{ padding: 20 }}>
         <View style={styles.body}>
-          <Text
-            style={[
-              styles.watermark,
-              paymentStatus === ENUM_ORDER_PAYMENT_STATUS_TYPES.PAID ? styles.watermarkPaid : styles.watermarkNotPaid,
-            ]}
-          >
-            {Toolbox.toPrettyText(paymentStatus)}
-          </Text>
+          <View style={styles.watermarkContainer}>
+            <Text
+              style={[
+                styles.watermark,
+                paymentStatus === ENUM_ORDER_PAYMENT_STATUS_TYPES.PAID ? styles.watermarkPaid : styles.watermarkNotPaid,
+              ]}
+            >
+              {Toolbox.toPrettyText(paymentStatus)}
+            </Text>
+          </View>
           <View style={styles.header}>
             {webLogo ? (
               // eslint-disable-next-line jsx-a11y/alt-text
@@ -200,20 +217,20 @@ const Receipt: React.FC<IProps> = ({
           <View>
             <View style={styles.itemRow}>
               <Text style={styles.itemTitle}>Name</Text>
-              <Text>{customerName}</Text>
+              <Text style={styles.itemValue}>{customerName}</Text>
             </View>
             <View style={styles.itemRow}>
               <Text style={styles.itemTitle}>Phone</Text>
-              <Text>{phone}</Text>
+              <Text style={styles.itemValue}>{phone}</Text>
             </View>
           </View>
           <View style={[styles.itemRow, styles.dashed]}>
-            <Text style={{ width: 170, fontWeight: 500 }}>Title</Text>
-            <Text style={{ fontWeight: 500 }}>Amount</Text>
+            <Text style={{ width: 140, fontWeight: 500 }}>Title</Text>
+            <Text style={{ width: 60, fontWeight: 500, textAlign: 'right' }}>Amount</Text>
           </View>
           {products.map((product, idx) => (
             <View key={idx} style={styles.itemRow}>
-              <Text style={{ width: 170 }}>
+              <Text style={{ width: 140 }}>
                 {product.name}
                 {product.specification && (
                   <Text style={{ fontSize: 8, fontWeight: 300, color: '#666885' }}>
@@ -247,17 +264,21 @@ const Receipt: React.FC<IProps> = ({
                   </Text>
                 )}
               </Text>
-              <View>
-                <Text>
-                  {product.saleDiscountPrice ? (
-                    <Text style={{ textDecoration: 'line-through', marginRight: 4, fontSize: 8 }}>
-                      {product.salePrice}
+              <View style={{ width: 60, alignItems: 'flex-end' }}>
+                {product.saleDiscountPrice ? (
+                  <View style={{ alignItems: 'flex-end' }}>
+                    <Text style={{ textDecoration: 'line-through', fontSize: 8, color: '#666' }}>
+                      {Toolbox.truncateNumber(product.salePrice)}
                     </Text>
-                  ) : null}
-                  <Text>
-                    {product.saleDiscountPrice || product.salePrice} ({product.quantity})
+                    <Text style={{ fontSize: 10, fontWeight: 500 }}>
+                      {Toolbox.truncateNumber(product.saleDiscountPrice)} ({product.quantity})
+                    </Text>
+                  </View>
+                ) : (
+                  <Text style={{ fontSize: 10, fontWeight: 500 }}>
+                    {Toolbox.truncateNumber(product.salePrice)} ({product.quantity})
                   </Text>
-                </Text>
+                )}
               </View>
             </View>
           ))}
