@@ -172,6 +172,42 @@ export type Database = {
         };
         Relationships: [];
       };
+      galleries: {
+        Row: {
+          bucket: string;
+          created_at: string;
+          etag: string | null;
+          file_name: string;
+          file_path: string;
+          file_url: string;
+          id: string;
+          updated_at: string;
+          version_id: string | null;
+        };
+        Insert: {
+          bucket: string;
+          created_at?: string;
+          etag?: string | null;
+          file_name: string;
+          file_path: string;
+          file_url: string;
+          id?: string;
+          updated_at?: string;
+          version_id?: string | null;
+        };
+        Update: {
+          bucket?: string;
+          created_at?: string;
+          etag?: string | null;
+          file_name?: string;
+          file_path?: string;
+          file_url?: string;
+          id?: string;
+          updated_at?: string;
+          version_id?: string | null;
+        };
+        Relationships: [];
+      };
       generics: {
         Row: {
           created_at: string;
@@ -942,16 +978,10 @@ export type Database = {
         Args: { dependent_permissions?: string[]; permission_name: string };
         Returns: boolean;
       };
-      current_user_is_super_admin: {
-        Args: Record<PropertyKey, never>;
-        Returns: boolean;
-      };
-      get_current_user_id: {
-        Args: Record<PropertyKey, never>;
-        Returns: string;
-      };
+      current_user_is_super_admin: { Args: never; Returns: boolean };
+      get_current_user_id: { Args: never; Returns: string };
       get_expired_products: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
           created_at: string;
           description: string | null;
@@ -971,9 +1001,15 @@ export type Database = {
           type: string;
           updated_at: string;
         }[];
+        SetofOptions: {
+          from: '*';
+          to: 'products';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       get_non_expired_products: {
-        Args: Record<PropertyKey, never>;
+        Args: never;
         Returns: {
           created_at: string;
           description: string | null;
@@ -993,6 +1029,12 @@ export type Database = {
           type: string;
           updated_at: string;
         }[];
+        SetofOptions: {
+          from: '*';
+          to: 'products';
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       setup_table_security: {
         Args: {

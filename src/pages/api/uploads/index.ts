@@ -11,7 +11,7 @@ import formidable from 'formidable';
 import fs from 'fs/promises';
 import { NextApiRequest, NextApiResponse } from 'next';
 import os from 'os';
-import { TUploadDto, uploadSchema } from '../lib/dtos';
+import { TUploadFileDto, uploadFileSchema } from '../lib/dtos';
 import { optimizeImageFn } from '../lib/utils';
 
 export const config = {
@@ -49,7 +49,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
   });
   const [fields, files] = await form.parse(req);
 
-  const { make_public } = fields;
+  const { type, make_public } = fields;
+  const purifiedType = type?.[0] || 'URL';
   const purifiedMakePublic = make_public?.[0] || 'false';
   const purifiedFiles = Array.isArray(files.files) ? files.files : ([files.files].filter(Boolean) as formidable.File[]);
 
@@ -67,7 +68,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json(response);
   }
 
-  const { success, data, ...restProps } = await validate<TUploadDto>(uploadSchema, {
+  const { success, data, ...restProps } = await validate<TUploadFileDto>(uploadFileSchema, {
     make_public: purifiedMakePublic,
     files: purifiedFiles,
   });
@@ -76,6 +77,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
   const { files: sanitizedFiles } = data;
   const urls = [];
+  const uploadFiles = [];
 
   try {
     const result = await SupabaseAdapter.find<ISettings>(supabaseServiceClient, Database.settings);
@@ -129,7 +131,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
           s3Client,
         });
 
-        urls.push(item.data.fileUrl);
+        urls.push(item.data.file_url);
+        uploadFiles.push(item);
       }),
     );
 
@@ -137,7 +140,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       success: true,
       statusCode: 201,
       message: 'Files uploaded successfully',
-      data: urls,
+      data: purifiedType === 'FILE' ? uploadFiles : urls,
       meta: null,
     };
 

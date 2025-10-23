@@ -10,6 +10,7 @@ export const Paths = {
   admin: {
     root: '/admin',
     pos: '/admin/pos',
+    galleries: '/admin/galleries',
     users: {
       root: '/admin/users',
       list: '/admin/users/list',

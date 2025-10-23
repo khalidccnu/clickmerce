@@ -29,10 +29,12 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
             {dayjs(order?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
           </Descriptions.Item>
           <Descriptions.Item label="Payment Status">
-            <Tag color={OrderPaymentStatusColorFn(order?.payment_status)}>{order?.payment_status}</Tag>
+            <Tag color={OrderPaymentStatusColorFn(order?.payment_status)}>
+              {Toolbox.toPrettyText(order?.payment_status)}
+            </Tag>
           </Descriptions.Item>
           <Descriptions.Item label="Status">
-            <Tag color={OrderStatusColorFn(order?.status)}>{order?.status}</Tag>
+            <Tag color={OrderStatusColorFn(order?.status)}>{Toolbox.toPrettyText(order?.status)}</Tag>
           </Descriptions.Item>
         </Descriptions>
       </Card>

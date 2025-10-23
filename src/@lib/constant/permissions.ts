@@ -10,6 +10,11 @@ export const Permissions = {
 
   SETTINGS_READ: 'settings:read',
 
+  GALLERIES_READ: 'galleries:read',
+  GALLERIES_WRITE: 'galleries:write',
+  GALLERIES_UPDATE: 'galleries:update',
+  GALLERIES_DELETE: 'galleries:delete',
+
   USERS_READ: 'users:read',
   USERS_WRITE: 'users:write',
   USERS_UPDATE: 'users:update',

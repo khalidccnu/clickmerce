@@ -1,4 +1,4 @@
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IBaseResponse } from '@base/interfaces';
 import * as fs from 'fs';
@@ -42,7 +42,7 @@ const s3FileUrl = async ({
   endpoint: string;
   r2WorkerEndpoint?: string;
   s3Client: S3Client;
-}): Promise<{ url: string; expiresIn: number }> => {
+}): Promise<{ url: string; expires_in: number }> => {
   try {
     const filePath = formatS3FilePath(fileName, folderPath);
     let url = r2WorkerEndpoint ? r2WorkerEndpoint : `${endpoint}/${bucket}`;
@@ -54,7 +54,7 @@ const s3FileUrl = async ({
       url = await getSignedUrl(s3Client, command, { expiresIn });
     }
 
-    return { url, expiresIn: makePublic ? 0 : expiresIn };
+    return { url, expires_in: makePublic ? 0 : expiresIn };
   } catch (error) {
     throw new Error('Failed to generate URL');
   }
@@ -82,12 +82,12 @@ export const s3FileUpload = async ({
   s3Client: S3Client;
 }): Promise<
   IBaseResponse<{
-    fileName: string;
-    filePath: string;
-    fileUrl: string;
+    file_name: string;
+    file_path: string;
+    file_url: string;
     bucket: string;
     etag: string;
-    versionId: string;
+    version_id: string;
   }>
 > => {
   const filePath = formatS3FilePath(fileName, folderPath);
@@ -119,12 +119,12 @@ export const s3FileUpload = async ({
       statusCode: 201,
       message: 'File uploaded successfully',
       data: {
-        fileName,
-        filePath,
-        fileUrl: file.url,
+        file_name: fileName,
+        file_path: filePath,
+        file_url: file.url,
         bucket,
         etag: result.ETag,
-        versionId: result.VersionId,
+        version_id: result.VersionId,
       },
       meta: null,
     };
@@ -140,5 +140,40 @@ export const s3FileUpload = async ({
     };
 
     return response;
+  }
+};
+
+export const s3FileDelete = async ({
+  filePath,
+  bucket,
+  s3Client,
+}: {
+  filePath?: string;
+  bucket: string;
+  s3Client: S3Client;
+}): Promise<IBaseResponse> => {
+  try {
+    const command = new DeleteObjectCommand({
+      Bucket: bucket,
+      Key: filePath,
+    });
+
+    await s3Client.send(command);
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'File deleted successfully',
+      data: null,
+      meta: null,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      statusCode: 500,
+      message: 'Failed to delete file from S3',
+      data: null,
+      meta: null,
+    };
   }
 };

@@ -1,52 +1,83 @@
+import { Analytic_Events } from '@lib/constant/analyticEvents';
 import { useRouter } from 'next/router';
 import Script from 'next/script';
 import React, { PropsWithChildren, useEffect } from 'react';
 
 interface IProps extends PropsWithChildren {
+  gtmId?: string;
   gtagId?: string;
   fbPixelId?: string;
 }
 
-const AnalyticsProvider: React.FC<IProps> = ({ gtagId, fbPixelId, children }) => {
+const AnalyticsProvider: React.FC<IProps> = ({ gtmId, gtagId, fbPixelId, children }) => {
   const router = useRouter();
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const handleRouteChangeFn = (url: string) => {
-      if (gtagId && window.gtag) {
-        window.gtag('event', 'page_view', {
+      if (gtmId && Array.isArray(window.dataLayer)) {
+        window.dataLayer.push({
+          event: Analytic_Events.page_view.google,
           page_path: url,
           page_location: window.location.href,
         });
       }
 
-      if (fbPixelId && window.fbq) {
-        window.fbq('track', 'PageView');
+      if (gtagId && typeof window.gtag === 'function') {
+        window.gtag('event', Analytic_Events.page_view.google, {
+          page_path: url,
+          page_location: window.location.href,
+        });
+      }
+
+      if (fbPixelId && typeof window.fbq === 'function') {
+        window.fbq('track', Analytic_Events.page_view.facebook);
       }
     };
 
     router.events.on('routeChangeComplete', handleRouteChangeFn);
     return () => router.events.off('routeChangeComplete', handleRouteChangeFn);
-  }, [router.events, gtagId, fbPixelId]);
+  }, [router.events, gtmId, gtagId, fbPixelId]);
 
   return (
-    <React.Fragment>
+    <>
       {children}
-      {gtagId && (
-        <React.Fragment>
+      {gtmId && (
+        <>
+          <Script id="gtm-script" strategy="afterInteractive">
+            {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${gtmId}');
+          `}
+          </Script>
+          <noscript
+            dangerouslySetInnerHTML={{
+              __html: `<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`,
+            }}
+          />
+        </>
+      )}
+      {gtagId && !gtmId && (
+        <>
           <Script src={`https://www.googletagmanager.com/gtag/js?id=${gtagId}`} strategy="afterInteractive" />
           <Script id="gtag-init" strategy="afterInteractive">
             {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', '${gtagId}', { send_page_view: false });
-            `}
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gtagId}', { send_page_view: false });
+          `}
           </Script>
-        </React.Fragment>
+        </>
       )}
       {fbPixelId && (
-        <Script id="fb-pixel-init" strategy="afterInteractive">
-          {`
+        <>
+          <Script id="fb-pixel-init" strategy="afterInteractive">
+            {`
             !function(f,b,e,v,n,t,s)
             {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
             n.callMethod.apply(n,arguments):n.queue.push(arguments)};
@@ -58,9 +89,15 @@ const AnalyticsProvider: React.FC<IProps> = ({ gtagId, fbPixelId, children }) =>
             fbq('init', '${fbPixelId}');
             fbq('track', 'PageView');
           `}
-        </Script>
+          </Script>
+          <noscript
+            dangerouslySetInnerHTML={{
+              __html: `<img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=${fbPixelId}&ev=PageView&noscript=1" />`,
+            }}
+          />
+        </>
       )}
-    </React.Fragment>
+    </>
   );
 };
 

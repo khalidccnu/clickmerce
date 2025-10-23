@@ -14,11 +14,14 @@ interface IBaseProps {
   isCrop?: boolean;
   isDisable?: boolean;
   isPreview?: boolean;
+  isPreviewImage?: boolean;
   sizeLimit?: number;
   acceptedTypes?: string[];
   maxCount?: number;
   initialValues?: string[];
+  type?: 'BASIC' | 'DRAGGER';
   onChange?: (urls: string[]) => void;
+  onFinish?: (files: File[]) => void;
   actionPath?: string;
   makePublic?: boolean;
 }
@@ -39,13 +42,16 @@ const CustomUploader: React.FC<TProps> = ({
   isCrop = false,
   isDisable = false,
   isPreview = true,
+  isPreviewImage = true,
   sizeLimit = 5,
   acceptedTypes = IMAGE_ALLOW_LIST,
   maxCount = 1,
   initialValues,
+  type = 'BASIC',
   listType = 'text',
   innerContent,
   onChange,
+  onFinish,
   actionPath,
   makePublic = false,
 }) => {
@@ -75,10 +81,7 @@ const CustomUploader: React.FC<TProps> = ({
   const onPreviewFn = async (file: UploadFile) => {
     const url = file.url || file.response?.data?.[0];
 
-    if (!url) {
-      message.error('No preview available');
-      return;
-    }
+    if (!url) return message.error('No preview available');
 
     setPreviewImage(url);
     setPreviewOpen(true);
@@ -97,28 +100,58 @@ const CustomUploader: React.FC<TProps> = ({
   };
 
   const handleChangeFn: UploadProps['onChange'] = ({ fileList }) => {
-    const purifiedFileList = fileList.map((file) => {
-      if (!file.response && file.status !== 'uploading' && file.status !== 'done') {
-        return { ...file, status: 'error' };
-      }
+    const purifiedFileList = fileList.map((file) => ({
+      ...file,
+      url:
+        file.url ||
+        file.response?.data?.[0] ||
+        (file.originFileObj ? URL.createObjectURL(file.originFileObj) : undefined),
+    }));
 
-      return {
-        ...file,
-        url: file.url || file.response?.data?.[0],
-      };
-    });
-
-    setFileList(purifiedFileList as any);
+    setFileList(purifiedFileList);
 
     const sanitizedFileList = purifiedFileList.every((file) => file.status === 'done');
 
     if (sanitizedFileList) {
-      const urls = extractUrlsFn(purifiedFileList as any);
+      const urls = extractUrlsFn(purifiedFileList);
 
       if (JSON.stringify(urls) !== JSON.stringify(lastUrlsRef.current)) {
         lastUrlsRef.current = urls;
         onChange?.(urls);
       }
+    }
+  };
+
+  const handleCustomRequestFn: UploadProps['customRequest'] = async (options) => {
+    const { file, onSuccess, onError } = options;
+
+    try {
+      if (onFinish) {
+        const purifiedFileList = [...fileList.map((file) => file.originFileObj as File).filter(Boolean), file as File];
+
+        onFinish(purifiedFileList);
+        const url = URL.createObjectURL(file as File);
+
+        onSuccess?.({ data: [url] }, new XMLHttpRequest());
+      } else {
+        const formData = Toolbox.withFormData({ files: file, make_public: makePublic });
+
+        const res = await fetch(`${Env.apiUrl}/${actionPath ?? 'uploads'}`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${getAuthToken()}` },
+          body: formData,
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          onSuccess?.(data, new XMLHttpRequest());
+        } else {
+          throw new Error(data?.message || 'Upload failed');
+        }
+      }
+    } catch (error) {
+      onError?.(error);
     }
   };
 
@@ -135,9 +168,24 @@ const CustomUploader: React.FC<TProps> = ({
       url,
     }));
 
-    setFileList(purifiedFileList as any);
+    setFileList(purifiedFileList as UploadFile[]);
     lastUrlsRef.current = initialValues;
   }, [initialValues]);
+
+  const uploadCommonProps = {
+    accept: acceptedTypes.map((type) => `.${type}`).join(','),
+    fileList,
+    listType: listType === 'button' ? 'text' : listType,
+    maxCount,
+    disabled: isDisable,
+    multiple: maxCount > 1,
+    showUploadList: isPreviewImage && { showPreviewIcon: isPreview },
+    beforeUpload: beforeUploadFn,
+    onChange: handleChangeFn,
+    onRemove: onRemoveFn,
+    onPreview: onPreviewFn,
+    customRequest: handleCustomRequestFn,
+  };
 
   return (
     <React.Fragment>
@@ -169,37 +217,39 @@ const CustomUploader: React.FC<TProps> = ({
         modalProps={{ centered: true }}
         modalWidth={680}
       >
-        <Upload
-          name="files"
-          headers={{ Authorization: `Bearer ${getAuthToken()}` }}
-          data={{ make_public: makePublic }}
-          accept={acceptedTypes.map((acceptedType) => `.${acceptedType}`).join(',')}
-          fileList={fileList}
-          listType={listType === 'button' ? 'text' : listType}
-          maxCount={maxCount}
-          disabled={isDisable}
-          multiple={maxCount > 1}
-          showUploadList={{ showPreviewIcon: isPreview }}
-          action={`${Env.apiUrl}/${actionPath ?? 'uploads'}`}
-          beforeUpload={beforeUploadFn}
-          onChange={handleChangeFn}
-          onRemove={onRemoveFn}
-          onPreview={onPreviewFn}
-        >
-          {fileList.length < maxCount &&
-            (listType === 'button' ? (
-              <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
-                {innerContent || 'Click to Upload'}
-              </Button>
-            ) : (
-              innerContent || (
-                <div className="flex flex-col items-center gap-2">
-                  <AiOutlinePlus />
-                  <p>Upload</p>
-                </div>
-              )
-            ))}
-        </Upload>
+        {type === 'DRAGGER' ? (
+          <Upload.Dragger {...uploadCommonProps}>
+            {fileList.length < maxCount &&
+              (listType === 'button' ? (
+                <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
+                  {innerContent || 'Click to Upload'}
+                </Button>
+              ) : (
+                innerContent || (
+                  <div className="flex flex-col items-center gap-2">
+                    <AiOutlinePlus />
+                    <p>Upload</p>
+                  </div>
+                )
+              ))}
+          </Upload.Dragger>
+        ) : (
+          <Upload {...uploadCommonProps}>
+            {fileList.length < maxCount &&
+              (listType === 'button' ? (
+                <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
+                  {innerContent || 'Click to Upload'}
+                </Button>
+              ) : (
+                innerContent || (
+                  <div className="flex flex-col items-center gap-2">
+                    <AiOutlinePlus />
+                    <p>Upload</p>
+                  </div>
+                )
+              ))}
+          </Upload>
+        )}
       </ImgCrop>
     </React.Fragment>
   );

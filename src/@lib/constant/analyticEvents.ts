@@ -9,5 +9,6 @@ export const Analytic_Events = {
   add_to_cart: { google: 'add_to_cart', facebook: 'AddToCart' },
   initiate_checkout: { google: 'begin_checkout', facebook: 'InitiateCheckout' },
   purchase: { google: 'purchase', facebook: 'Purchase' },
+  search: { google: 'search', facebook: 'Search' },
   page_view: { google: 'page_view', facebook: 'PageView' },
 } as const;

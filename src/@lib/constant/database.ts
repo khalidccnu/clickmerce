@@ -1,5 +1,6 @@
 export const Database = {
   dashboard: 'dashboard',
+  galleries: 'galleries',
   users: 'users',
   usersInfo: 'users_info',
   userRoles: 'user_roles',

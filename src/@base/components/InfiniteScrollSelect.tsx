@@ -29,7 +29,7 @@ const InfiniteScrollSelect = <D = any,>({
   const { ref, inView } = useInView();
 
   const normalizeValueFn = (value) => {
-    const extractValueFn = (elem) => elem?.id ?? elem;
+    const extractValueFn = (elem) => elem?.id ?? elem?.value ?? elem;
 
     if (Array.isArray(value)) {
       return value.map(extractValueFn);
@@ -72,11 +72,11 @@ const InfiniteScrollSelect = <D = any,>({
         loading={query.isLoading}
         options={Toolbox.toCleanArray([
           ...items.map((item, idx) => option({ idx, item })),
-          query.hasNextPage
+          query.isLoading || query.hasNextPage
             ? {
                 key: 'loading',
                 label: (
-                  <div className="text-center" ref={ref}>
+                  <div className="flex items-center justify-center py-4" ref={ref}>
                     <Spin />
                   </div>
                 ),
@@ -103,11 +103,11 @@ const InfiniteScrollSelect = <D = any,>({
       loading={query.isLoading}
       options={Toolbox.toCleanArray([
         ...items.map((item, idx) => option({ idx, item })),
-        query.hasNextPage
+        query.isLoading || query.hasNextPage
           ? {
               key: 'loading',
               label: (
-                <div className="text-center" ref={ref}>
+                <div className="flex items-center justify-center py-4" ref={ref}>
                   <Spin />
                 </div>
               ),

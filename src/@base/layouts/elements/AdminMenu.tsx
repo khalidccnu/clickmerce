@@ -9,7 +9,7 @@ import { BsBoxSeam } from 'react-icons/bs';
 import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons/fa';
 import { FiShoppingCart } from 'react-icons/fi';
 import { GiMedicines } from 'react-icons/gi';
-import { GrUserAdmin } from 'react-icons/gr';
+import { GrGallery, GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline, IoReturnUpBack } from 'react-icons/io5';
 import { LiaCartArrowDownSolid } from 'react-icons/lia';
 import { MdDashboard, MdLocalOffer, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
@@ -37,6 +37,12 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.root,
           icon: <MdDashboard />,
           label: <CustomLink href={Paths.admin.root}>Dashboard</CustomLink>,
+        },
+        {
+          key: Paths.admin.galleries,
+          icon: <GrGallery />,
+          label: <CustomLink href={Toolbox.appendPagination(Paths.admin.galleries, 1, 12)}>Galleries</CustomLink>,
+          allowedPermissions: ['galleries:read'],
         },
         {
           key: Paths.admin.users.list,

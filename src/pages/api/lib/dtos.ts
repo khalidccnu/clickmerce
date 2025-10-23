@@ -1,7 +1,8 @@
 import { File } from 'formidable';
 import * as yup from 'yup';
 
-export const uploadSchema = yup.object({
+export const uploadFileSchema = yup.object({
+  type: yup.string().oneOf(['FILE', 'URL']).optional(),
   make_public: yup.string().optional(),
   files: yup
     .array()
@@ -18,4 +19,4 @@ export const uploadSchema = yup.object({
     .required('Files are required'),
 });
 
-export type TUploadDto = yup.InferType<typeof uploadSchema>;
+export type TUploadFileDto = yup.InferType<typeof uploadFileSchema>;
