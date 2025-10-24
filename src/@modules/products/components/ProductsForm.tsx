@@ -864,7 +864,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           </Col>
           <Col xs={24}>
             <Form.Item name="description" className="!mb-0">
-              <RichTextEditor placeholder="Description" isDark={isDark} />
+              <RichTextEditor placeholder="Description" isDark={isDark} makePublicFile />
             </Form.Item>
           </Col>
           <Col xs={24}>

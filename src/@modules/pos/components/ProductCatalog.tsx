@@ -215,7 +215,9 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
           <InfiniteScroll<IProduct>
             query={productsQuery}
             onChangeItems={(products) => setProducts(products)}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 pr-4"
+            className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 pr-4', {
+              block: !products.length,
+            })}
             emptyItemsPlaceholder="No products available"
           >
             {({ idx, item: product }) => {

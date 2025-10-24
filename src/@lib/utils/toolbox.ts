@@ -620,6 +620,13 @@ export const Toolbox = {
   },
 
   printWindow: function (type: 'pdf' | 'html', content: string) {
+    const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
+    if (isMobile && type === 'pdf') {
+      window.open(content, '_blank');
+      return;
+    }
+
     const iframe = document.createElement('iframe');
     iframe.style.display = 'none';
     document.body.appendChild(iframe);

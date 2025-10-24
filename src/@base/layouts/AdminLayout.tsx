@@ -45,7 +45,11 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       top: 0,
       left: isCollapsed ? '-100%' : 0,
       height: '100vh',
-      borderRight: screens.md ? 'none' : '1px solid var(--color-gray-200)',
+      borderRight: screens.md
+        ? 'none'
+        : isLight
+          ? '1px solid var(--color-gray-300)'
+          : '1px solid var(--color-gray-700)',
       background: isLight ? 'var(--color-white)' : 'var(--color-rich-black)',
       boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
       zIndex: 100,

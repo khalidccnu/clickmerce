@@ -17,7 +17,7 @@ const PageHeader: React.FC<IProps> = ({ className, title, subTitle, tags, extra,
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center gap-2 md:gap-4 mb-4 pb-4 border-b border-gray-200',
+        'flex flex-wrap items-center gap-2 md:gap-4 mb-4 pb-4 border-b border-gray-300/70 dark:border-gray-700/30',
         'page_header',
         className,
       )}
