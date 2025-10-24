@@ -65,7 +65,7 @@ const CustomUploader: React.FC<TProps> = ({
   };
 
   const imgCropBeforeUploadFn = (file: TFile) => {
-    return Toolbox.acceptFileTypes(file, ['jpg', 'jpeg', 'png']);
+    return Toolbox.acceptFileTypes(file, ['jpg', 'jpeg', 'png', 'webp']);
   };
 
   const beforeUploadFn = (file: TFile) => {
@@ -108,7 +108,9 @@ const CustomUploader: React.FC<TProps> = ({
         (file.originFileObj ? URL.createObjectURL(file.originFileObj) : undefined),
     }));
 
-    setFileList(purifiedFileList);
+    const fileListWithStatus = purifiedFileList.filter((file) => file.status);
+
+    setFileList(fileListWithStatus);
 
     const sanitizedFileList = purifiedFileList.every((file) => file.status === 'done');
 

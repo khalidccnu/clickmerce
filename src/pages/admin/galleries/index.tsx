@@ -110,7 +110,7 @@ const GalleriesPage = () => {
       >
         {previewImage ? (
           <React.Fragment>
-            <Image src={previewImage} alt="" className="w-80 mx-auto" />
+            <Image src={previewImage} alt="" rootClassName="flex justify-center" />
             <div className="text-center space-x-1.5 mt-4">
               <Button
                 onClick={() => {
@@ -127,6 +127,7 @@ const GalleriesPage = () => {
           </React.Fragment>
         ) : (
           <CustomUploader
+            isCrop
             isPreviewImage={false}
             type="DRAGGER"
             listType="picture-card"
@@ -139,7 +140,7 @@ const GalleriesPage = () => {
                 <Button type="primary">Browse</Button>
               </div>
             }
-            onFinish={(files) => handleImageChangeFn(files?.[0])}
+            onFinish={([_, file]) => handleImageChangeFn(file)}
           />
         )}
       </BaseModalWithoutClicker>

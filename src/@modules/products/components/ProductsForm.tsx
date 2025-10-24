@@ -18,6 +18,7 @@ import { ICategory } from '@modules/categories/lib/interfaces';
 import DosageFormsForm from '@modules/dosage-forms/components/DosageFormsForm';
 import { DosageFormsHooks } from '@modules/dosage-forms/lib/hooks';
 import { IDosageForm } from '@modules/dosage-forms/lib/interfaces';
+import { GalleriesHooks } from '@modules/galleries/lib/hooks';
 import GenericsForm from '@modules/generics/components/GenericsForm';
 import { GenericsHooks } from '@modules/generics/lib/hooks';
 import { IGeneric } from '@modules/generics/lib/interfaces';
@@ -82,6 +83,20 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
   const [genericsSearchTerm, setGenericsSearchTerm] = useState(null);
   const [suppliersSearchTerm, setSuppliersSearchTerm] = useState(null);
   const [categoriesSearchTerm, setCategoriesSearchTerm] = useState(null);
+
+  const handleImageUploadFn = (name: number, file: File) => {
+    if (!file) return;
+
+    const formData: any = Toolbox.withFormData({ files: file, type: 'FILE', make_public: 'true' });
+
+    galleriesCreateFn.mutate(formData, {
+      onSuccess: (res) => {
+        if (res.success) {
+          form.setFieldValue(['images', name, 'url'], res.data?.file_url);
+        }
+      },
+    });
+  };
 
   const handleFinishFn = (values) => {
     const currentSanitizedVariations = values?.variations?.map((variation) => {
@@ -180,6 +195,19 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     options: {
       limit: '20',
       search_term: suppliersSearchTerm,
+    },
+  });
+
+  const galleriesCreateFn = GalleriesHooks.useCreate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        messageApi.success(res.message);
+      },
     },
   });
 
@@ -323,10 +351,13 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                             >
                               <CustomUploader
                                 isCrop
-                                makePublic
                                 listType="picture-card"
-                                initialValues={[formValues?.images?.[name]?.url]}
-                                onChange={(urls) => form.setFieldValue(['images', name, 'url'], urls[0] || null)}
+                                initialValues={
+                                  Array.isArray(formValues?.images?.[name]?.url)
+                                    ? formValues?.images?.[name]?.url
+                                    : [formValues?.images?.[name]?.url]
+                                }
+                                onFinish={([_, file]) => handleImageUploadFn(name, file)}
                               />
                             </Form.Item>
                           </Col>
