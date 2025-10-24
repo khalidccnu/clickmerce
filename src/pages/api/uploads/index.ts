@@ -132,7 +132,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         });
 
         urls.push(item.data.file_url);
-        uploadFiles.push(item);
+        uploadFiles.push(item.data);
       }),
     );
 

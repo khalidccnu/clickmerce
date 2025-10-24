@@ -4,7 +4,10 @@ import { Jimp, JimpMime } from 'jimp';
 export const optimizeImageFn = async (file: Buffer, width = 1200, quality = 65): Promise<Buffer> => {
   const type = await fileTypeFromBuffer(file);
 
-  if (type?.mime?.startsWith('image/')) {
+  if (
+    type?.mime?.startsWith('image/') &&
+    Object.values(JimpMime).includes(type.mime as (typeof JimpMime)[keyof typeof JimpMime])
+  ) {
     const image = await Jimp.read(file);
 
     if (image.width > width) {

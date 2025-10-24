@@ -41,14 +41,13 @@ export const GalleriesServices = {
     }
   },
 
-  create: async (payload: IGalleryCreate): Promise<IBaseResponse<IGallery>> => {
+  create: async (payload: IGalleryCreate): Promise<IGalleriesResponse> => {
     try {
-      let res: IBaseResponse<IGallery>;
+      let res: IGalleriesResponse;
       const { data } = await AxiosSecureInstance.post('/uploads', payload);
 
       if (Toolbox.isNotEmpty(data?.data)) {
-        const purifiedData = data?.data?.[0]?.data;
-        res = await SupabaseAdapter.create<IGallery>(supabaseBrowserClient, END_POINT, purifiedData);
+        res = await SupabaseAdapter.batchCreate<IGallery>(supabaseBrowserClient, END_POINT, data.data);
       }
 
       return Promise.resolve(res);

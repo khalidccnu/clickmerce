@@ -39,7 +39,7 @@ const PaymentMethodsForm: React.FC<IProps> = ({ isLoading, form, formType = 'cre
           return;
         }
 
-        form.setFieldValue('image', res.data?.file_url);
+        form.setFieldValue('image', res.data?.[0]?.file_url);
         messageApi.success(res.message);
       },
     },

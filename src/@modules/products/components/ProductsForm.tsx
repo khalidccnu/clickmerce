@@ -92,7 +92,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     galleriesCreateFn.mutate(formData, {
       onSuccess: (res) => {
         if (res.success) {
-          form.setFieldValue(['images', name, 'url'], res.data?.file_url);
+          form.setFieldValue(['images', name, 'url'], res.data?.[0]?.file_url);
         }
       },
     });
