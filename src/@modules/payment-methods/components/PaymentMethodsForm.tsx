@@ -76,6 +76,7 @@ const PaymentMethodsForm: React.FC<IProps> = ({ isLoading, form, formType = 'cre
             <Form.Item name="image" className="!mb-0">
               <CustomUploader
                 isCrop
+                type="DRAGGER"
                 listType="picture-card"
                 initialValues={Array.isArray(formValues?.image) ? formValues?.image : [formValues?.image]}
                 onFinish={([_, file]) => handleImageUploadFn(file)}

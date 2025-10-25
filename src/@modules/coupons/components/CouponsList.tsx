@@ -8,6 +8,7 @@ import { Button, Drawer, Form, Space, Table, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { AiFillEdit, AiFillEye } from 'react-icons/ai';
+import { ENUM_COUPON_TYPES } from '../lib/enums';
 import { CouponsHooks } from '../lib/hooks';
 import { ICoupon } from '../lib/interfaces';
 import CouponsForm from './CouponsForm';
@@ -65,7 +66,8 @@ const CouponsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       key: 'amount',
       dataIndex: 'amount',
       title: 'Amount',
-      render: (amount) => Toolbox.withCurrency(amount),
+      render: (amount, record) =>
+        record?.type === ENUM_COUPON_TYPES.FIXED ? Toolbox.withCurrency(amount) : amount + '%',
     },
     {
       key: 'created_at',

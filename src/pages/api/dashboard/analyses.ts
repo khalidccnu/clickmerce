@@ -77,7 +77,6 @@ async function handleAnalyses(req: NextApiRequest, res: NextApiResponse) {
 
       if (!acc[month]) {
         acc[month] = {
-          costs_amount: 0,
           sales_amount: 0,
           profit_amount: 0,
           orders: 0,
@@ -97,7 +96,6 @@ async function handleAnalyses(req: NextApiRequest, res: NextApiResponse) {
       const orderSale = order.sub_total_amount || 0;
       const orderProfit = Math.max(orderSale - orderCost, 0);
 
-      acc[month].costs_amount += orderCost;
       acc[month].sales_amount += orderSale;
       acc[month].profit_amount += orderProfit;
       acc[month].orders += 1;
@@ -107,7 +105,6 @@ async function handleAnalyses(req: NextApiRequest, res: NextApiResponse) {
 
     const analyses: IDashboardAnalysis[] = Object.keys(monthlyDist).map((month) => ({
       month,
-      costs_amount: Toolbox.truncateNumber(monthlyDist[month].costs_amount),
       sales_amount: Toolbox.truncateNumber(monthlyDist[month].sales_amount),
       profit_amount: Toolbox.truncateNumber(monthlyDist[month].profit_amount),
       orders: monthlyDist[month].orders,

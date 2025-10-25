@@ -16,6 +16,12 @@ export const States: IStates = {
     key: 'headerHeight',
     initialValue: 0,
   },
+  sidebar: {
+    key: 'sidebar',
+    initialValue: {
+      isCollapsed: false,
+    },
+  },
   menu: {
     key: 'menu',
     initialValue: {

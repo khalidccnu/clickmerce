@@ -1,5 +1,6 @@
 import { Env } from '.environments';
 import { IMAGE_ALLOW_LIST } from '@lib/constant/common';
+import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAuthToken } from '@modules/auth/lib/utils/client';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
@@ -187,6 +188,7 @@ const CustomUploader: React.FC<TProps> = ({
     onRemove: onRemoveFn,
     onPreview: onPreviewFn,
     customRequest: handleCustomRequestFn,
+    className: cn({ '[&_.ant-upload]:hidden': fileList.length >= maxCount }),
   };
 
   return (
@@ -221,35 +223,33 @@ const CustomUploader: React.FC<TProps> = ({
       >
         {type === 'DRAGGER' ? (
           <Upload.Dragger {...uploadCommonProps}>
-            {fileList.length < maxCount &&
-              (listType === 'button' ? (
-                <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
-                  {innerContent || 'Click to Upload'}
-                </Button>
-              ) : (
-                innerContent || (
-                  <div className="flex flex-col items-center gap-2">
-                    <AiOutlinePlus />
-                    <p>Upload</p>
-                  </div>
-                )
-              ))}
+            {listType === 'button' ? (
+              <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
+                {innerContent || 'Click to Upload'}
+              </Button>
+            ) : (
+              innerContent || (
+                <div className="flex flex-col items-center gap-2">
+                  <AiOutlinePlus />
+                  <p>Upload</p>
+                </div>
+              )
+            )}
           </Upload.Dragger>
         ) : (
           <Upload {...uploadCommonProps}>
-            {fileList.length < maxCount &&
-              (listType === 'button' ? (
-                <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
-                  {innerContent || 'Click to Upload'}
-                </Button>
-              ) : (
-                innerContent || (
-                  <div className="flex flex-col items-center gap-2">
-                    <AiOutlinePlus />
-                    <p>Upload</p>
-                  </div>
-                )
-              ))}
+            {listType === 'button' ? (
+              <Button type="primary" icon={<AiOutlineUpload />} disabled={isDisable}>
+                {innerContent || 'Click to Upload'}
+              </Button>
+            ) : (
+              innerContent || (
+                <div className="flex flex-col items-center gap-2">
+                  <AiOutlinePlus />
+                  <p>Upload</p>
+                </div>
+              )
+            )}
           </Upload>
         )}
       </ImgCrop>

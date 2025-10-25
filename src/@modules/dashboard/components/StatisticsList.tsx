@@ -1,18 +1,20 @@
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
-  DollarCircleOutlined,
+  FundOutlined,
   ShoppingCartOutlined,
+  StopOutlined,
   SyncOutlined,
   TrophyOutlined,
   TruckOutlined,
 } from '@ant-design/icons';
+import { States } from '@lib/constant/states';
+import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
-import { Card, Col, Row, Spin, Typography } from 'antd';
+import { Card, Col, Row, Spin } from 'antd';
 import React from 'react';
 import { DashboardHooks } from '../lib/hooks';
-const { Text, Title } = Typography;
 
 interface IStatistic {
   icon: React.ReactNode;
@@ -28,6 +30,8 @@ interface IProps {
 }
 
 const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate }) => {
+  const [sidebar] = useLocalState(States.sidebar);
+
   const { isLoading, data } = DashboardHooks.useFindStatistic({
     options: {
       start_date: startDate,
@@ -61,16 +65,22 @@ const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate }) => 
       value: data?.data?.delivered_orders || 0,
     },
     {
-      icon: <DollarCircleOutlined className="text-2xl text-white" />,
-      iconBgColorClassName: 'bg-red-500',
-      title: 'Total Costs Amount',
-      value: Toolbox.withCurrency(data?.data?.total_costs_amount || 0),
+      icon: <StopOutlined className="text-2xl text-white" />,
+      iconBgColorClassName: 'bg-gray-500',
+      title: 'Cancelled Orders',
+      value: data?.data?.cancelled_orders || 0,
     },
     {
       icon: <ShoppingCartOutlined className="text-2xl text-white" />,
       iconBgColorClassName: 'bg-purple-500',
       title: 'Total Sales Amount',
       value: Toolbox.withCurrency(data?.data?.total_sales_amount || 0),
+    },
+    {
+      icon: <FundOutlined className="text-2xl text-white" />,
+      iconBgColorClassName: 'bg-teal-500',
+      title: 'Total Due Amount',
+      value: Toolbox.withCurrency(data?.data?.total_due_amount || 0),
     },
     {
       icon: <TrophyOutlined className="text-2xl text-white" />,
@@ -84,12 +94,19 @@ const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate }) => 
     <div className={className}>
       {isLoading ? (
         <div className="flex justify-center py-8">
-          <Spin size="large" />
+          <Spin />
         </div>
       ) : (
         <Row gutter={[16, 16]}>
           {statistics.map((statistic, idx) => (
-            <Col xs={24} md={12} lg={6} key={idx}>
+            <Col
+              xs={24}
+              md={sidebar.isCollapsed ? 12 : 24}
+              lg={sidebar.isCollapsed ? 8 : 12}
+              xl={sidebar.isCollapsed ? 6 : 8}
+              xxl={6}
+              key={idx}
+            >
               <Card
                 styles={{
                   body: {
@@ -99,12 +116,8 @@ const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate }) => 
               >
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex-1">
-                    <Text className="text-gray-500 dark:text-gray-300 text-sm block" style={{ marginBottom: 4 }}>
-                      {statistic.title}
-                    </Text>
-                    <Title level={2} className="text-gray-900 dark:text-white text-3xl font-bold" style={{ margin: 0 }}>
-                      {statistic.value}
-                    </Title>
+                    <p className="text-gray-500 dark:text-gray-300 text-sm block mb-1">{statistic.title}</p>
+                    <p className="text-gray-900 dark:text-white text-2xl font-bold">{statistic.value}</p>
                   </div>
                   <div
                     className={cn(

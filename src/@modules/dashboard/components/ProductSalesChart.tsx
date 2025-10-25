@@ -32,7 +32,7 @@ const ProductSalesChart: React.FC<IProps> = ({ isLoading, data }) => {
     },
     plotOptions: {
       bar: {
-        columnWidth: 100 / 12 + '%',
+        columnWidth: data?.length >= 8 ? '35%' : data?.length >= 4 ? '25%' : '15%',
         distributed: true,
       },
     },
@@ -105,7 +105,7 @@ const ProductSalesChart: React.FC<IProps> = ({ isLoading, data }) => {
 
   return isLoading ? (
     <div className="flex justify-center py-8">
-      <Spin size="large" />
+      <Spin />
     </div>
   ) : (
     <div className="bg-gray-200/40 dark:bg-[var(--color-rich-black)] rounded-lg p-4">

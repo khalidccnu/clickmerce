@@ -15,35 +15,38 @@ interface IProps {
 const ProductSalesAmountChart: React.FC<IProps> = ({ isLoading, data }) => {
   const { isDark } = useTheme();
 
-  const lineChartOptions: ApexOptions = {
+  const areaChartOptions: ApexOptions = {
     chart: {
-      type: 'line',
+      type: 'area',
       toolbar: { show: false },
     },
     xaxis: {
       categories: data?.map((elem) => elem?.month),
-      labels: {
-        show: false,
-      },
+      labels: { show: false },
     },
     yaxis: {
-      labels: {
-        show: false,
-      },
+      labels: { show: false },
     },
     dataLabels: { enabled: false },
     stroke: {
       width: 2,
       curve: 'smooth',
     },
+    fill: {
+      type: 'gradient',
+      gradient: {
+        shadeIntensity: 1,
+        opacityFrom: 0.45,
+        opacityTo: 0,
+        stops: [0, 90, 100],
+      },
+    },
     markers: {
       size: 4,
       colors: ['#008FFB', '#FF4560', '#00E396'],
       strokeColors: isDark ? '#1f2937' : '#fff',
       strokeWidth: 2,
-      hover: {
-        size: 6,
-      },
+      hover: { size: 6 },
     },
     tooltip: {
       enabled: true,
@@ -61,24 +64,16 @@ const ProductSalesAmountChart: React.FC<IProps> = ({ isLoading, data }) => {
     responsive: [
       {
         breakpoint: 1024,
-        options: {
-          chart: { height: 300 },
-        },
+        options: { chart: { height: 300 } },
       },
       {
         breakpoint: 600,
-        options: {
-          chart: { height: 250 },
-        },
+        options: { chart: { height: 250 } },
       },
     ],
   };
 
-  const lineChartSeries = [
-    {
-      name: 'Costs Amount',
-      data: data?.map((elem) => elem?.costs_amount),
-    },
+  const areaChartSeries = [
     {
       name: 'Sales Amount',
       data: data?.map((elem) => elem?.sales_amount),
@@ -91,11 +86,11 @@ const ProductSalesAmountChart: React.FC<IProps> = ({ isLoading, data }) => {
 
   return isLoading ? (
     <div className="flex justify-center py-8">
-      <Spin size="large" />
+      <Spin />
     </div>
   ) : (
     <div className="bg-gray-200/40 dark:bg-[var(--color-rich-black)] rounded-lg p-4">
-      <ReactApexChart options={lineChartOptions} series={lineChartSeries} type="line" height={350} />
+      <ReactApexChart options={areaChartOptions} series={areaChartSeries} type="area" height={350} />
     </div>
   );
 };

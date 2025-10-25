@@ -7,8 +7,9 @@ export interface IDashboardStatistics {
   shipped_orders: number;
   processing_orders: number;
   delivered_orders: number;
-  total_costs_amount: number;
+  cancelled_orders: number;
   total_sales_amount: number;
+  total_due_amount: number;
   total_profit_amount: number;
 }
 
@@ -19,9 +20,8 @@ export interface IDashboardStatisticsResponse extends IBaseResponse {
 export interface IDashboardAnalysis {
   month: string;
   orders: number;
-  profit_amount: number;
   sales_amount: number;
-  costs_amount: number;
+  profit_amount: number;
 }
 
 export interface IDashboardAnalysesResponse extends IBaseResponse {

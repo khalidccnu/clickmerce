@@ -1,4 +1,5 @@
 export const Dayjs = {
+  queryDate: 'YYYY-MM-DD',
   date: 'DD.MM.YYYY',
   time: 'HH:mm',
   timeWithAmPm: 'hh:mm A',

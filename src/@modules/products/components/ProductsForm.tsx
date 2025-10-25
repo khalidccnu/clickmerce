@@ -351,6 +351,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
                             >
                               <CustomUploader
                                 isCrop
+                                type="DRAGGER"
                                 listType="picture-card"
                                 initialValues={
                                   Array.isArray(formValues?.images?.[name]?.url)

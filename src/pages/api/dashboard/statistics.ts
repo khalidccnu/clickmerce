@@ -79,8 +79,9 @@ async function handleStatistics(req: NextApiRequest, res: NextApiResponse) {
     const processingOrders = orders.filter((order) => order.status === ENUM_ORDER_STATUS_TYPES.PROCESSING).length;
     const shippedOrders = orders.filter((order) => order.status === ENUM_ORDER_STATUS_TYPES.SHIPPED).length;
     const deliveredOrders = orders.filter((order) => order.status === ENUM_ORDER_STATUS_TYPES.DELIVERED).length;
+    const cancelledOrders = orders.filter((order) => order.status === ENUM_ORDER_STATUS_TYPES.CANCELLED).length;
 
-    const { totalCostsAmount, totalSalesAmount } = orders.reduce(
+    const { totalCostsAmount, totalSalesAmount, totalDueAmount } = orders.reduce(
       (acc, order) => {
         const orderCost =
           order.products?.reduce((productCost, product) => {
@@ -93,13 +94,15 @@ async function handleStatistics(req: NextApiRequest, res: NextApiResponse) {
           }, 0) || 0;
 
         const orderSale = order.sub_total_amount || 0;
+        const orderDue = order.due_amount || 0;
 
         acc.totalCostsAmount += orderCost;
         acc.totalSalesAmount += orderSale;
+        acc.totalDueAmount += orderDue;
 
         return acc;
       },
-      { totalCostsAmount: 0, totalSalesAmount: 0 },
+      { totalCostsAmount: 0, totalSalesAmount: 0, totalDueAmount: 0 },
     );
 
     const totalProfitAmount = totalSalesAmount > totalCostsAmount ? totalSalesAmount - totalCostsAmount : 0;
@@ -109,8 +112,9 @@ async function handleStatistics(req: NextApiRequest, res: NextApiResponse) {
       processing_orders: processingOrders,
       shipped_orders: shippedOrders,
       delivered_orders: deliveredOrders,
-      total_costs_amount: Toolbox.truncateNumber(totalCostsAmount),
+      cancelled_orders: cancelledOrders,
       total_sales_amount: Toolbox.truncateNumber(totalSalesAmount),
+      total_due_amount: Toolbox.truncateNumber(totalDueAmount),
       total_profit_amount: Toolbox.truncateNumber(totalProfitAmount),
     };
 

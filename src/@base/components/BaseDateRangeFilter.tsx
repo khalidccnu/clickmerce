@@ -106,8 +106,8 @@ const BaseDateRangeFilter: React.FC<IProps> = ({
         };
 
         if (values.customDate?.length === 2) {
-          changedValues.startDate = dayjs(values.customDate[0]).format(Dayjs.date);
-          changedValues.endDate = dayjs(values.customDate[1]).format(Dayjs.date);
+          changedValues.startDate = dayjs(values.customDate[0]).format(Dayjs.queryDate);
+          changedValues.endDate = dayjs(values.customDate[1]).format(Dayjs.queryDate);
         } else if (values.dateFilter && values.dateFilter !== 'Custom') {
           try {
             const dateFilter = JSON.parse(values.dateFilter);

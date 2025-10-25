@@ -12,7 +12,7 @@ import Authorization from '@modules/auth/components/Authorization';
 import { Button, FloatButton, Grid, Layout } from 'antd';
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import React, { type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import React, { type PropsWithChildren, useEffect, useRef } from 'react';
 import { IoClose, IoLaptopOutline } from 'react-icons/io5';
 import { MdFullscreen, MdFullscreenExit, MdOutlineKeyboardDoubleArrowRight } from 'react-icons/md';
 
@@ -30,20 +30,20 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
   const screens = Grid.useBreakpoint();
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useSessionState(States.headerHeight);
-  const [isCollapsed, setCollapsed] = useState(false);
+  const [sidebar, setSidebar] = useLocalState(States.sidebar);
   const [menu, setMenu] = useLocalState<IMenu>(States.menu);
   const { elemRef: siderRef, width: siderWidth } = useResize<HTMLDivElement>();
   const siderFloatButtonRef = useRef(null);
   const { isLight } = useTheme();
   const { isFullScreen, toggleFullScreenFn } = useFullScreen();
 
-  useClickOutside([siderRef, siderFloatButtonRef], () => (screens.md ? null : setCollapsed(true)));
+  useClickOutside([siderRef, siderFloatButtonRef], () => (screens.md ? null : setSidebar({ isCollapsed: true })));
 
   const styles: any = {
     sider: {
       position: 'fixed',
       top: 0,
-      left: isCollapsed ? '-100%' : 0,
+      left: sidebar.isCollapsed ? '-100%' : 0,
       height: '100vh',
       borderRight: screens.md
         ? 'none'
@@ -62,7 +62,7 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       overflowY: 'auto',
     },
     layout: {
-      paddingLeft: !screens.md || isCollapsed ? 0 : siderWidth,
+      paddingLeft: !screens.md || sidebar.isCollapsed ? 0 : siderWidth,
       background: 'transparent',
     },
     header: {
@@ -92,16 +92,16 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
         ref={siderRef}
         collapsible
         trigger={null}
-        collapsed={isCollapsed}
+        collapsed={sidebar.isCollapsed}
         width={280}
         style={styles.sider}
         breakpoint="md"
         theme="light"
         onBreakpoint={(broken) => {
-          if (broken) setCollapsed(true);
+          if (broken) setSidebar({ isCollapsed: true });
         }}
         onClick={(e) => {
-          if (!screens.md && (e.target as HTMLAnchorElement).href) setCollapsed(true);
+          if (!screens.md && (e.target as HTMLAnchorElement).href) setSidebar({ isCollapsed: true });
         }}
       >
         <div
@@ -123,8 +123,16 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       </Layout.Sider>
       <Layout style={styles.layout}>
         <Layout.Header style={styles.header} ref={headerRef}>
-          <Button type="text" size="large" onClick={() => setCollapsed((prev) => !prev)}>
-            <MdOutlineKeyboardDoubleArrowRight size={24} className={isCollapsed ? 'rotate-0' : 'rotate-180'} />
+          <Button
+            type="text"
+            size="large"
+            onClick={() =>
+              setSidebar((prev) => {
+                return { ...prev, isCollapsed: !prev.isCollapsed };
+              })
+            }
+          >
+            <MdOutlineKeyboardDoubleArrowRight size={24} className={sidebar.isCollapsed ? 'rotate-0' : 'rotate-180'} />
           </Button>
           <Authorization allowedPermissions={['pos:read']}>
             <CustomLink href={Paths.admin.pos}>
@@ -149,10 +157,14 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       <FloatButton
         ref={siderFloatButtonRef}
         style={{
-          display: screens.md || isCollapsed ? 'none' : 'block',
+          display: screens.md || sidebar.isCollapsed ? 'none' : 'block',
         }}
         icon={<IoClose />}
-        onClick={() => setCollapsed((prev) => !prev)}
+        onClick={() =>
+          setSidebar((prev) => {
+            return { ...prev, isCollapsed: !prev.isCollapsed };
+          })
+        }
       />
     </Layout>
   );
