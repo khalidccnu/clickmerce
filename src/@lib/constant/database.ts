@@ -21,5 +21,7 @@ export const Database = {
   deliveryZones: 'delivery_zones',
   coupons: 'coupons',
   paymentMethods: 'payment_methods',
+  banners: 'banners',
+  features: 'features',
   settings: 'settings',
 };

@@ -12,7 +12,16 @@ import { GiMedicines } from 'react-icons/gi';
 import { GrGallery, GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline, IoReturnUpBack } from 'react-icons/io5';
 import { LiaCartArrowDownSolid } from 'react-icons/lia';
-import { MdDashboard, MdLocalOffer, MdOutlineCategory, MdOutlineInventory2, MdOutlineMap } from 'react-icons/md';
+import {
+  MdDashboard,
+  MdDashboardCustomize,
+  MdExtension,
+  MdLocalOffer,
+  MdOutlineCategory,
+  MdOutlineInventory2,
+  MdOutlineMap,
+  MdOutlineViewCarousel,
+} from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
 
@@ -219,6 +228,26 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
             <CustomLink href={Toolbox.appendPagination(Paths.admin.paymentMethods.list)}>Payment Methods</CustomLink>
           ),
           allowedPermissions: ['payment_methods:read'],
+        },
+        {
+          key: Paths.admin.cms.root,
+          icon: <MdDashboardCustomize />,
+          label: 'CMS',
+          allowedPermissions: ['banners:read'],
+          children: [
+            {
+              key: Paths.admin.cms.banners.list,
+              icon: <MdOutlineViewCarousel />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.banners.list)}>Banners</CustomLink>,
+              allowedPermissions: ['banners:read'],
+            },
+            {
+              key: Paths.admin.cms.features.list,
+              icon: <MdExtension />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.features.list)}>Features</CustomLink>,
+              allowedPermissions: ['features:read'],
+            },
+          ],
         },
         {
           key: Paths.admin.settings.root,

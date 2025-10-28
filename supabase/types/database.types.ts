@@ -8,6 +8,36 @@ export type Database = {
   };
   public: {
     Tables: {
+      banners: {
+        Row: {
+          created_at: string;
+          id: string;
+          image: string;
+          is_active: boolean;
+          name: string;
+          slug: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          image: string;
+          is_active?: boolean;
+          name: string;
+          slug?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          image?: string;
+          is_active?: boolean;
+          name?: string;
+          slug?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       categories: {
         Row: {
           created_at: string;
@@ -168,6 +198,36 @@ export type Database = {
           is_active?: boolean;
           name?: string;
           slug?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      features: {
+        Row: {
+          created_at: string;
+          description: string | null;
+          id: string;
+          image: string;
+          is_active: boolean;
+          title: string;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          image: string;
+          is_active?: boolean;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          description?: string | null;
+          id?: string;
+          image?: string;
+          is_active?: boolean;
+          title?: string;
           updated_at?: string;
         };
         Relationships: [];
@@ -934,7 +994,66 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      public_banners: {
+        Row: {
+          created_at: string | null;
+          id: string | null;
+          image: string | null;
+          is_active: boolean | null;
+          name: string | null;
+          slug: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          id?: string | null;
+          image?: string | null;
+          is_active?: boolean | null;
+          name?: string | null;
+          slug?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          id?: string | null;
+          image?: string | null;
+          is_active?: boolean | null;
+          name?: string | null;
+          slug?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
+      public_features: {
+        Row: {
+          created_at: string | null;
+          description: string | null;
+          id: string | null;
+          image: string | null;
+          is_active: boolean | null;
+          title: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string | null;
+          image?: string | null;
+          is_active?: boolean | null;
+          title?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          created_at?: string | null;
+          description?: string | null;
+          id?: string | null;
+          image?: string | null;
+          is_active?: boolean | null;
+          title?: string | null;
+          updated_at?: string | null;
+        };
+        Relationships: [];
+      };
     };
     Functions: {
       create_multiple_permission_mappings: {

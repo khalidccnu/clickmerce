@@ -84,6 +84,17 @@ export const Paths = {
       root: '/admin/payment-methods',
       list: '/admin/payment-methods/list',
     },
+    cms: {
+      root: '/admin/cms',
+      banners: {
+        root: '/admin/cms/banners',
+        list: '/admin/cms/banners/list',
+      },
+      features: {
+        root: '/admin/cms/features',
+        list: '/admin/cms/features/list',
+      },
+    },
     settings: {
       root: '/admin/settings',
     },

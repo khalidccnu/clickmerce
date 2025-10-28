@@ -89,4 +89,14 @@ export const Permissions = {
   PAYMENT_METHODS_WRITE: 'payment_methods:write',
   PAYMENT_METHODS_UPDATE: 'payment_methods:update',
   PAYMENT_METHODS_DELETE: 'payment_methods:delete',
+
+  BANNERS_READ: 'banners:read',
+  BANNERS_WRITE: 'banners:write',
+  BANNERS_UPDATE: 'banners:update',
+  BANNERS_DELETE: 'banners:delete',
+
+  FEATURES_READ: 'features:read',
+  FEATURES_WRITE: 'features:write',
+  FEATURES_UPDATE: 'features:update',
+  FEATURES_DELETE: 'features:delete',
 } as const;
