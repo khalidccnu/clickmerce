@@ -15,6 +15,7 @@ export interface IOrdersFilter extends IBaseFilter {
 
 export interface IOrder extends IBaseEntity {
   code: TId;
+  customer_id: TId;
   customer: IUser;
   products: {
     id: TId;

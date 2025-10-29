@@ -8,6 +8,7 @@ import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { orderReturnSchema, orderUpdateSchema, TOrderReturnDto, TOrderUpdateDto } from '@modules/orders/lib/dtos';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
+import { ENUM_TRANSACTION_TYPES } from '@modules/transactions/lib/enums';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -239,6 +240,15 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
         return res.status(500).json(response);
       }
+
+      await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
+        code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
+        type: ENUM_TRANSACTION_TYPES.CREDIT,
+        amount: newPayAmount - order.pay_amount,
+        note: `Payment for Order #${order.code}`,
+        user_id: order?.customer_id,
+        created_by_id: user.id,
+      });
     }
 
     if (status) {
@@ -268,6 +278,15 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
             }
           }
         }
+
+        await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
+          code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
+          type: ENUM_TRANSACTION_TYPES.CREDIT,
+          amount: order.grand_total_amount,
+          note: `Return for Order #${order.code}`,
+          user_id: order.customer_id,
+          created_by_id: user.id,
+        });
       }
 
       updateResult = await SupabaseAdapter.update<IOrder>(supabaseServerClient, Database.orders, id as string, {
@@ -593,6 +612,15 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(500).json(response);
     }
+
+    await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
+      code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
+      type: ENUM_TRANSACTION_TYPES.CREDIT,
+      amount: order.grand_total_amount - updateResult.data.grand_total_amount,
+      note: `Return for Order #${order.code}`,
+      user_id: order.customer_id,
+      created_by_id: user.id,
+    });
 
     const updatedOrder = await SupabaseAdapter.findOne<IOrder>(
       supabaseServerClient,

@@ -15,8 +15,8 @@ export type Database = {
           image: string;
           is_active: boolean;
           name: string;
-          slug: string | null;
           updated_at: string;
+          url: string | null;
         };
         Insert: {
           created_at?: string;
@@ -24,8 +24,8 @@ export type Database = {
           image: string;
           is_active?: boolean;
           name: string;
-          slug?: string | null;
           updated_at?: string;
+          url?: string | null;
         };
         Update: {
           created_at?: string;
@@ -33,8 +33,8 @@ export type Database = {
           image?: string;
           is_active?: boolean;
           name?: string;
-          slug?: string | null;
           updated_at?: string;
+          url?: string | null;
         };
         Relationships: [];
       };
@@ -873,6 +873,60 @@ export type Database = {
         };
         Relationships: [];
       };
+      transactions: {
+        Row: {
+          amount: number;
+          code: string;
+          created_at: string;
+          created_by_id: string | null;
+          id: string;
+          is_active: boolean;
+          note: string | null;
+          type: string;
+          updated_at: string;
+          user_id: string;
+        };
+        Insert: {
+          amount: number;
+          code: string;
+          created_at?: string;
+          created_by_id?: string | null;
+          id?: string;
+          is_active?: boolean;
+          note?: string | null;
+          type: string;
+          updated_at?: string;
+          user_id: string;
+        };
+        Update: {
+          amount?: number;
+          code?: string;
+          created_at?: string;
+          created_by_id?: string | null;
+          id?: string;
+          is_active?: boolean;
+          note?: string | null;
+          type?: string;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'transactions_created_by_id_fkey';
+            columns: ['created_by_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'transactions_user_id_fkey';
+            columns: ['user_id'];
+            isOneToOne: false;
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       user_roles: {
         Row: {
           created_at: string;
@@ -994,66 +1048,7 @@ export type Database = {
       };
     };
     Views: {
-      public_banners: {
-        Row: {
-          created_at: string | null;
-          id: string | null;
-          image: string | null;
-          is_active: boolean | null;
-          name: string | null;
-          slug: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          id?: string | null;
-          image?: string | null;
-          is_active?: boolean | null;
-          name?: string | null;
-          slug?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          created_at?: string | null;
-          id?: string | null;
-          image?: string | null;
-          is_active?: boolean | null;
-          name?: string | null;
-          slug?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
-      public_features: {
-        Row: {
-          created_at: string | null;
-          description: string | null;
-          id: string | null;
-          image: string | null;
-          is_active: boolean | null;
-          title: string | null;
-          updated_at: string | null;
-        };
-        Insert: {
-          created_at?: string | null;
-          description?: string | null;
-          id?: string | null;
-          image?: string | null;
-          is_active?: boolean | null;
-          title?: string | null;
-          updated_at?: string | null;
-        };
-        Update: {
-          created_at?: string | null;
-          description?: string | null;
-          id?: string | null;
-          image?: string | null;
-          is_active?: boolean | null;
-          title?: string | null;
-          updated_at?: string | null;
-        };
-        Relationships: [];
-      };
+      [_ in never]: never;
     };
     Functions: {
       create_multiple_permission_mappings: {

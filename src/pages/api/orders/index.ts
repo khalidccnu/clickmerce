@@ -2,6 +2,7 @@ import { IBaseResponse } from '@base/interfaces';
 import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
 import { Database } from '@lib/constant/database';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
@@ -13,6 +14,7 @@ import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ENUM_SETTINGS_TAX_TYPES } from '@modules/settings/lib/enums';
 import { ISettings } from '@modules/settings/lib/interfaces';
+import { ENUM_TRANSACTION_TYPES } from '@modules/transactions/lib/enums';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -476,6 +478,26 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         products: enrichedProducts,
       };
     }
+
+    if (enrichedOrder?.pay_amount) {
+      await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
+        code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
+        type: ENUM_TRANSACTION_TYPES.CREDIT,
+        amount: enrichedOrder.pay_amount,
+        note: `Payment for Order #${enrichedOrder.code}`,
+        user_id: customer_id,
+        created_by_id: user.id,
+      });
+    }
+
+    await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
+      code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
+      type: ENUM_TRANSACTION_TYPES.DEBIT,
+      amount: enrichedOrder.grand_total_amount,
+      note: `Payment for Order #${enrichedOrder.code}`,
+      user_id: customer_id,
+      created_by_id: user.id,
+    });
 
     if (coupon_id) {
       const { success, data } = await SupabaseAdapter.findById<ICoupon>(

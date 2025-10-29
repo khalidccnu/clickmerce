@@ -84,6 +84,16 @@ export const Paths = {
       root: '/admin/payment-methods',
       list: '/admin/payment-methods/list',
     },
+    tallyKhata: {
+      root: '/admin/tally-khata',
+      dashboard: {
+        root: '/admin/tally-khata/dashboard',
+      },
+      transactions: {
+        root: '/admin/tally-khata/transactions',
+        list: '/admin/tally-khata/transactions/list',
+      },
+    },
     cms: {
       root: '/admin/cms',
       banners: {

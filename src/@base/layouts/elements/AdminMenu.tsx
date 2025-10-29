@@ -4,6 +4,7 @@ import { Paths } from '@lib/constant/paths';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getMenuItemsAccess } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
+import { AiOutlineBook } from 'react-icons/ai';
 import { BiCategory, BiCollection } from 'react-icons/bi';
 import { BsBoxSeam } from 'react-icons/bs';
 import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons/fa';
@@ -21,6 +22,8 @@ import {
   MdOutlineInventory2,
   MdOutlineMap,
   MdOutlineViewCarousel,
+  MdSpaceDashboard,
+  MdSwapHoriz,
 } from 'react-icons/md';
 import { RiUserStarFill } from 'react-icons/ri';
 import { TbTruckDelivery } from 'react-icons/tb';
@@ -230,10 +233,43 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           allowedPermissions: ['payment_methods:read'],
         },
         {
+          key: Paths.admin.tallyKhata.root,
+          icon: <AiOutlineBook />,
+          label: 'Tally Khata',
+          allowedPermissions: ['tally_khata_dashboard:read', 'transactions:read'],
+          children: [
+            {
+              key: Paths.admin.tallyKhata.dashboard.root,
+              icon: <MdSpaceDashboard />,
+              label: <CustomLink href={Paths.admin.tallyKhata.dashboard.root}>Dashboard</CustomLink>,
+              allowedPermissions: ['tally_khata_dashboard:read'],
+            },
+            {
+              key: Paths.admin.tallyKhata.transactions.list,
+              icon: <MdSwapHoriz />,
+              label: (
+                <CustomLink
+                  href={{
+                    pathname: Paths.admin.tallyKhata.transactions.list,
+                    query: {
+                      page: 1,
+                      limit: 10,
+                      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+                    },
+                  }}
+                >
+                  Transactions
+                </CustomLink>
+              ),
+              allowedPermissions: ['transactions:read'],
+            },
+          ],
+        },
+        {
           key: Paths.admin.cms.root,
           icon: <MdDashboardCustomize />,
           label: 'CMS',
-          allowedPermissions: ['banners:read'],
+          allowedPermissions: ['banners:read', 'features:read'],
           children: [
             {
               key: Paths.admin.cms.banners.list,

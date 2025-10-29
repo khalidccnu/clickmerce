@@ -90,6 +90,13 @@ export const Permissions = {
   PAYMENT_METHODS_UPDATE: 'payment_methods:update',
   PAYMENT_METHODS_DELETE: 'payment_methods:delete',
 
+  TALLY_KHATA_DASHBOARD_READ: 'tally_khata_dashboard:read',
+
+  TRANSACTIONS_READ: 'transactions:read',
+  TRANSACTIONS_WRITE: 'transactions:write',
+  TRANSACTIONS_UPDATE: 'transactions:update',
+  TRANSACTIONS_DELETE: 'transactions:delete',
+
   BANNERS_READ: 'banners:read',
   BANNERS_WRITE: 'banners:write',
   BANNERS_UPDATE: 'banners:update',

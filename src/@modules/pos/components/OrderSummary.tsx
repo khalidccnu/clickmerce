@@ -449,7 +449,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
       >
         <UsersForm
           form={userFormInstance}
-          initialValues={{ is_admin: 'false', is_active: 'true' }}
+          initialValues={{ is_admin: 'false', is_default_customer: 'false', is_active: 'true' }}
           isLoading={userCreateFn.isPending}
           onFinish={(values) => userCreateFn.mutate(values)}
         />

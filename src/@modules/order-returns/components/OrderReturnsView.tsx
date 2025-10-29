@@ -21,7 +21,7 @@ const OrderReturnsView: React.FC<IProps> = ({ orderReturn }) => {
           labelStyle={{ fontWeight: 600 }}
         >
           <Descriptions.Item label="Code">
-            <span className="font-mono text-[var(--color-primary)]">{orderReturn?.code}</span>
+            <span className="text-[var(--color-primary)]">{orderReturn?.code}</span>
           </Descriptions.Item>
           <Descriptions.Item label="Date">
             {dayjs(orderReturn?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}

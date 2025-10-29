@@ -93,7 +93,7 @@ const FeaturesForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           </Col>
           <Col xs={24}>
             <Form.Item name="description" className="!mb-0">
-              <FloatTextarea placeholder="Description" />
+              <FloatTextarea placeholder="Description" autoSize={{ minRows: 1, maxRows: 3 }} />
             </Form.Item>
           </Col>
           <Col xs={24}>

@@ -78,7 +78,7 @@ const FeaturesList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       dataIndex: 'description',
       title: 'Description',
       render: (description) => (
-        <Typography.Paragraph ellipsis={{ rows: 2, expandable: true }} style={{ marginBottom: 0 }}>
+        <Typography.Paragraph ellipsis={{ rows: 3, expandable: true }} style={{ marginBottom: 0 }}>
           {description || 'N/A'}
         </Typography.Paragraph>
       ),
