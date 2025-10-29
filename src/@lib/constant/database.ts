@@ -21,6 +21,7 @@ export const Database = {
   deliveryZones: 'delivery_zones',
   coupons: 'coupons',
   paymentMethods: 'payment_methods',
+  tallykhataDashboard: 'tallykhata_dashboard',
   transactions: 'transactions',
   banners: 'banners',
   features: 'features',
