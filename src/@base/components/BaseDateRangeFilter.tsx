@@ -132,7 +132,12 @@ const BaseDateRangeFilter: React.FC<IProps> = ({
           </Select>
         </Form.Item>
         <Form.Item name="customDate" style={{ width: '100%' }} className="mb-0">
-          <DatePicker.RangePicker {...dateRangePickerProps} />
+          <DatePicker.RangePicker
+            dropdownClassName="[&_.ant-picker-panels]:flex-col md:[&_.ant-picker-panels]:flex-row"
+            placement="bottomLeft"
+            getPopupContainer={(trigger) => trigger.parentElement}
+            {...dateRangePickerProps}
+          />
         </Form.Item>
       </Space.Compact>
     </Form>
