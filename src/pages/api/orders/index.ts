@@ -427,7 +427,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            customer: { table: Database.users, foreignKey: 'customer_id' },
+            customer: {
+              table: Database.users,
+              foreignKey: 'customer_id',
+              nested: { user_info: { table: Database.usersInfo } },
+            },
             payment_method: { table: Database.paymentMethods, foreignKey: 'payment_method_id' },
             delivery_zone: { table: Database.deliveryZones, foreignKey: 'delivery_zone_id' },
             created_by: { table: Database.users, foreignKey: 'created_by_id' },
@@ -438,7 +442,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       },
     );
 
-    let enrichedOrder = completeOrderResponse.data || orderResponse.data;
+    let enrichedOrder = completeOrderResponse.data;
 
     if (enrichedOrder && enrichedOrder.products && Array.isArray(enrichedOrder.products)) {
       const enrichedProducts = await Promise.all(
@@ -497,6 +501,13 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       note: `Payment for Order #${enrichedOrder.code}`,
       user_id: customer_id,
       created_by_id: user.id,
+    });
+
+    const customerBalance = enrichedOrder?.customer?.user_info?.balance || 0;
+    const customerNewBalance = customerBalance - enrichedOrder.grand_total_amount + (enrichedOrder.pay_amount || 0);
+
+    await SupabaseAdapter.update(supabaseServerClient, Database.usersInfo, enrichedOrder?.customer?.user_info?.id, {
+      balance: customerNewBalance,
     });
 
     if (coupon_id) {

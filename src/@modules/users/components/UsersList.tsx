@@ -1,10 +1,9 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
-import { Dayjs } from '@lib/constant/dayjs';
+import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, Space, Table, message } from 'antd';
-import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { AiFillEdit, AiFillEye } from 'react-icons/ai';
 import { UsersHooks } from '../lib/hooks';
@@ -46,6 +45,7 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
     email: elem?.email,
     birthday: elem?.user_info?.birthday,
     blood_group: elem?.user_info?.blood_group,
+    balance: elem?.user_info?.balance,
     is_active: elem?.is_active,
     created_at: elem?.created_at,
   }));
@@ -68,10 +68,10 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       render: (email) => email || 'N/A',
     },
     {
-      key: 'created_at',
-      dataIndex: 'created_at',
-      title: 'Created At',
-      render: (created_at) => dayjs(created_at).format(Dayjs.dateTimeSecondsWithAmPm),
+      key: 'balance',
+      dataIndex: 'balance',
+      title: 'Balance',
+      render: (balance) => Toolbox.withCurrency(balance || 0),
     },
     {
       key: 'is_active',

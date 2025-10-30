@@ -7,16 +7,20 @@ export interface IUsersFilter extends IBaseFilter {
   is_default_customer?: string;
 }
 
+export interface IUserInfo extends IBaseEntity {
+  birthday: string;
+  blood_group: string;
+  balance: number;
+  user_id: TId;
+}
+
 export interface IUser extends IBaseEntity {
   name: string;
   phone: string;
   email: string;
   is_admin: boolean;
   is_default_customer: boolean;
-  user_info: {
-    birthday: string;
-    blood_group: string;
-  };
+  user_info: IUserInfo;
   user_roles: ({ role_id: TId; user_id: TId; role: IRole } & IBaseEntity)[];
 }
 

@@ -1010,6 +1010,7 @@ export type Database = {
       };
       users_info: {
         Row: {
+          balance: number | null;
           birthday: string | null;
           blood_group: string | null;
           created_at: string;
@@ -1019,6 +1020,7 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          balance?: number | null;
           birthday?: string | null;
           blood_group?: string | null;
           created_at?: string;
@@ -1028,6 +1030,7 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          balance?: number | null;
           birthday?: string | null;
           blood_group?: string | null;
           created_at?: string;

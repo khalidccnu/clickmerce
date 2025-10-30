@@ -194,9 +194,25 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
   try {
-    const orderResponse = await SupabaseAdapter.findOne<IOrder>(supabaseServerClient, Database.orders, {
-      textFilters: { conditions: { id: { eq: id as string } } },
-    });
+    const orderResponse = await SupabaseAdapter.findOne<IOrder>(
+      supabaseServerClient,
+      Database.orders,
+      {
+        textFilters: { conditions: { id: { eq: id as string } } },
+      },
+      {
+        selection: buildSelectionFn({
+          relations: {
+            customer: {
+              table: Database.users,
+              foreignKey: 'customer_id',
+              nested: { user_info: { table: Database.usersInfo } },
+            },
+          },
+          filters: { id },
+        }),
+      },
+    );
 
     if (!orderResponse.success || !orderResponse.data) {
       const response: IBaseResponse = {
@@ -241,13 +257,22 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
         return res.status(500).json(response);
       }
 
+      const amount = newPayAmount - order.pay_amount;
+
       await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
         code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
         type: ENUM_TRANSACTION_TYPES.CREDIT,
-        amount: newPayAmount - order.pay_amount,
+        amount,
         note: `Payment for Order #${order.code}`,
         user_id: order?.customer_id,
         created_by_id: user.id,
+      });
+
+      const customerBalance = order?.customer?.user_info?.balance || 0;
+      const customerNewBalance = customerBalance + amount;
+
+      await SupabaseAdapter.update(supabaseServerClient, Database.usersInfo, order?.customer?.user_info?.id, {
+        balance: customerNewBalance,
       });
     }
 
@@ -286,6 +311,13 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
           note: `Return for Order #${order.code}`,
           user_id: order.customer_id,
           created_by_id: user.id,
+        });
+
+        const customerBalance = order?.customer?.user_info?.balance || 0;
+        const customerNewBalance = customerBalance + order.grand_total_amount;
+
+        await SupabaseAdapter.update(supabaseServerClient, Database.usersInfo, order?.customer?.user_info?.id, {
+          balance: customerNewBalance,
         });
       }
 
@@ -397,9 +429,25 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
   try {
-    const orderResponse = await SupabaseAdapter.findOne<IOrder>(supabaseServerClient, Database.orders, {
-      textFilters: { conditions: { id: { eq: id as string } } },
-    });
+    const orderResponse = await SupabaseAdapter.findOne<IOrder>(
+      supabaseServerClient,
+      Database.orders,
+      {
+        textFilters: { conditions: { id: { eq: id as string } } },
+      },
+      {
+        selection: buildSelectionFn({
+          relations: {
+            customer: {
+              table: Database.users,
+              foreignKey: 'customer_id',
+              nested: { user_info: { table: Database.usersInfo } },
+            },
+          },
+          filters: { id },
+        }),
+      },
+    );
 
     if (!orderResponse.success || !orderResponse.data) {
       const response: IBaseResponse = {
@@ -613,13 +661,22 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json(response);
     }
 
+    const amount = order.grand_total_amount - updateResult.data.grand_total_amount;
+
     await SupabaseAdapter.create(supabaseServerClient, Database.transactions, {
       code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
       type: ENUM_TRANSACTION_TYPES.CREDIT,
-      amount: order.grand_total_amount - updateResult.data.grand_total_amount,
+      amount,
       note: `Return for Order #${order.code}`,
       user_id: order.customer_id,
       created_by_id: user.id,
+    });
+
+    const customerBalance = order?.customer?.user_info?.balance || 0;
+    const customerNewBalance = customerBalance + amount;
+
+    await SupabaseAdapter.update(supabaseServerClient, Database.usersInfo, order?.customer?.user_info?.id, {
+      balance: customerNewBalance,
     });
 
     const updatedOrder = await SupabaseAdapter.findOne<IOrder>(

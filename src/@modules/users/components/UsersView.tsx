@@ -27,6 +27,9 @@ const UsersView: React.FC<IProps> = ({ data }) => {
       <Descriptions.Item label="Birthday">
         {data?.user_info?.birthday ? dayjs(data?.user_info?.birthday).format(Dayjs.date) : 'N/A'}
       </Descriptions.Item>
+      <Descriptions.Item label="Balance" span={2}>
+        {Toolbox.withCurrency(data?.user_info?.balance || 0)}
+      </Descriptions.Item>
       <Descriptions.Item label="Roles" span={2}>
         {Toolbox.isEmpty(data?.user_roles) ? 'N/A' : data?.user_roles?.map((ur) => ur?.role?.name).join(', ')}
       </Descriptions.Item>
@@ -37,6 +40,7 @@ const UsersView: React.FC<IProps> = ({ data }) => {
         ) : (
           <Tag color="orange">Optional Customer</Tag>
         )}
+        <Tag color="geekblue">{dayjs(data?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}</Tag>
       </Descriptions.Item>
     </Descriptions>
   );

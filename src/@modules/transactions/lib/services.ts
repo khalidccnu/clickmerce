@@ -5,6 +5,7 @@ import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAuthSession } from '@modules/auth/lib/utils/client';
+import { ENUM_TRANSACTION_TYPES } from './enums';
 import { ITransaction, ITransactionCreate, ITransactionsFilter, ITransactionsResponse } from './interfaces';
 
 const END_POINT: string = Database.transactions;
@@ -58,11 +59,38 @@ export const TransactionsServices = {
     const code = Toolbox.generateKey({ prefix: 'TXN', type: 'upper' });
 
     try {
-      const res = await SupabaseAdapter.create<ITransaction>(supabaseBrowserClient, END_POINT, {
-        ...payload,
-        code,
-        created_by_id: user.id,
-      });
+      const res = await SupabaseAdapter.create<ITransaction>(
+        supabaseBrowserClient,
+        END_POINT,
+        {
+          ...payload,
+          code,
+          created_by_id: user.id,
+        },
+        {
+          selection: buildSelectionFn({
+            relations: {
+              user: {
+                table: Database.users,
+                columns: ['id', 'name', 'phone', 'email'],
+                foreignKey: 'user_id',
+                nested: { user_info: { table: Database.usersInfo, columns: ['id', 'balance'] } },
+              },
+            },
+          }),
+        },
+      );
+
+      if (res.success) {
+        const userBalance = res?.data?.user?.user_info?.balance || 0;
+        const userNewBalance =
+          userBalance + (payload.type === ENUM_TRANSACTION_TYPES.CREDIT ? payload.amount : -payload.amount);
+
+        await SupabaseAdapter.update(supabaseBrowserClient, Database.usersInfo, res?.data?.user?.user_info?.id, {
+          balance: userNewBalance,
+        });
+      }
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);

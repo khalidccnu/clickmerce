@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS users_info (
     
     birthday TIMESTAMPTZ,
     blood_group VARCHAR,
+    balance DECIMAL(10,2) DEFAULT 0,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     user_id UUID UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE
 );
