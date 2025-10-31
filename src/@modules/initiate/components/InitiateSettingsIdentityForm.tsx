@@ -74,7 +74,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           <FloatInput placeholder="Logo URL" />
         </Form.Item>
       </Col>
-      <Col xs={24} md={12}>
+      <Col xs={24}>
         <Form.Item
           name={['identity', 'social_image_url']}
           rules={[

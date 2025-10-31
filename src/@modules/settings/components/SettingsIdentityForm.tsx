@@ -97,7 +97,7 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
             <FloatInput placeholder="Logo URL" />
           </Form.Item>
         </Col>
-        <Col xs={24} md={12} xl={8}>
+        <Col xs={24} xl={8}>
           <Form.Item
             name="social_image_url"
             rules={[
@@ -149,7 +149,7 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
             />
           </Form.Item>
         </Col>
-        <Col xs={24}>
+        <Col xs={24} xl={16}>
           <Form.Item name="description" className="!mb-0">
             <FloatTextarea placeholder="Description" autoSize={{ minRows: 1, maxRows: 3 }} />
           </Form.Item>
