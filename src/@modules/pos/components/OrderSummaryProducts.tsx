@@ -18,6 +18,7 @@ import Receipt from '@modules/orders/components/Receipt';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
+import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { UsersServices } from '@modules/users/lib/services';
 import { pdf } from '@react-pdf/renderer';
 import { Button, Empty, message, Popconfirm, Spin, Tag } from 'antd';
@@ -46,7 +47,9 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
     setReceiptPreviewLoading(true);
 
     try {
-      const webLogo = await normalizeReceiptImageUrlFn(Env.webBrandLogo);
+      const webLogo = await normalizeReceiptImageUrlFn(
+        settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
+      );
       const { data: customer } = await UsersServices.findById(customerId);
       const { data: profile } = await AuthServices.profile();
       const products = [...cart]
@@ -78,7 +81,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
 
       const order = {
         webLogo,
-        webTitle: Env.webTitle,
+        webTitle: settingsQuery.data?.data?.identity?.name || Env.webTitle,
         moneyReceiptDate: dayjs().format(Dayjs.dateTimeSecondsWithAmPm),
         trxId: invId,
         customerName: customer?.name,
@@ -106,6 +109,8 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
       setReceiptPreviewLoading(false);
     }
   };
+
+  const settingsQuery = SettingsHooks.useFind();
 
   const productsBulkQuery = ProductsHooks.useFindBulk({
     config: {

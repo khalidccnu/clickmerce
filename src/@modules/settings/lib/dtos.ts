@@ -5,18 +5,21 @@ import { settingsTaxTypes, settingsVatTypes } from './enums';
 export const settingsIdentityCreateSchema = yup.object({
   name: yup.string().min(3).required(),
   initial_name: yup.string().min(3).required(),
+  icon_url: yup.string().url().optional().nullable(),
   logo_url: yup.string().url().optional().nullable(),
+  social_image_url: yup.string().url().optional().nullable(),
   phone_code: yup.string().min(2).required(),
   currency: yup.string().min(2).required(),
+  description: yup.string().max(200).optional().nullable(),
 });
 
 export const settingsS3CreateSchema = yup.object({
-  access_key_id: yup.string().min(5).required(),
-  secret_access_key: yup.string().min(5).required(),
-  endpoint: yup.string().url().required(),
+  access_key_id: yup.string().min(5).required().nullable(),
+  secret_access_key: yup.string().min(5).required().nullable(),
+  endpoint: yup.string().url().required().nullable(),
   r2_worker_endpoint: yup.string().url().optional().nullable(),
-  region: yup.string().min(3).required(),
-  bucket: yup.string().min(3).required(),
+  region: yup.string().min(3).required().nullable(),
+  bucket: yup.string().min(3).required().nullable(),
 });
 
 export const settingsVatCreateSchema = yup.object({

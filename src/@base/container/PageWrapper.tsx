@@ -19,6 +19,7 @@ interface IMeta {
   image?: string;
   type?: 'website' | 'article';
   url?: string;
+  icon?: string;
   keywords?: string;
   articlePublishedTime?: string;
   articleAuthor?: string;
@@ -30,17 +31,20 @@ interface IProps extends IMeta, PropsWithChildren {}
 const PageWrapper: React.FC<IProps> = ({ children, ...customMeta }) => {
   const router = useRouter();
 
+  const { baseTitle, description, image, icon, ...restCustomMeta } = customMeta;
   const asPath = router.asPath?.split('?')[0];
   const ogImageUrl = ImagePaths.logo.includes('http') ? ImagePaths.logo : `${Env.webHostUrl}${ImagePaths.logo}`;
+  const iconUrl = ImagePaths.icon.includes('http') ? ImagePaths.icon : `${Env.webHostUrl}${ImagePaths.icon}`;
 
   const meta: IMeta = {
     title: '',
-    baseTitle: Env.webTitle,
-    description: Env.webDescription,
-    image: ogImageUrl,
+    baseTitle: baseTitle || Env.webTitle,
+    description: description || Env.webDescription,
+    image: image || ogImageUrl,
     url: `${Env.webHostUrl}${router.locale ? '/' + router.locale : ''}${asPath}`,
+    icon: icon || iconUrl,
     type: 'website',
-    ...customMeta,
+    ...restCustomMeta,
   };
 
   const generatedTitle = `${meta.title ? meta.title + ' - ' : ''}${meta.baseTitle}`;
@@ -50,6 +54,8 @@ const PageWrapper: React.FC<IProps> = ({ children, ...customMeta }) => {
       <Head>
         <title>{generatedTitle}</title>
         <link rel="canonical" href={meta.url} />
+        <link key="favicon" rel="icon" href={meta.icon} />
+        <link key="favicon-shortcut" rel="shortcut icon" href={meta.icon} />
 
         {meta.description && <meta name="description" content={meta.description} />}
         {meta.keywords && <meta name="keywords" content={meta.keywords} />}

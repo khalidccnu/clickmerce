@@ -1,4 +1,3 @@
-import { Env } from '.environments';
 import { StyleProvider, createCache, extractStyle } from '@ant-design/cssinjs';
 import type { DocumentContext } from 'next/document';
 import Document, { Head, Html, Main, NextScript } from 'next/document';
@@ -8,7 +7,8 @@ const MyDocument = () => {
   return (
     <Html lang="en">
       <Head>
-        <link rel="shortcut icon" href={Env.webBrandIcon} />
+        {/* <link key="favicon" rel="icon" href={Env.webBrandIcon} />
+        <link key="favicon-shortcut" rel="shortcut icon" href={Env.webBrandIcon} /> */}
       </Head>
       <body className="bg-[var(--color-gray-50)] dark:bg-[var(--color-dark-gray)]">
         <Main />

@@ -9,7 +9,7 @@ const NotFoundPage = () => {
   const router = useRouter();
 
   return (
-    <PageWrapper title="404">
+    <PageWrapper title="404" baseTitle={null}>
       <section>
         <div className="container">
           <div className="flex flex-col md:grid md:grid-cols-2 gap-8 justify-center md:items-center max-w-4xl min-h-screen py-16 mx-auto">

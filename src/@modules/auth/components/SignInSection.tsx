@@ -6,6 +6,7 @@ import ThemeToggler from '@base/components/ThemeToggler';
 import { Messages } from '@lib/constant/messages';
 import { Paths } from '@lib/constant/paths';
 import { Storage } from '@lib/utils/storage';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { Button, Form, Input, message, Spin } from 'antd';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -19,7 +20,11 @@ const Lottie = dynamic(() => import('lottie-react'), {
   loading: () => <Spin />,
 });
 
-const SignInSection = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const SignInSection: React.FC<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const redirectUrl = router.query?.[REDIRECT_PREFIX]?.toString();
@@ -35,9 +40,9 @@ const SignInSection = () => {
 
         setAuthSession(data.data);
 
-        messageApi.loading(Messages.signIn(), 1).then(async () => {
-          Storage.setData(PC_KEY, Env.webPhoneCode);
-          Storage.setData(CURRENCY_KEY, Env.webCurrency);
+        messageApi.loading(Messages.signIn(settingsIdentity?.name), 1).then(async () => {
+          Storage.setData(PC_KEY, settingsIdentity?.phone_code || Env.webPhoneCode);
+          Storage.setData(CURRENCY_KEY, settingsIdentity?.currency?.split('_')?.[1] || Env.webCurrency);
 
           window.location.replace(redirectUrl || Paths.admin.root);
         });

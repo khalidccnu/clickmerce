@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const UnderConstructionPage = () => {
   return (
-    <PageWrapper title="Under Construction">
+    <PageWrapper title="Under Construction" baseTitle={null}>
       <section>
         <div className="container">
           <div className="flex flex-col md:grid md:grid-cols-2 gap-8 justify-center md:items-center max-w-4xl min-h-screen py-16 mx-auto">

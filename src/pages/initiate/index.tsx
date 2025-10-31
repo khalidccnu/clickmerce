@@ -43,7 +43,7 @@ const InitiatePage = () => {
       <section className="py-16">
         {messageHolder}
         <div className="container">
-          <BrandLogo className="mx-auto" width={280} />
+          <BrandLogo className="mx-auto" width={280} isBrand={false} />
           <div className="max-w-2xl mx-auto mt-8 space-y-12">
             <MultiStepForm<IInitiate>
               form={form}

@@ -4,16 +4,19 @@ import { TSettingsTaxType, TSettingsVatType } from './enums';
 export interface ISettingsIdentity {
   name: string;
   initial_name: string;
-  logo_url?: string;
+  icon_url: string;
+  logo_url: string;
+  social_image_url: string;
   phone_code: string;
   currency: string;
+  description: string;
 }
 
 export interface ISettingsS3 {
   access_key_id: string;
   secret_access_key: string;
   endpoint: string;
-  r2_worker_endpoint?: string;
+  r2_worker_endpoint: string;
   region: string;
   bucket: string;
 }
@@ -41,8 +44,8 @@ export interface ISettingsResponse extends IBaseResponse {
 }
 
 export interface ISettingsCreate {
-  identity: ISettingsIdentity;
-  s3: ISettingsS3;
-  vat: ISettingsVat;
-  tax: ISettingsTax;
+  identity: Partial<ISettingsIdentity>;
+  s3: Partial<ISettingsS3>;
+  vat: Partial<ISettingsVat>;
+  tax: Partial<ISettingsTax>;
 }

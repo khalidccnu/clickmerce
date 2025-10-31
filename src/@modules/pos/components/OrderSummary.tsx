@@ -30,6 +30,7 @@ import { OrdersHooks } from '@modules/orders/lib/hooks';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
 import { IPaymentMethod } from '@modules/payment-methods/lib/interfaces';
+import { SettingsHooks } from '@modules/settings/lib/hooks';
 import UsersForm from '@modules/users/components/UsersForm';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUser } from '@modules/users/lib/interfaces';
@@ -64,7 +65,9 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
 
   const handlePdfFn = async (order: IOrder) => {
     try {
-      const webLogo = await normalizeReceiptImageUrlFn(Env.webBrandLogo);
+      const webLogo = await normalizeReceiptImageUrlFn(
+        settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
+      );
       const products = order?.products
         ?.flatMap((product) =>
           (product?.variations || []).map((variation) => ({
@@ -84,7 +87,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
 
       const props = {
         webLogo,
-        webTitle: Env.webTitle,
+        webTitle: settingsQuery.data?.data?.identity?.name || Env.webTitle,
         moneyReceiptDate: dayjs(order.created_at).format(Dayjs.dateTimeSecondsWithAmPm),
         trxId: order?.code,
         customerName: order?.customer?.name,
@@ -129,6 +132,8 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
       },
     });
   };
+
+  const settingsQuery = SettingsHooks.useFind();
 
   const orderCreateFn = OrdersHooks.useCreate({
     config: {

@@ -8,7 +8,7 @@ export const SettingsHooks = {
 
     return useQuery({
       queryKey: [...(queryKey || []), SettingsServices.NAME],
-      queryFn: SettingsServices.find,
+      queryFn: () => SettingsServices.find(),
       ...rest,
     });
   },
