@@ -25,18 +25,24 @@ const PosPage: NextPage<IProps> = ({ settingsIdentity }) => {
 
 export default WithAuthorization(PosPage, { allowedPermissions: ['pos:read'] });
 
-export const getServerSideProps: GetServerSideProps<IProps> = async ({ req }) => {
-  const { data: settings } = await SettingsServices.find({ req });
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
 
-  if (!settings) {
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
     return {
       notFound: true,
     };
   }
-
-  return {
-    props: {
-      settingsIdentity: settings?.identity ?? null,
-    },
-  };
 };

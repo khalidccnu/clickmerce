@@ -25,17 +25,23 @@ const AuthPage: NextPage<IProps> = ({ settingsIdentity }) => {
 export default AuthPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
-  const { data: settings } = await SettingsServices.find();
+  try {
+    const { success, data: settings } = await SettingsServices.find();
 
-  if (!settings) {
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
     return {
       notFound: true,
     };
   }
-
-  return {
-    props: {
-      settingsIdentity: settings?.identity ?? null,
-    },
-  };
 };
