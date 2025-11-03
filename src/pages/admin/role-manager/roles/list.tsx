@@ -8,11 +8,18 @@ import WithAuthorization from '@modules/auth/components/WithAuthorization';
 import RolesForm from '@modules/roles/components/RolesForm';
 import RolesList from '@modules/roles/components/RolesList';
 import { RolesHooks } from '@modules/roles/lib/hooks';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const RolesPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const RolesPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -44,7 +51,13 @@ const RolesPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Roles"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Roles"
@@ -86,3 +99,25 @@ const RolesPage = () => {
 export default WithAuthorization(RolesPage, {
   allowedPermissions: ['roles:read'],
 });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

@@ -5,6 +5,7 @@ import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import { normalizeReceiptImageUrlFn } from '@modules/pos/lib/utils';
+import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { pdf } from '@react-pdf/renderer';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Dropdown, Form, message, Space, Table } from 'antd';
@@ -44,7 +45,9 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
 
   const handlePdfFn = async (order: IOrder) => {
     try {
-      const webLogo = await normalizeReceiptImageUrlFn(Env.webBrandLogo);
+      const webLogo = await normalizeReceiptImageUrlFn(
+        settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
+      );
       const products = order?.products
         ?.flatMap((product) =>
           (product?.variations || []).map((variation) => ({
@@ -64,7 +67,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
 
       const props = {
         webLogo,
-        webTitle: Env.webTitle,
+        webTitle: settingsQuery.data?.data?.identity?.name || Env.webTitle,
         moneyReceiptDate: dayjs(order.created_at).format(Dayjs.dateTimeSecondsWithAmPm),
         trxId: order?.code,
         customerName: order?.customer?.name,
@@ -92,6 +95,8 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       setOrderInvoiceId(null);
     }
   };
+
+  const settingsQuery = SettingsHooks.useFind();
 
   const orderUpdateFn = OrdersHooks.useUpdate({
     config: {

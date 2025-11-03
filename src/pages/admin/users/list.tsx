@@ -4,16 +4,23 @@ import PageWrapper from '@base/container/PageWrapper';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
 import WithAuthorization from '@modules/auth/components/WithAuthorization';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import UsersFilter from '@modules/users/components/UsersFilter';
 import UsersForm from '@modules/users/components/UsersForm';
 import UsersList from '@modules/users/components/UsersList';
 import { UsersHooks } from '@modules/users/lib/hooks';
 import { IUsersFilter } from '@modules/users/lib/interfaces';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const UsersPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const UsersPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const UsersPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Users"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Users"
@@ -93,3 +106,25 @@ const UsersPage = () => {
 };
 
 export default WithAuthorization(UsersPage, { allowedPermissions: ['users:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

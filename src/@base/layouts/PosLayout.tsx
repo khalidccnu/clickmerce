@@ -82,8 +82,8 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
       </Layout.Sider>
       <Layout style={styles.layout}>
         <Layout.Header style={styles.header}>
-          <CustomLink href={Paths.root}>
-            <BrandLogo width={screens.md ? 220 : 160} />
+          <CustomLink href={Paths.root} className="h-full">
+            <BrandLogo width={screens.md ? 220 : 160} className="max-h-full" />
           </CustomLink>
           {screens.lg && <RealTimeClock color="purple" />}
           <CustomLink href={Paths.admin.root} className="ml-auto">

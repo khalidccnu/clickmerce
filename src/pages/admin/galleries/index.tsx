@@ -2,17 +2,25 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import BaseSearch from '@base/components/BaseSearch';
 import CustomUploader from '@base/components/CustomUploader';
 import PageHeader from '@base/components/PageHeader';
+import PageWrapper from '@base/container/PageWrapper';
 import { IBaseFilter } from '@base/interfaces';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
 import GalleriesList from '@modules/galleries/components/GalleriesList';
 import { GalleriesHooks } from '@modules/galleries/lib/hooks';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Image, Tag, message } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { FcAddImage } from 'react-icons/fc';
 
-const GalleriesPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const GalleriesPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [isUploadLoading, setUploadLoading] = useState(false);
@@ -68,7 +76,13 @@ const GalleriesPage = () => {
   });
 
   return (
-    <React.Fragment>
+    <PageWrapper
+      title="Galleries"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Galleries"
@@ -144,8 +158,30 @@ const GalleriesPage = () => {
           />
         )}
       </BaseModalWithoutClicker>
-    </React.Fragment>
+    </PageWrapper>
   );
 };
 
 export default GalleriesPage;
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

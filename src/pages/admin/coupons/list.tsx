@@ -10,11 +10,18 @@ import CouponsList from '@modules/coupons/components/CouponsList';
 import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
 import { CouponsHooks } from '@modules/coupons/lib/hooks';
 import { ICouponsFilter } from '@modules/coupons/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const CouponsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const CouponsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -46,7 +53,13 @@ const CouponsPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Coupons"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Coupons"
@@ -100,3 +113,25 @@ const CouponsPage = () => {
 };
 
 export default WithAuthorization(CouponsPage, { allowedPermissions: ['coupons:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

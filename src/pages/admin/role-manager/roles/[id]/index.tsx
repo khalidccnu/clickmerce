@@ -6,12 +6,19 @@ import WithAuthorization from '@modules/auth/components/WithAuthorization';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import { IPermission } from '@modules/permissions/lib/interfaces';
 import { RolesHooks } from '@modules/roles/lib/hooks';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Checkbox, Empty, message, Spin } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { RiAlarmWarningFill } from 'react-icons/ri';
 
-const RolesIdPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const RolesIdPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const { id } = router.query;
   const [messageApi, messageHolder] = message.useMessage();
@@ -74,26 +81,48 @@ const RolesIdPage = () => {
 
   if (roleQuery.isLoading || isLoading) {
     return (
-      <div className="text-center">
-        <Spin />
-      </div>
+      <PageWrapper
+        title="Loading..."
+        baseTitle={settingsIdentity?.name}
+        description={settingsIdentity?.description}
+        icon={settingsIdentity?.icon_url}
+        image={settingsIdentity?.social_image_url}
+      >
+        <div className="text-center">
+          <Spin />
+        </div>
+      </PageWrapper>
     );
   }
 
   if (roleQuery.data?.data?.name === Roles.SUPER_ADMIN) {
     return (
-      <div className="flex justify-center">
-        <div className="flex flex-col items-center bg-white p-5 rounded-lg shadow-md">
-          <RiAlarmWarningFill color="#ef4444" size={32} className="animate-pulse" />
-          <h3 className="text-2xl font-bold text-red-500">Unauthorized Access</h3>
-          <p className="mt-2 text-gray-500">You do not have permission to access this page!</p>
+      <PageWrapper
+        title="Unauthorized Access"
+        baseTitle={settingsIdentity?.name}
+        description={settingsIdentity?.description}
+        icon={settingsIdentity?.icon_url}
+        image={settingsIdentity?.social_image_url}
+      >
+        <div className="flex justify-center">
+          <div className="flex flex-col items-center bg-white p-5 rounded-lg shadow-md">
+            <RiAlarmWarningFill color="#ef4444" size={32} className="animate-pulse" />
+            <h3 className="text-2xl font-bold text-red-500">Unauthorized Access</h3>
+            <p className="mt-2 text-gray-500">You do not have permission to access this page!</p>
+          </div>
         </div>
-      </div>
+      </PageWrapper>
     );
   }
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Role Permissions"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title={
@@ -188,3 +217,25 @@ const RolesIdPage = () => {
 export default WithAuthorization(RolesIdPage, {
   allowedPermissions: ['roles:update'],
 });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

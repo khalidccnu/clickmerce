@@ -1,5 +1,5 @@
 import { Dayjs } from '@lib/constant/dayjs';
-import { DatePicker, Form, Select, SelectProps, Space } from 'antd';
+import { DatePicker, Form, Grid, Select, SelectProps, Space } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { SpaceCompactProps } from 'antd/es/space/Compact';
 import dayjs from 'dayjs';
@@ -77,6 +77,7 @@ const BaseDateRangeFilter: React.FC<IProps> = ({
   initialValues,
   onFinish,
 }) => {
+  const screens = Grid.useBreakpoint();
   const [formInstance] = Form.useForm();
 
   useEffect(() => {
@@ -134,8 +135,7 @@ const BaseDateRangeFilter: React.FC<IProps> = ({
         <Form.Item name="customDate" style={{ width: '100%' }} className="mb-0">
           <DatePicker.RangePicker
             dropdownClassName="[&_.ant-picker-panels]:flex-col md:[&_.ant-picker-panels]:flex-row"
-            placement="bottomLeft"
-            getPopupContainer={(trigger) => trigger.parentElement}
+            getPopupContainer={(trigger) => (screens.md ? document.body : trigger.parentElement)}
             {...dateRangePickerProps}
           />
         </Form.Item>

@@ -9,11 +9,18 @@ import DosageFormsForm from '@modules/dosage-forms/components/DosageFormsForm';
 import DosageFormsList from '@modules/dosage-forms/components/DosageFormsList';
 import { DosageFormsHooks } from '@modules/dosage-forms/lib/hooks';
 import { IDosageFormsFilter } from '@modules/dosage-forms/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const DosageFormsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const DosageFormsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const DosageFormsPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Dosage Forms"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Dosage Forms"
@@ -93,3 +106,25 @@ const DosageFormsPage = () => {
 };
 
 export default WithAuthorization(DosageFormsPage, { allowedPermissions: ['dosage_forms:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

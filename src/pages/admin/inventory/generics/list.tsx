@@ -9,11 +9,18 @@ import GenericsForm from '@modules/generics/components/GenericsForm';
 import GenericsList from '@modules/generics/components/GenericsList';
 import { GenericsHooks } from '@modules/generics/lib/hooks';
 import { IGenericsFilter } from '@modules/generics/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const GenericsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const GenericsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const GenericsPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Generics"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Generics"
@@ -93,3 +106,25 @@ const GenericsPage = () => {
 };
 
 export default WithAuthorization(GenericsPage, { allowedPermissions: ['generics:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

@@ -7,10 +7,17 @@ import OrdersFilter from '@modules/orders/components/OrdersFilter';
 import OrdersList from '@modules/orders/components/OrdersList';
 import { OrdersHooks } from '@modules/orders/lib/hooks';
 import { IOrdersFilter } from '@modules/orders/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-const OrdersPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const OrdersPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IOrdersFilter>(router.asPath);
 
@@ -24,7 +31,13 @@ const OrdersPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Orders"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       <PageHeader
         title="Orders"
         subTitle={<BaseSearch />}
@@ -56,3 +69,25 @@ const OrdersPage = () => {
 };
 
 export default WithAuthorization(OrdersPage, { allowedPermissions: ['orders:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

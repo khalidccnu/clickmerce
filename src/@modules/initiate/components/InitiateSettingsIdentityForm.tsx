@@ -1,4 +1,5 @@
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatTextarea from '@base/antd/components/FloatTextarea';
 import CountryCurrencySelect from '@base/components/CountryCurrencySelect';
 import PhoneCodeSelect from '@base/components/PhoneCodeSelect';
 import { Col, Form, FormInstance, Row } from 'antd';
@@ -47,24 +48,44 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
       </Col>
       <Col xs={24} md={12}>
         <Form.Item
+          name={['identity', 'icon_url']}
+          rules={[
+            {
+              type: 'url',
+              message: 'Icon url must be a valid!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatInput placeholder="Icon URL" />
+        </Form.Item>
+      </Col>
+      <Col xs={24} md={12}>
+        <Form.Item
           name={['identity', 'logo_url']}
           rules={[
             {
-              validator: (_, value) => {
-                if (!value) return Promise.resolve();
-
-                const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|svg))$/i;
-                if (!urlPattern.test(value)) {
-                  return Promise.reject(new Error('Please type a valid logo URL (e.g., png, jpg, jpeg, svg).'));
-                }
-
-                return Promise.resolve();
-              },
+              type: 'url',
+              message: 'Logo url must be a valid!',
             },
           ]}
           className="!mb-0"
         >
           <FloatInput placeholder="Logo URL" />
+        </Form.Item>
+      </Col>
+      <Col xs={24}>
+        <Form.Item
+          name={['identity', 'social_image_url']}
+          rules={[
+            {
+              type: 'url',
+              message: 'Social image url must be a valid!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatInput placeholder="Social Image URL" />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
@@ -103,6 +124,11 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
             currency={formValues?.identity?.currency}
             onSelectCurrency={(currency) => form.setFieldValue(['identity', 'currency'], currency)}
           />
+        </Form.Item>
+      </Col>
+      <Col xs={24}>
+        <Form.Item name={['identity', 'description']} className="!mb-0">
+          <FloatTextarea placeholder="Description" autoSize={{ minRows: 1, maxRows: 3 }} />
         </Form.Item>
       </Col>
     </Row>

@@ -9,11 +9,18 @@ import CategoriesForm from '@modules/categories/components/CategoriesForm';
 import CategoriesList from '@modules/categories/components/CategoriesList';
 import { CategoriesHooks } from '@modules/categories/lib/hooks';
 import { ICategoriesFilter } from '@modules/categories/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const CategoriesPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const CategoriesPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const CategoriesPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Categories"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Categories"
@@ -93,3 +106,25 @@ const CategoriesPage = () => {
 };
 
 export default WithAuthorization(CategoriesPage, { allowedPermissions: ['categories:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

@@ -1,5 +1,6 @@
 import useValue from '@base/antd/hooks/useValue';
-import { DatePicker } from 'antd';
+import { cn } from '@lib/utils/cn';
+import { DatePicker, Grid } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { useCallback, useMemo } from 'react';
 import FloatLabel from './FloatLabel';
@@ -18,8 +19,11 @@ const FloatRangePicker: React.FC<IProps> = ({
   required,
   style,
   className,
+  classNames,
+  getPopupContainer,
   ...rest
 }) => {
+  const screens = Grid.useBreakpoint();
   const {
     hasValue,
     handleChangeFn,
@@ -63,6 +67,12 @@ const FloatRangePicker: React.FC<IProps> = ({
       <DatePicker.RangePicker
         {...rest}
         className={className}
+        classNames={{
+          ...classNames,
+          popup: {
+            root: cn(classNames?.popup?.root, '[&_.ant-picker-panels]:flex-col md:[&_.ant-picker-panels]:flex-row'),
+          },
+        }}
         style={style}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
@@ -72,6 +82,10 @@ const FloatRangePicker: React.FC<IProps> = ({
         defaultValue={defaultValue}
         onChange={changeHandlerFn}
         placeholder={haveValue && placeholder ? null : placeholder}
+        getPopupContainer={(trigger) => {
+          if (getPopupContainer) return getPopupContainer(trigger);
+          return screens.md ? document.body : trigger.parentElement;
+        }}
       />
     </FloatLabel>
   );

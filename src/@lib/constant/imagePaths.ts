@@ -1,6 +1,7 @@
 import { Env } from '.environments';
 
 export const ImagePaths = {
+  icon: Env.webBrandIcon,
   logo: Env.webBrandLogo,
   avatar: '/images/avatar.svg',
   placeHolder: '/images/placeholder.svg',

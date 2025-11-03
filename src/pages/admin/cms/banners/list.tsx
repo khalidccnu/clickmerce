@@ -9,11 +9,18 @@ import BannersForm from '@modules/banners/components/BannersForm';
 import BannersList from '@modules/banners/components/BannersList';
 import { BannersHooks } from '@modules/banners/lib/hooks';
 import { IBannersFilter } from '@modules/banners/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const BannersPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const BannersPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const BannersPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Banners"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Banners"
@@ -93,3 +106,25 @@ const BannersPage = () => {
 };
 
 export default WithAuthorization(BannersPage, { allowedPermissions: ['banners:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

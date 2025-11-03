@@ -8,11 +8,18 @@ import PermissionsForm from '@modules/permissions/components/PermissionsForm';
 import PermissionsList from '@modules/permissions/components/PermissionsList';
 import { PermissionsHooks } from '@modules/permissions/lib/hooks';
 import { IPermissionsFilter } from '@modules/permissions/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const PermissionsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const PermissionsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -44,7 +51,13 @@ const PermissionsPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Permissions"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Permissions"
@@ -86,3 +99,25 @@ const PermissionsPage = () => {
 export default WithAuthorization(PermissionsPage, {
   allowedPermissions: ['permissions:read'],
 });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

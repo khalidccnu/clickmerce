@@ -4,16 +4,23 @@ import PageWrapper from '@base/container/PageWrapper';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
 import WithAuthorization from '@modules/auth/components/WithAuthorization';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import TransactionsFilter from '@modules/transactions/components/TransactionsFilter';
 import TransactionsForm from '@modules/transactions/components/TransactionsForm';
 import TransactionsList from '@modules/transactions/components/TransactionsList';
 import { TransactionsHooks } from '@modules/transactions/lib/hooks';
 import { ITransactionsFilter } from '@modules/transactions/lib/interfaces';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const TransactionsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const TransactionsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const TransactionsPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Transactions"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Transactions"
@@ -92,3 +105,25 @@ const TransactionsPage = () => {
 };
 
 export default WithAuthorization(TransactionsPage, { allowedPermissions: ['transactions:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

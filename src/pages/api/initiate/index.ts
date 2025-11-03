@@ -176,6 +176,14 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
     const { identity, s3, vat, tax } = settings;
 
+    const purifiedSettingsIdentity = {
+      ...identity,
+      icon_url: identity.icon_url || null,
+      logo_url: identity.logo_url || null,
+      social_image_url: identity.social_image_url || null,
+      description: identity.description || null,
+    };
+
     const purifiedSettingsS3 = {
       access_key_id: s3?.access_key_id || null,
       secret_access_key: s3?.secret_access_key || null,
@@ -186,7 +194,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     };
 
     const settingsResult = await SupabaseAdapter.create(supabaseServiceClient, Database.settings, {
-      identity,
+      identity: purifiedSettingsIdentity,
       s3: purifiedSettingsS3,
       vat,
       tax,

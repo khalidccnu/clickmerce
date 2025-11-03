@@ -31,22 +31,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   const { token } = getServerAuthSession(req);
 
-  if (!token) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 401,
-      message: 'Unauthorized',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(401).json(response);
-  }
-
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
   try {
-    const result = await SupabaseAdapter.find<ISettings>(supabaseServerClient, Database.settings);
+    const result = await SupabaseAdapter.find<ISettings>(
+      supabaseServerClient,
+      token ? Database.settings : Database.settings_view,
+    );
 
     if (!result.success) {
       const response: IBaseResponse = {
@@ -58,6 +49,18 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       };
 
       return res.status(result.statusCode || 400).json(response);
+    }
+
+    if (!token) {
+      const response: IBaseResponse = {
+        success: true,
+        statusCode: 200,
+        message: 'Settings fetched successfully',
+        data: result.data?.[0] || null,
+        meta: result.meta,
+      };
+
+      return res.status(200).json(response);
     }
 
     const { s3, ...safeSettings } = result.data?.[0];

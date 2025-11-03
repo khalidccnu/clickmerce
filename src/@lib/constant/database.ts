@@ -26,4 +26,5 @@ export const Database = {
   banners: 'banners',
   features: 'features',
   settings: 'settings',
+  settings_view: 'settings_view',
 };

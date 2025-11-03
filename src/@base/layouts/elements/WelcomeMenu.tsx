@@ -4,6 +4,7 @@ import ThemeToggler from '@base/components/ThemeToggler';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
 import ProfileCard from '@modules/ProfileCard';
+import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { Button, Dropdown } from 'antd';
 import React, { useState } from 'react';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
@@ -18,6 +19,8 @@ interface IProps {
 const WelcomeMenu: React.FC<IProps> = ({ className }) => {
   const { isAuthenticate } = useAuthSession();
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
+
+  const settingsQuery = SettingsHooks.useFind();
 
   const profileQuery = AuthHooks.useProfile({
     config: {
@@ -48,7 +51,9 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
         popupRender={() => {
           return (
             <div className="bg-[var(--color-white)] dark:bg-[var(--color-rich-black)] p-4 border border-[var(--color-gray-100)] rounded-lg shadow-sm">
-              <p className="font-medium text-xs text-[var(--color-gray-500)]">Welcome to {Env.webTitle}</p>
+              <p className="font-medium text-xs text-[var(--color-gray-500)]">
+                Welcome to {settingsQuery.data?.data?.identity?.name || Env.webTitle}
+              </p>
               <p className="font-semibold">{profileQuery.data?.data?.name}</p>
               <ul className="flex flex-col gap-2 border-t border-t-[var(--color-gray-100)] pt-4 mt-4">
                 {items.map((item) => (

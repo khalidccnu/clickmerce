@@ -8,11 +8,18 @@ import WithAuthorization from '@modules/auth/components/WithAuthorization';
 import PermissionTypesForm from '@modules/permission-types/components/PermissionTypesForm';
 import PermissionTypesList from '@modules/permission-types/components/PermissionTypesList';
 import { PermissionTypesHooks } from '@modules/permission-types/lib/hooks';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const PermissionTypesPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const PermissionTypesPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -44,7 +51,13 @@ const PermissionTypesPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Permission Types"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Permission Types"
@@ -86,3 +99,25 @@ const PermissionTypesPage = () => {
 export default WithAuthorization(PermissionTypesPage, {
   allowedPermissions: ['permission_types:read'],
 });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

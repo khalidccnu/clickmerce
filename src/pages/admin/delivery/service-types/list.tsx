@@ -9,11 +9,18 @@ import DeliveryServiceTypesForm from '@modules/delivery-service-types/components
 import DeliveryServiceTypesList from '@modules/delivery-service-types/components/DeliveryServiceTypesList';
 import { DeliveryServiceTypesHooks } from '@modules/delivery-service-types/lib/hooks';
 import { IDeliveryServiceTypesFilter } from '@modules/delivery-service-types/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const DeliveryServiceTypesPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const DeliveryServiceTypesPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const DeliveryServiceTypesPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Delivery Service Types"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Delivery Service Types"
@@ -98,3 +111,25 @@ const DeliveryServiceTypesPage = () => {
 };
 
 export default WithAuthorization(DeliveryServiceTypesPage, { allowedPermissions: ['delivery_service_types:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

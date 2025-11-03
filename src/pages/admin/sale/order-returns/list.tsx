@@ -7,10 +7,17 @@ import OrderReturnsFilter from '@modules/order-returns/components/OrderReturnsFi
 import OrderReturnsList from '@modules/order-returns/components/OrderReturnsList';
 import { OrderReturnsHooks } from '@modules/order-returns/lib/hooks';
 import { IOrderReturnsFilter } from '@modules/order-returns/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-const OrderReturnsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const OrderReturnsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IOrderReturnsFilter>(router.asPath);
 
@@ -24,7 +31,13 @@ const OrderReturnsPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Order Returns"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       <PageHeader
         title="Order Returns"
         subTitle={<BaseSearch />}
@@ -56,3 +69,25 @@ const OrderReturnsPage = () => {
 };
 
 export default WithAuthorization(OrderReturnsPage, { allowedPermissions: ['order_returns:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

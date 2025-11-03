@@ -9,11 +9,18 @@ import DeliveryZonesForm from '@modules/delivery-zones/components/DeliveryZonesF
 import DeliveryZonesList from '@modules/delivery-zones/components/DeliveryZonesList';
 import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZonesFilter } from '@modules/delivery-zones/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Button, Drawer, Form, message, Tag } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-const DeliveryZonesPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const DeliveryZonesPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
@@ -45,7 +52,13 @@ const DeliveryZonesPage = () => {
   });
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Delivery Zones"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       <PageHeader
         title="Delivery Zones"
@@ -93,3 +106,25 @@ const DeliveryZonesPage = () => {
 };
 
 export default WithAuthorization(DeliveryZonesPage, { allowedPermissions: ['delivery_service_types:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

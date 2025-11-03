@@ -5,9 +5,16 @@ import SettingsS3Form from '@modules/settings/components/SettingsS3Form';
 import SettingsTaxForm from '@modules/settings/components/SettingsTaxForm';
 import SettingsVatForm from '@modules/settings/components/SettingsVatForm';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import { Form, message, Spin, Tabs, TabsProps } from 'antd';
+import { GetServerSideProps, NextPage } from 'next';
 
-const SettingsPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+}
+
+const SettingsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const [identityFormInstance] = Form.useForm();
   const [s3FormInstance] = Form.useForm();
@@ -113,7 +120,13 @@ const SettingsPage = () => {
   ];
 
   return (
-    <PageWrapper>
+    <PageWrapper
+      title="Settings"
+      baseTitle={settingsIdentity?.name}
+      description={settingsIdentity?.description}
+      icon={settingsIdentity?.icon_url}
+      image={settingsIdentity?.social_image_url}
+    >
       {messageHolder}
       {settingsQuery.isLoading ? <Spin /> : <Tabs defaultActiveKey={items[0].key} items={items} />}
     </PageWrapper>
@@ -121,3 +134,25 @@ const SettingsPage = () => {
 };
 
 export default WithAuthorization(SettingsPage, { allowedPermissions: ['settings:read'] });
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success, data: settings } = await SettingsServices.find();
+
+    if (!success) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

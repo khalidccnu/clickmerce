@@ -1,16 +1,18 @@
 import { TId } from '@base/interfaces';
 import { AxiosSecureInstance } from '@lib/config/axiosInstance';
+import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
+import { AxiosRequestConfig } from 'axios';
 import { ISettingsCreate, ISettingsResponse } from './interfaces';
 
-const END_POINT: string = '/settings';
+const END_POINT: string = `/${Database.settings}`;
 
 export const SettingsServices = {
   NAME: END_POINT,
 
-  find: async (): Promise<ISettingsResponse> => {
+  find: async (config?: AxiosRequestConfig): Promise<ISettingsResponse> => {
     try {
-      const res = await AxiosSecureInstance.get(END_POINT);
+      const res = await AxiosSecureInstance.get(END_POINT, config);
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);

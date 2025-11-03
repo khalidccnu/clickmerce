@@ -1,5 +1,6 @@
 import { Env } from '.environments';
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatTextarea from '@base/antd/components/FloatTextarea';
 import CountryCurrencySelect from '@base/components/CountryCurrencySelect';
 import PhoneCodeSelect from '@base/components/PhoneCodeSelect';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
@@ -70,24 +71,44 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
         </Col>
         <Col xs={24} md={12} xl={8}>
           <Form.Item
+            name="icon_url"
+            rules={[
+              {
+                type: 'url',
+                message: 'Icon url must be a valid!',
+              },
+            ]}
+            className="!mb-0"
+          >
+            <FloatInput placeholder="Icon URL" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <Form.Item
             name="logo_url"
             rules={[
               {
-                validator: (_, value) => {
-                  if (!value) return Promise.resolve();
-
-                  const urlPattern = /^(https?:\/\/.*\.(?:png|jpg|jpeg|svg))$/i;
-                  if (!urlPattern.test(value)) {
-                    return Promise.reject(new Error('Please type a valid logo URL (e.g., png, jpg, jpeg, svg).'));
-                  }
-
-                  return Promise.resolve();
-                },
+                type: 'url',
+                message: 'Logo url must be a valid!',
               },
             ]}
             className="!mb-0"
           >
             <FloatInput placeholder="Logo URL" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} xl={8}>
+          <Form.Item
+            name="social_image_url"
+            rules={[
+              {
+                type: 'url',
+                message: 'Social image url must be a valid!',
+              },
+            ]}
+            className="!mb-0"
+          >
+            <FloatInput placeholder="Social Image URL" />
           </Form.Item>
         </Col>
         <Col xs={24} md={12} xl={8}>
@@ -126,6 +147,11 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
               currency={formValues?.currency}
               onSelectCurrency={(currency) => form.setFieldValue('currency', currency)}
             />
+          </Form.Item>
+        </Col>
+        <Col xs={24} xl={16}>
+          <Form.Item name="description" className="!mb-0">
+            <FloatTextarea placeholder="Description" autoSize={{ minRows: 1, maxRows: 3 }} />
           </Form.Item>
         </Col>
         <Col xs={24}>

@@ -108,9 +108,9 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
           style={styles.menuWrapper}
           className="[&_.ant-menu]:!bg-transparent [&_.ant-menu]:!border-none designed_scrollbar overscroll-contain"
         >
-          <div style={{ height: `calc(${headerHeight}px - 16px)` }} className="place-self-center place-content-center">
-            <CustomLink href={Paths.root}>
-              <BrandLogo width={220} />
+          <div style={{ height: `calc(${headerHeight}px - 32px)` }} className="place-self-center place-content-center">
+            <CustomLink href={Paths.root} className="h-full">
+              <BrandLogo width={220} className="max-h-full" />
             </CustomLink>
           </div>
           <AdminMenu
