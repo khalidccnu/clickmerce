@@ -1,6 +1,9 @@
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatSelect from '@base/antd/components/FloatSelect';
+import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
 import React, { useEffect } from 'react';
+import { settingsS3ProviderTypes } from '../lib/enums';
 import { ISettings, ISettingsS3 } from '../lib/interfaces';
 
 interface IProps {
@@ -26,6 +29,31 @@ const SettingsS3Form: React.FC<IProps> = ({ isLoading, form, formType = 'create'
       disabled={initialValues?.is_s3_configured}
     >
       <Row gutter={[16, 16]}>
+        <Col xs={24} md={12} xl={8}>
+          <Form.Item
+            name="provider"
+            rules={[
+              {
+                required: true,
+                message: 'Provider is required!',
+              },
+            ]}
+            className="!mb-0"
+          >
+            <FloatSelect
+              allowClear
+              showSearch
+              virtual={false}
+              placeholder="Provider"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+              options={settingsS3ProviderTypes.map((providerType) => ({
+                key: providerType,
+                label: Toolbox.toPrettyText(providerType),
+                value: providerType,
+              }))}
+            />
+          </Form.Item>
+        </Col>
         <Col xs={24} md={12} xl={8}>
           <Form.Item
             name="access_key_id"
@@ -74,20 +102,6 @@ const SettingsS3Form: React.FC<IProps> = ({ isLoading, form, formType = 'create'
         </Col>
         <Col xs={24} md={12} xl={8}>
           <Form.Item
-            name="r2_worker_endpoint"
-            rules={[
-              {
-                type: 'url',
-                message: 'R2 worker endpoint must be a valid URL!',
-              },
-            ]}
-            className="!mb-0"
-          >
-            <FloatInput placeholder="R2 Worker Endpoint" />
-          </Form.Item>
-        </Col>
-        <Col xs={24} md={12} xl={8}>
-          <Form.Item
             name="region"
             rules={[
               {
@@ -112,6 +126,20 @@ const SettingsS3Form: React.FC<IProps> = ({ isLoading, form, formType = 'create'
             className="!mb-0"
           >
             <FloatInput placeholder="Bucket" />
+          </Form.Item>
+        </Col>
+        <Col xs={24}>
+          <Form.Item
+            name="custom_url"
+            rules={[
+              {
+                type: 'url',
+                message: 'Custom URL must be a valid URL!',
+              },
+            ]}
+            className="!mb-0"
+          >
+            <FloatInput placeholder="Custom URL" />
           </Form.Item>
         </Col>
         <Col xs={12}>

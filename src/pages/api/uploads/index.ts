@@ -1,5 +1,5 @@
 import { IBaseResponse } from '@base/interfaces';
-import { s3, s3FileUpload } from '@lib/config/s3';
+import { s3, s3FileUploadFn } from '@lib/config/s3';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
@@ -95,7 +95,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const settings = result.data?.[0];
-    const isS3Configured = Toolbox.hasAllPropsInObject(settings.s3, null, ['r2_worker_endpoint']);
+    const isS3Configured = Toolbox.hasAllPropsInObject(settings.s3, null, ['custom_url']);
 
     if (!isS3Configured) {
       const response: IBaseResponse = {
@@ -109,7 +109,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json(response);
     }
 
-    const { access_key_id, secret_access_key, endpoint, r2_worker_endpoint, bucket, region } = settings.s3;
+    const { provider, access_key_id, secret_access_key, endpoint, custom_url, bucket, region } = settings.s3;
     const s3Client = s3(access_key_id, secret_access_key, endpoint, region);
 
     await Promise.all(
@@ -120,14 +120,16 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         const buffer = await fs.readFile(sanitizedFile.filepath);
 
         const optimizedFileBuffer = await optimizeImageFn(buffer);
-        const item = await s3FileUpload({
+        const item = await s3FileUploadFn({
+          provider,
           file: optimizedFileBuffer,
           fileName,
           contentType: sanitizedFile.mimetype,
           makePublic: purifiedMakePublic === 'true',
           bucket,
           endpoint,
-          r2WorkerEndpoint: r2_worker_endpoint,
+          region,
+          customUrl: custom_url,
           s3Client,
         });
 

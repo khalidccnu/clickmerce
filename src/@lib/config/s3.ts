@@ -1,9 +1,62 @@
+import { Env } from '.environments';
 import { DeleteObjectCommand, GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IBaseResponse } from '@base/interfaces';
+import { ENUM_SETTINGS_S3_PROVIDER_TYPES, TSettingsS3ProviderType } from '@modules/settings/lib/enums';
 import * as fs from 'fs';
 
-const formatS3FilePath = (fileName: string, folderPath?: string): string => {
+const buildPublicUrlFn = ({
+  provider,
+  endpoint,
+  bucket,
+  region,
+  filePath,
+  customUrl,
+}: {
+  provider: TSettingsS3ProviderType;
+  endpoint: string;
+  bucket: string;
+  region: string;
+  filePath: string;
+  customUrl?: string;
+}): string => {
+  if (customUrl) {
+    return `${customUrl}/${filePath}`;
+  }
+
+  switch (provider) {
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.AWS_S3:
+      if (region) {
+        return `https://${bucket}.s3.${region}.amazonaws.com/${filePath}`;
+      } else {
+        return `https://s3.amazonaws.com/${bucket}/${filePath}`;
+      }
+
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.DIGITALOCEAN:
+      if (region) {
+        return `https://${bucket}.${region}.digitaloceanspaces.com/${filePath}`;
+      } else {
+        return `${endpoint}/${bucket}/${filePath}`;
+      }
+
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.CLOUDFLARE_R2:
+      return `${endpoint}/${bucket}/${filePath}`;
+
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.SUPABASE_STORAGE:
+      const url = `${endpoint}/object/public/${bucket}/${filePath}`;
+      return url.replace('/s3/', '/');
+
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.BACKBLAZE:
+      return `${endpoint}/file/${bucket}/${filePath}`;
+
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.MINIO:
+    case ENUM_SETTINGS_S3_PROVIDER_TYPES.CUSTOM:
+    default:
+      return `${endpoint}/${bucket}/${filePath}`;
+  }
+};
+
+const formatS3FilePathFn = (fileName: string, folderPath?: string): string => {
   let path = '';
 
   if (folderPath) path += `${folderPath}/`;
@@ -24,14 +77,16 @@ export const s3 = (accessKeyId: string, secretAccessKey: string, endpoint: strin
   });
 };
 
-const s3FileUrl = async ({
+const s3FileUrlFn = async ({
   fileName,
   folderPath,
   makePublic,
   expiresIn = 3600,
   bucket,
   endpoint,
-  r2WorkerEndpoint,
+  region,
+  provider,
+  customUrl,
   s3Client,
 }: {
   fileName: string;
@@ -40,15 +95,24 @@ const s3FileUrl = async ({
   expiresIn?: number;
   bucket: string;
   endpoint: string;
-  r2WorkerEndpoint?: string;
+  region: string;
+  provider: TSettingsS3ProviderType;
+  customUrl?: string;
   s3Client: S3Client;
 }): Promise<{ url: string; expires_in: number }> => {
   try {
-    const filePath = formatS3FilePath(fileName, folderPath);
-    let url = r2WorkerEndpoint ? r2WorkerEndpoint : `${endpoint}/${bucket}`;
+    const filePath = formatS3FilePathFn(fileName, folderPath);
+    let url: string;
 
     if (makePublic) {
-      url += `/${filePath}`;
+      url = buildPublicUrlFn({
+        provider,
+        endpoint,
+        bucket,
+        region,
+        filePath,
+        customUrl,
+      });
     } else {
       const command = new GetObjectCommand({ Bucket: bucket, Key: filePath });
       url = await getSignedUrl(s3Client, command, { expiresIn });
@@ -60,7 +124,7 @@ const s3FileUrl = async ({
   }
 };
 
-export const s3FileUpload = async ({
+export const s3FileUploadFn = async ({
   file,
   fileName,
   folderPath,
@@ -68,7 +132,9 @@ export const s3FileUpload = async ({
   makePublic = false,
   bucket,
   endpoint,
-  r2WorkerEndpoint,
+  region,
+  provider,
+  customUrl,
   s3Client,
 }: {
   file: string | Buffer;
@@ -78,7 +144,9 @@ export const s3FileUpload = async ({
   makePublic?: boolean;
   bucket: string;
   endpoint: string;
-  r2WorkerEndpoint?: string;
+  region: string;
+  provider: TSettingsS3ProviderType;
+  customUrl?: string;
   s3Client: S3Client;
 }): Promise<
   IBaseResponse<{
@@ -90,7 +158,7 @@ export const s3FileUpload = async ({
     version_id: string;
   }>
 > => {
-  const filePath = formatS3FilePath(fileName, folderPath);
+  const filePath = formatS3FilePathFn(fileName, folderPath);
   const payload = typeof file === 'string' && fs.existsSync(file) ? fs.createReadStream(file) : file;
 
   try {
@@ -104,13 +172,15 @@ export const s3FileUpload = async ({
     });
 
     const result = await s3Client.send(command);
-    const file = await s3FileUrl({
+    const file = await s3FileUrlFn({
       fileName,
       folderPath,
       makePublic,
       bucket,
       endpoint,
-      r2WorkerEndpoint,
+      region,
+      provider,
+      customUrl,
       s3Client,
     });
 
@@ -134,7 +204,7 @@ export const s3FileUpload = async ({
     const response: IBaseResponse = {
       success: false,
       statusCode: 500,
-      message: 'Failed to upload file to S3',
+      message: Env.isProduction ? 'Failed to upload file to S3' : error.message,
       data: null,
       meta: null,
     };
@@ -143,7 +213,7 @@ export const s3FileUpload = async ({
   }
 };
 
-export const s3FileDelete = async ({
+export const s3FileDeleteFn = async ({
   filePath,
   bucket,
   s3Client,
@@ -171,7 +241,7 @@ export const s3FileDelete = async ({
     return {
       success: false,
       statusCode: 500,
-      message: 'Failed to delete file from S3',
+      message: Env.isProduction ? 'Failed to delete file from S3' : error.message,
       data: null,
       meta: null,
     };

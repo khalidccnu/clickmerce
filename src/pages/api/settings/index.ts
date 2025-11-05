@@ -64,7 +64,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
 
     const { s3, ...safeSettings } = result.data?.[0];
-    const isS3Configured = Toolbox.hasAllPropsInObject(s3, null, ['r2_worker_endpoint']);
+    const isS3Configured = Toolbox.hasAllPropsInObject(s3, null, ['custom_url']);
 
     const response: IBaseResponse = {
       success: true,

@@ -1,5 +1,5 @@
 import { IBaseEntity, IBaseResponse } from '@base/interfaces';
-import { TSettingsTaxType, TSettingsVatType } from './enums';
+import { TSettingsS3ProviderType, TSettingsTaxType, TSettingsVatType } from './enums';
 
 export interface ISettingsIdentity {
   name: string;
@@ -13,12 +13,13 @@ export interface ISettingsIdentity {
 }
 
 export interface ISettingsS3 {
+  provider: TSettingsS3ProviderType;
   access_key_id: string;
   secret_access_key: string;
   endpoint: string;
-  r2_worker_endpoint: string;
   region: string;
   bucket: string;
+  custom_url: string;
 }
 
 export interface ISettingsVat {

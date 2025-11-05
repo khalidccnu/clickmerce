@@ -1,5 +1,5 @@
 import { IBaseResponse } from '@base/interfaces';
-import { s3, s3FileDelete } from '@lib/config/s3';
+import { s3, s3FileDeleteFn } from '@lib/config/s3';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
@@ -70,7 +70,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const settings = result.data?.[0];
-  const isS3Configured = Toolbox.hasAllPropsInObject(settings.s3, null, ['r2_worker_endpoint']);
+  const isS3Configured = Toolbox.hasAllPropsInObject(settings.s3, null, ['custom_url']);
 
   if (!isS3Configured) {
     const response: IBaseResponse = {
@@ -86,7 +86,7 @@ async function handleDelete(req: NextApiRequest, res: NextApiResponse) {
   const { access_key_id, secret_access_key, endpoint, bucket, region } = settings.s3;
   const s3Client = s3(access_key_id, secret_access_key, endpoint, region);
 
-  const deleteResult = await s3FileDelete({
+  const deleteResult = await s3FileDeleteFn({
     filePath,
     bucket,
     s3Client,

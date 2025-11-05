@@ -185,10 +185,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     };
 
     const purifiedSettingsS3 = {
+      provider: s3?.provider || null,
       access_key_id: s3?.access_key_id || null,
       secret_access_key: s3?.secret_access_key || null,
       endpoint: s3?.endpoint || null,
-      r2_worker_endpoint: s3?.r2_worker_endpoint || null,
+      custom_url: s3?.custom_url || null,
       region: s3?.region || null,
       bucket: s3?.bucket || null,
     };
