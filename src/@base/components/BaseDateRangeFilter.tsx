@@ -1,4 +1,3 @@
-import { Dayjs } from '@lib/constant/dayjs';
 import { DatePicker, Form, Grid, Select, SelectProps, Space } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
 import { SpaceCompactProps } from 'antd/es/space/Compact';
@@ -107,8 +106,8 @@ const BaseDateRangeFilter: React.FC<IProps> = ({
         };
 
         if (values.customDate?.length === 2) {
-          changedValues.startDate = dayjs(values.customDate[0]).format(Dayjs.queryDate);
-          changedValues.endDate = dayjs(values.customDate[1]).format(Dayjs.queryDate);
+          changedValues.startDate = dayjs(values.customDate[0]).startOf('day').toISOString();
+          changedValues.endDate = dayjs(values.customDate[1]).endOf('day').toISOString();
         } else if (values.dateFilter && values.dateFilter !== 'Custom') {
           try {
             const dateFilter = JSON.parse(values.dateFilter);
