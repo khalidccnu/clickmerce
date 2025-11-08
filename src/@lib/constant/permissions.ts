@@ -106,4 +106,9 @@ export const Permissions = {
   FEATURES_WRITE: 'features:write',
   FEATURES_UPDATE: 'features:update',
   FEATURES_DELETE: 'features:delete',
+
+  PAGES_READ: 'pages:read',
+  PAGES_WRITE: 'pages:write',
+  PAGES_UPDATE: 'pages:update',
+  PAGES_DELETE: 'pages:delete',
 } as const;

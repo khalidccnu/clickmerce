@@ -112,6 +112,10 @@ export const Paths = {
         root: '/admin/cms/features',
         list: '/admin/cms/features/list',
       },
+      pages: {
+        root: '/admin/cms/pages',
+        list: '/admin/cms/pages/list',
+      },
     },
     settings: {
       root: '/admin/settings',

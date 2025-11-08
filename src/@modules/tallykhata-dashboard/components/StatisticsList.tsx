@@ -42,37 +42,37 @@ const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate, userI
 
   const statistics: IStatistic[] = [
     {
-      icon: <SwapOutlined className="text-2xl text-white" />,
+      icon: <SwapOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-indigo-500',
       title: 'Total Transactions',
       value: data?.data?.total_transactions || 0,
     },
     {
-      icon: <RiseOutlined className="text-2xl text-white" />,
+      icon: <RiseOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-green-600',
       title: 'Credit Transactions',
       value: data?.data?.credit_transactions || 0,
     },
     {
-      icon: <FallOutlined className="text-2xl text-white" />,
+      icon: <FallOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-red-600',
       title: 'Debit Transactions',
       value: data?.data?.debit_transactions || 0,
     },
     {
-      icon: <WalletOutlined className="text-2xl text-white" />,
+      icon: <WalletOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-blue-600',
       title: 'Total Credit Amount',
       value: Toolbox.withCurrency(data?.data?.total_credit_amount || 0),
     },
     {
-      icon: <BankOutlined className="text-2xl text-white" />,
+      icon: <BankOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-orange-600',
       title: 'Total Debit Amount',
       value: Toolbox.withCurrency(data?.data?.total_debit_amount || 0),
     },
     {
-      icon: <LineChartOutlined className="text-2xl text-white" />,
+      icon: <LineChartOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-emerald-600',
       title: 'Net Balance',
       value: Toolbox.withCurrency(data?.data?.net_balance || 0),

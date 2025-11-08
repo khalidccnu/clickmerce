@@ -41,49 +41,49 @@ const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate }) => 
 
   const statistics: IStatistic[] = [
     {
-      icon: <ClockCircleOutlined className="text-2xl text-white" />,
+      icon: <ClockCircleOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-orange-500',
       title: 'Pending Orders',
       value: data?.data?.pending_orders || 0,
     },
     {
-      icon: <SyncOutlined className="text-2xl text-white" />,
+      icon: <SyncOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-yellow-500',
       title: 'Processing Orders',
       value: data?.data?.processing_orders || 0,
     },
     {
-      icon: <TruckOutlined className="text-2xl text-white" />,
+      icon: <TruckOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-blue-500',
       title: 'Shipped Orders',
       value: data?.data?.shipped_orders || 0,
     },
     {
-      icon: <CheckCircleOutlined className="text-2xl text-white" />,
+      icon: <CheckCircleOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-green-500',
       title: 'Delivered Orders',
       value: data?.data?.delivered_orders || 0,
     },
     {
-      icon: <StopOutlined className="text-2xl text-white" />,
+      icon: <StopOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-gray-500',
       title: 'Cancelled Orders',
       value: data?.data?.cancelled_orders || 0,
     },
     {
-      icon: <ShoppingCartOutlined className="text-2xl text-white" />,
+      icon: <ShoppingCartOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-purple-500',
       title: 'Total Sales Amount',
       value: Toolbox.withCurrency(data?.data?.total_sales_amount || 0),
     },
     {
-      icon: <FundOutlined className="text-2xl text-white" />,
+      icon: <FundOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-teal-500',
       title: 'Total Due Amount',
       value: Toolbox.withCurrency(data?.data?.total_due_amount || 0),
     },
     {
-      icon: <TrophyOutlined className="text-2xl text-white" />,
+      icon: <TrophyOutlined className="text-2xl" style={{ color: '#fff' }} />,
       iconBgColorClassName: 'bg-emerald-500',
       title: 'Total Profit Amount',
       value: Toolbox.withCurrency(data?.data?.total_profit_amount || 0),

@@ -25,6 +25,7 @@ export const Database = {
   transactions: 'transactions',
   banners: 'banners',
   features: 'features',
+  pages: 'pages',
   settings: 'settings',
   settings_view: 'settings_view',
 };

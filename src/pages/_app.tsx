@@ -14,7 +14,7 @@ const roboto = Roboto({
   variable: '--font-roboto',
 });
 
-const App = ({ router, Component, pageProps: { settingsIdentity, ...restPageProps } }: AppProps) => {
+const App = ({ router, Component, pageProps: { settingsIdentity, pages, ...restPageProps } }: AppProps) => {
   const fontWithMorePropsCreateFn = (fontDefinition: NextFontWithVariable, originalVariableName: string) => {
     return { ...fontDefinition, originalVariableName };
   };
@@ -28,8 +28,8 @@ const App = ({ router, Component, pageProps: { settingsIdentity, ...restPageProp
         <title>{Env.webTitle}</title>
         <meta name="description" content={Env.webDescription} />
       </Head>
-      <WithLayout pathname={router.pathname} settingsIdentity={settingsIdentity}>
-        <Component settingsIdentity={settingsIdentity} {...restPageProps} />
+      <WithLayout pathname={router.pathname} settingsIdentity={settingsIdentity} pages={pages}>
+        <Component settingsIdentity={settingsIdentity} pages={pages} {...restPageProps} />
       </WithLayout>
     </Providers>
   );

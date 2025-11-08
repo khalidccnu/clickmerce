@@ -14,6 +14,7 @@ import { GrGallery, GrUserAdmin } from 'react-icons/gr';
 import { IoCubeOutline, IoReturnUpBack } from 'react-icons/io5';
 import { LiaCartArrowDownSolid } from 'react-icons/lia';
 import {
+  MdArticle,
   MdDashboard,
   MdDashboardCustomize,
   MdExtension,
@@ -282,6 +283,12 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
               icon: <MdExtension />,
               label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.features.list)}>Features</CustomLink>,
               allowedPermissions: ['features:read'],
+            },
+            {
+              key: Paths.admin.cms.pages.list,
+              icon: <MdArticle />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.pages.list)}>Pages</CustomLink>,
+              allowedPermissions: ['pages:read'],
             },
           ],
         },

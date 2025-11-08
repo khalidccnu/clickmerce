@@ -1,29 +1,39 @@
+import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
-import { pageTypes } from '@modules/pages/lib/enums';
+import { Paths } from '@lib/constant/paths';
+import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
+import TermsAndConditionsSection from '@modules/terms-and-conditions/TermsAndConditionsSection';
 import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps {
   settingsIdentity: ISettingsIdentity;
   pages: IPage[];
+  termsAndConditionsPage: IPage;
 }
 
-const HomePage: NextPage<IProps> = ({ settingsIdentity }) => {
+const TermsAndConditionsPage: NextPage<IProps> = ({ settingsIdentity, termsAndConditionsPage }) => {
   return (
     <PageWrapper
-      title="Home"
+      title="Terms And Conditions"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
-    ></PageWrapper>
+    >
+      <BaseHeroWrapper
+        title="Terms And Conditions"
+        breadcrumb={[{ name: 'terms and conditions', slug: Paths.termsAndConditions }]}
+      />
+      <TermsAndConditionsSection className="py-10 md:py-16" termsAndConditionsPage={termsAndConditionsPage} />
+    </PageWrapper>
   );
 };
 
-export default HomePage;
+export default TermsAndConditionsPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
   try {
@@ -34,9 +44,20 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       limit: pageTypes.length.toString(),
     });
 
-    if (!settingsSuccess || !pagesSuccess) {
+    const termsAndConditionsPage = pages?.find((page) => page.type === ENUM_PAGE_TYPES.TERMS_AND_CONDITIONS);
+
+    if (!settingsSuccess || !pagesSuccess || !termsAndConditionsPage?.is_active) {
       return {
         notFound: true,
+      };
+    }
+
+    if (!termsAndConditionsPage?.content) {
+      return {
+        redirect: {
+          destination: Paths.underConstruction,
+          permanent: false,
+        },
       };
     }
 
@@ -44,6 +65,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       props: {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
+        termsAndConditionsPage: termsAndConditionsPage ?? null,
       },
     };
   } catch (error) {

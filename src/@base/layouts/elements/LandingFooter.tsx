@@ -3,15 +3,35 @@ import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
 import { Paths } from '@lib/constant/paths';
 import { useSettingsIdentity } from '@lib/context/SettingsIdentityContext';
+import { ENUM_PAGE_TYPES } from '@modules/pages/lib/enums';
 import Link from 'next/link';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FaEnvelope, FaFacebook, FaLocationDot, FaPhone } from 'react-icons/fa6';
 
 const LandingFooter = () => {
-  const { settingsIdentity } = useSettingsIdentity();
+  const { settingsIdentity, pages } = useSettingsIdentity();
   const footerRef = useRef(null);
   const [footerHeight, setFooterHeight] = useState(0);
+
+  const { aboutPage, privacyPolicyPage, termsAndConditionsPage, refundPolicyPage } = useMemo(() => {
+    return {
+      aboutPage: pages?.find((page) => page.type === ENUM_PAGE_TYPES.ABOUT),
+      privacyPolicyPage: pages?.find((page) => page.type === ENUM_PAGE_TYPES.PRIVACY_POLICY),
+      termsAndConditionsPage: pages?.find((page) => page.type === ENUM_PAGE_TYPES.TERMS_AND_CONDITIONS),
+      refundPolicyPage: pages?.find((page) => page.type === ENUM_PAGE_TYPES.REFUND_POLICY),
+    };
+  }, [pages]);
+
+  const hasPageLinks =
+    aboutPage?.is_active ||
+    privacyPolicyPage?.is_active ||
+    termsAndConditionsPage?.is_active ||
+    refundPolicyPage?.is_active;
+
+  const hasContactInfo = settingsIdentity?.address || settingsIdentity?.phone || settingsIdentity?.email;
+
+  const footerMiddleDivideCount = hasPageLinks && hasContactInfo ? 3 : hasPageLinks || hasContactInfo ? 2 : 1;
 
   useEffect(() => {
     if (footerRef.current) setFooterHeight(footerRef.current.offsetHeight);
@@ -56,8 +76,7 @@ const LandingFooter = () => {
             className="middle"
             style={
               {
-                '--footer-middle-divide-count':
-                  settingsIdentity?.address || settingsIdentity?.phone || settingsIdentity?.email ? 3 : 2,
+                '--footer-middle-divide-count': footerMiddleDivideCount,
               } as React.CSSProperties
             }
           >
@@ -65,24 +84,34 @@ const LandingFooter = () => {
               <h6 className="title">About us</h6>
               <p className="description">{settingsIdentity?.description || Env.webDescription}</p>
             </div>
-            <div className="item">
-              <h6 className="title">Useful Link</h6>
-              <ul className="links_wrapper">
-                <li className="link">
-                  <Link href={Paths.about}>About us</Link>
-                </li>
-                <li className="link">
-                  <Link href={Paths.privacyPolicy}>Privacy Policy</Link>
-                </li>
-                <li className="link">
-                  <Link href={Paths.termsAndConditions}>Terms and Conditions</Link>
-                </li>
-                <li className="link">
-                  <Link href={Paths.refundPolicy}>Refund Policy</Link>
-                </li>
-              </ul>
-            </div>
-            {(settingsIdentity?.address || settingsIdentity?.phone || settingsIdentity?.email) && (
+            {hasPageLinks && (
+              <div className="item">
+                <h6 className="title">Useful Link</h6>
+                <ul className="links_wrapper">
+                  {aboutPage?.is_active && (
+                    <li className="link">
+                      <Link href={Paths.about}>About us</Link>
+                    </li>
+                  )}
+                  {privacyPolicyPage?.is_active && (
+                    <li className="link">
+                      <Link href={Paths.privacyPolicy}>Privacy Policy</Link>
+                    </li>
+                  )}
+                  {termsAndConditionsPage?.is_active && (
+                    <li className="link">
+                      <Link href={Paths.termsAndConditions}>Terms and Conditions</Link>
+                    </li>
+                  )}
+                  {refundPolicyPage?.is_active && (
+                    <li className="link">
+                      <Link href={Paths.refundPolicy}>Refund Policy</Link>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            )}
+            {hasContactInfo && (
               <div className="item">
                 <h6 className="title">Get in touch</h6>
                 <ul className="links_wrapper">

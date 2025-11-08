@@ -1,7 +1,10 @@
+import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
-import { pageTypes } from '@modules/pages/lib/enums';
+import { Paths } from '@lib/constant/paths';
+import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
+import PrivacyPolicySection from '@modules/privacy-policy/PrivacyPolicySection';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
@@ -9,21 +12,25 @@ import { GetServerSideProps, NextPage } from 'next';
 interface IProps {
   settingsIdentity: ISettingsIdentity;
   pages: IPage[];
+  privacyPolicyPage: IPage;
 }
 
-const HomePage: NextPage<IProps> = ({ settingsIdentity }) => {
+const PrivacyPolicyPage: NextPage<IProps> = ({ settingsIdentity, privacyPolicyPage }) => {
   return (
     <PageWrapper
-      title="Home"
+      title="Privacy Policy"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
-    ></PageWrapper>
+    >
+      <BaseHeroWrapper title="Privacy Policy" breadcrumb={[{ name: 'privacy policy', slug: Paths.privacyPolicy }]} />
+      <PrivacyPolicySection className="py-10 md:py-16" privacyPolicyPage={privacyPolicyPage} />
+    </PageWrapper>
   );
 };
 
-export default HomePage;
+export default PrivacyPolicyPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
   try {
@@ -34,9 +41,20 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       limit: pageTypes.length.toString(),
     });
 
-    if (!settingsSuccess || !pagesSuccess) {
+    const privacyPolicyPage = pages?.find((page) => page.type === ENUM_PAGE_TYPES.PRIVACY_POLICY);
+
+    if (!settingsSuccess || !pagesSuccess || !privacyPolicyPage?.is_active) {
       return {
         notFound: true,
+      };
+    }
+
+    if (!privacyPolicyPage?.content) {
+      return {
+        redirect: {
+          destination: Paths.underConstruction,
+          permanent: false,
+        },
       };
     }
 
@@ -44,6 +62,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       props: {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
+        privacyPolicyPage: privacyPolicyPage ?? null,
       },
     };
   } catch (error) {

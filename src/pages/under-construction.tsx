@@ -1,8 +1,19 @@
 import PageWrapper from '@base/container/PageWrapper';
 import { ImagePaths } from '@lib/constant/imagePaths';
+import { pageTypes } from '@modules/pages/lib/enums';
+import { IPage } from '@modules/pages/lib/interfaces';
+import { PagesServices } from '@modules/pages/lib/services';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
+import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
 
-const UnderConstructionPage = () => {
+interface IProps {
+  settingsIdentity: ISettingsIdentity;
+  pages: IPage[];
+}
+
+const UnderConstructionPage: NextPage<IProps> = () => {
   return (
     <PageWrapper title="Under Construction" baseTitle={null}>
       <section>
@@ -33,3 +44,31 @@ const UnderConstructionPage = () => {
 };
 
 export default UnderConstructionPage;
+
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+  try {
+    const { success: settingsSuccess, data: settings } = await SettingsServices.find();
+
+    const { success: pagesSuccess, data: pages } = await PagesServices.find({
+      page: '1',
+      limit: pageTypes.length.toString(),
+    });
+
+    if (!settingsSuccess || !pagesSuccess) {
+      return {
+        notFound: true,
+      };
+    }
+
+    return {
+      props: {
+        settingsIdentity: settings?.identity ?? null,
+        pages: pages ?? [],
+      },
+    };
+  } catch (error) {
+    return {
+      notFound: true,
+    };
+  }
+};

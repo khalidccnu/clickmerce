@@ -3,6 +3,7 @@ import { Paths } from '@lib/constant/paths';
 import SettingsIdentityContext from '@lib/context/SettingsIdentityContext';
 import { initializeRedux, persistor } from '@lib/redux/store';
 import { Toolbox } from '@lib/utils/toolbox';
+import { IPage } from '@modules/pages/lib/interfaces';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import React, { type PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
@@ -14,9 +15,10 @@ import PosLayout from './PosLayout';
 interface IProps extends PropsWithChildren {
   pathname: string;
   settingsIdentity: ISettingsIdentity;
+  pages: IPage[];
 }
 
-const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, children }) => {
+const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, pages, children }) => {
   const { store } = initializeRedux();
 
   if (pathname === Paths.admin.pos) {
@@ -44,7 +46,7 @@ const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, children }) 
   }
 
   return (
-    <SettingsIdentityContext.Provider value={{ settingsIdentity }}>
+    <SettingsIdentityContext.Provider value={{ settingsIdentity, pages }}>
       <LandingLayout>{children}</LandingLayout>
     </SettingsIdentityContext.Provider>
   );

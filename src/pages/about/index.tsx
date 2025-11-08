@@ -1,5 +1,8 @@
+import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
-import { pageTypes } from '@modules/pages/lib/enums';
+import { Paths } from '@lib/constant/paths';
+import AboutSection from '@modules/about/AboutSection';
+import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
@@ -9,21 +12,25 @@ import { GetServerSideProps, NextPage } from 'next';
 interface IProps {
   settingsIdentity: ISettingsIdentity;
   pages: IPage[];
+  aboutPage: IPage;
 }
 
-const HomePage: NextPage<IProps> = ({ settingsIdentity }) => {
+const AboutPage: NextPage<IProps> = ({ settingsIdentity, aboutPage }) => {
   return (
     <PageWrapper
-      title="Home"
+      title="About"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
-    ></PageWrapper>
+    >
+      <BaseHeroWrapper title="About" breadcrumb={[{ name: 'about', slug: Paths.about }]} />
+      <AboutSection className="py-10 md:py-16" aboutPage={aboutPage} />
+    </PageWrapper>
   );
 };
 
-export default HomePage;
+export default AboutPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
   try {
@@ -34,9 +41,20 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       limit: pageTypes.length.toString(),
     });
 
-    if (!settingsSuccess || !pagesSuccess) {
+    const aboutPage = pages?.find((page) => page.type === ENUM_PAGE_TYPES.ABOUT);
+
+    if (!settingsSuccess || !pagesSuccess || !aboutPage?.is_active) {
       return {
         notFound: true,
+      };
+    }
+
+    if (!aboutPage?.content) {
+      return {
+        redirect: {
+          destination: Paths.underConstruction,
+          permanent: false,
+        },
       };
     }
 
@@ -44,6 +62,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       props: {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
+        aboutPage: aboutPage ?? null,
       },
     };
   } catch (error) {
