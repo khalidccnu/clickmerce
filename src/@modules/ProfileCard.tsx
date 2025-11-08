@@ -1,13 +1,13 @@
-import { ImagePaths } from '@lib/constant/imagePaths';
+import { Toolbox } from '@lib/utils/toolbox';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { Button, Form, Input, message } from 'antd';
 import React, { useState } from 'react';
 import { MdLock } from 'react-icons/md';
 import { RiArrowGoBackFill } from 'react-icons/ri';
-import { IUser } from './users/lib/interfaces';
+import { IToken } from './auth/lib/interfaces';
 
 interface IProps {
-  user: IUser;
+  user: IToken['user'];
 }
 
 const signOutFn = AuthHooks.useSignOut;
@@ -79,7 +79,11 @@ const ProfileCard: React.FC<IProps> = ({ user }) => {
             <img className="object-cover w-full" src="/images/profile_cover.svg" alt="" />
           </div>
           <div className="mx-auto w-32 h-32 relative -mt-16 border-4 dark:border-[var(--color-dark-gray)] rounded-full overflow-hidden">
-            <img className="object-cover object-center" src={ImagePaths.avatar} alt="" />
+            <img
+              className="object-cover object-center"
+              src={Toolbox.generateCharacterSvg({ character: user?.name, type: 'url' })}
+              alt={user?.name}
+            />
           </div>
           <div className="text-center mt-2">
             <h2 className="font-semibold">{user?.name}</h2>

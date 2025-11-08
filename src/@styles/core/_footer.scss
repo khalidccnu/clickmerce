@@ -1,0 +1,127 @@
+footer {
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #0a111f;
+  padding-block: 3rem;
+  @include lg {
+    position: fixed;
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    .logo_container {
+      max-width: 12rem;
+      img {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        object-fit: contain;
+      }
+    }
+    .social_links_wrapper {
+      display: flex;
+      gap: 0.5rem;
+      .social_link {
+        a {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          width: 2rem;
+          height: 2rem;
+          background-color: #192947;
+          color: var(--color-gray-100);
+          transition: color 500ms;
+          &:hover {
+            color: var(--color-primary);
+          }
+        }
+      }
+    }
+  }
+  .middle {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.5rem;
+    border: 0.01rem solid rgba(112, 112, 112, 0.1);
+    border-left: 0;
+    border-right: 0;
+    padding-block: 3rem;
+    @include md {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 3rem;
+    }
+    @include lg {
+      grid-template-columns: repeat(var(--footer-middle-divide-count), minmax(0, 1fr));
+    }
+    @include xl {
+      gap: 5rem;
+    }
+    .item {
+      color: var(--color-gray-400);
+      &:nth-child(2) {
+        @include md {
+          order: 1;
+        }
+        @include lg {
+          justify-self: center;
+          order: 0;
+        }
+      }
+      .title {
+        color: var(--color-white);
+        margin-bottom: 1rem;
+      }
+      .description {
+        text-align: justify;
+      }
+      .links_wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        .link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          .icon_container {
+            flex-shrink: 0;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 100%;
+            background-color: #131e32;
+          }
+          a {
+            transition: color 500ms;
+            &:hover {
+              color: var(--color-primary);
+            }
+          }
+        }
+      }
+    }
+  }
+  .bottom {
+    padding-top: 1.5rem;
+    color: var(--color-gray-400);
+    text-align: center;
+    a {
+      transition: color 500ms;
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+  }
+}
+
+.footer_height_emulator {
+  display: none;
+  @include lg {
+    display: block;
+  }
+}

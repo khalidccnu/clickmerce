@@ -1,12 +1,10 @@
 import PageWrapper from '@base/container/PageWrapper';
+import { IBasePageProps } from '@base/interfaces';
 import SignInSection from '@modules/auth/components/SignInSection';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
-interface IProps {
-  settingsIdentity: ISettingsIdentity;
-}
+interface IProps extends IBasePageProps {}
 
 const AuthPage: NextPage<IProps> = ({ settingsIdentity }) => {
   return (

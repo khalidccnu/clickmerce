@@ -10,6 +10,12 @@ export interface ISettingsIdentity {
   phone_code: string;
   currency: string;
   description: string;
+  phone: string;
+  email: string;
+  address: string;
+  fb_url: string;
+  ig_url: string;
+  yt_url: string;
 }
 
 export interface ISettingsS3 {

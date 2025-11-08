@@ -182,6 +182,12 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       logo_url: identity.logo_url || null,
       social_image_url: identity.social_image_url || null,
       description: identity.description || null,
+      phone: identity.phone || null,
+      email: identity.email || null,
+      address: identity.address || null,
+      fb_url: identity.fb_url || null,
+      ig_url: identity.ig_url || null,
+      yt_url: identity.yt_url || null,
     };
 
     const purifiedSettingsS3 = {

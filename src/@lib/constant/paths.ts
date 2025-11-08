@@ -4,8 +4,16 @@ export const Paths = {
   root: '/',
   initiate: '/initiate',
   underConstruction: '/under-construction',
+  about: '/about',
+  contact: '/contact',
+  privacyPolicy: '/privacy-policy',
+  termsAndConditions: '/terms-and-conditions',
+  refundPolicy: '/refund-policy',
   auth: {
     signIn: '/auth',
+  },
+  users: {
+    root: '/users',
   },
   admin: {
     root: '/admin',

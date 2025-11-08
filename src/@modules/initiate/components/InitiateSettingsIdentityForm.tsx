@@ -1,6 +1,7 @@
 import FloatInput from '@base/antd/components/FloatInput';
 import FloatTextarea from '@base/antd/components/FloatTextarea';
 import CountryCurrencySelect from '@base/components/CountryCurrencySelect';
+import InputPhone from '@base/components/InputPhone';
 import PhoneCodeSelect from '@base/components/PhoneCodeSelect';
 import { Col, Form, FormInstance, Row } from 'antd';
 import React from 'react';
@@ -129,6 +130,72 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
       <Col xs={24}>
         <Form.Item name={['identity', 'description']} className="!mb-0">
           <FloatTextarea placeholder="Description" autoSize={{ minRows: 1, maxRows: 3 }} />
+        </Form.Item>
+      </Col>
+      <Col xs={24} md={12}>
+        <Form.Item name={['identity', 'phone']} className="!mb-0">
+          <InputPhone size="large" />
+        </Form.Item>
+      </Col>
+      <Col xs={24} md={12}>
+        <Form.Item
+          name={['identity', 'email']}
+          rules={[
+            {
+              type: 'email',
+              message: 'Email is not valid!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatInput placeholder="Email" />
+        </Form.Item>
+      </Col>
+      <Col xs={24}>
+        <Form.Item name={['identity', 'address']} className="!mb-0">
+          <FloatInput placeholder="Address" />
+        </Form.Item>
+      </Col>
+      <Col xs={24} md={12}>
+        <Form.Item
+          name={['identity', 'fb_url']}
+          rules={[
+            {
+              type: 'url',
+              message: 'Facebook url must be a valid!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatInput placeholder="Facebook URL" />
+        </Form.Item>
+      </Col>
+      <Col xs={24} md={12}>
+        <Form.Item
+          name={['identity', 'ig_url']}
+          rules={[
+            {
+              type: 'url',
+              message: 'Instagram url must be a valid!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatInput placeholder="Instagram URL" />
+        </Form.Item>
+      </Col>
+      <Col xs={24}>
+        <Form.Item
+          name={['identity', 'yt_url']}
+          rules={[
+            {
+              type: 'url',
+              message: 'YouTube url must be a valid!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatInput placeholder="YouTube URL" />
         </Form.Item>
       </Col>
     </Row>

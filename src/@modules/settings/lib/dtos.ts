@@ -11,6 +11,12 @@ export const settingsIdentityCreateSchema = yup.object({
   phone_code: yup.string().min(2).required(),
   currency: yup.string().min(2).required(),
   description: yup.string().max(200).optional().nullable(),
+  phone: yup.string().optional().nullable(),
+  email: yup.string().email().optional().nullable(),
+  address: yup.string().optional().nullable(),
+  fb_url: yup.string().url().optional().nullable(),
+  ig_url: yup.string().url().optional().nullable(),
+  yt_url: yup.string().url().optional().nullable(),
 });
 
 export const settingsS3CreateSchema = yup.object({

@@ -1,3 +1,4 @@
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { IUser } from '@modules/users/lib/interfaces';
 
 export type TId = string | number;
@@ -54,4 +55,8 @@ export interface IBaseServices<Entity = any, FilterOptions = any, CreatePayload 
   create(payload: CreatePayload): Promise<IBaseResponse<Entity>>;
   update(payload: { id: TId; data: Partial<UpdatePayload> }): Promise<IBaseResponse<Entity>>;
   delete(id: TId): Promise<IBaseResponse<Entity>>;
+}
+
+export interface IBasePageProps {
+  settingsIdentity: ISettingsIdentity;
 }

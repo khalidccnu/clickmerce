@@ -34,7 +34,7 @@ const ProductCatalog: React.FC<IProps> = ({ className }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const { isAuthenticate } = useAuthSession();
-  const [headerHeight] = useSessionState(States.headerHeight);
+  const [headerHeight] = useSessionState(States.adminHeaderHeight);
   const { elemRef: productCatalogHeaderRef, height: productCatalogHeaderHeight } = useResize<HTMLDivElement>();
   const productsSearchRef = useRef(null);
   const [productsSearchTerm, setProductsSearchTerm] = useState<string>(null);

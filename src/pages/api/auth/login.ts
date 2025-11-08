@@ -107,7 +107,16 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
     permissions = rolePermissions?.data?.map((rp) => rp?.permission?.name);
   }
 
-  const token = jwtSign({ user: { id: user.data.id, roles, permissions } });
+  const token = jwtSign({
+    user: {
+      id: user.data.id,
+      name: user.data.name,
+      phone: user.data.phone,
+      email: user.data.email,
+      roles,
+      permissions,
+    },
+  });
   delete user.data.password;
 
   const response: IBaseResponse<{ user: IUser; token: string }> = {

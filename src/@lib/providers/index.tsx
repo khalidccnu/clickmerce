@@ -1,15 +1,12 @@
 import { DayjsConfig } from '@lib/config/dayjs';
 import { queryClient } from '@lib/config/reactQuery';
 import useTheme from '@lib/hooks/useTheme';
-import { initializeRedux, persistor } from '@lib/redux/store';
 import { setNotificationInstance } from '@lib/utils/notificationInstance';
 import { QueryClientProvider } from '@tanstack/react-query';
 import type { ThemeConfig } from 'antd';
 import { ConfigProvider, notification, theme as themeConfig } from 'antd';
 import { NextFontWithVariable } from 'next/dist/compiled/@next/font';
 import { useEffect, type PropsWithChildren } from 'react';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 
 type TProps = {
   nextFont: (NextFontWithVariable & { originalVariableName: string })[];
@@ -18,7 +15,6 @@ type TProps = {
 export const Providers = ({ nextFont, children }: TProps) => {
   const { isLight } = useTheme();
   const [notificationApi, notificationHolder] = notification.useNotification();
-  const { store } = initializeRedux();
 
   DayjsConfig();
 
@@ -53,20 +49,12 @@ export const Providers = ({ nextFont, children }: TProps) => {
   }, [notificationApi]);
 
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-        <ConfigProvider theme={theme}>
-          <QueryClientProvider client={queryClient}>
-            <main
-              role="main"
-              id="__main"
-              className={[...nextFont.map((font) => font.variable), 'font-roboto'].join(' ')}
-            >
-              {notificationHolder} {children}
-            </main>
-          </QueryClientProvider>
-        </ConfigProvider>
-      </PersistGate>
-    </Provider>
+    <ConfigProvider theme={theme}>
+      <QueryClientProvider client={queryClient}>
+        <main role="main" id="__main" className={[...nextFont.map((font) => font.variable), 'font-roboto'].join(' ')}>
+          {notificationHolder} {children}
+        </main>
+      </QueryClientProvider>
+    </ConfigProvider>
   );
 };

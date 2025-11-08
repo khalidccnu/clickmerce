@@ -5,6 +5,9 @@ import { TRole } from '@lib/constant/roles';
 export interface IToken {
   user: {
     id: TId;
+    name: string;
+    phone: string;
+    email: string;
     roles: TRole[];
     permissions: TPermission[];
   };

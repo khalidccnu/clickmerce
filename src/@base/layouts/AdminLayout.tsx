@@ -29,7 +29,7 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
   const pathname = usePathname();
   const screens = Grid.useBreakpoint();
   const headerRef = useRef(null);
-  const [headerHeight, setHeaderHeight] = useSessionState(States.headerHeight);
+  const [headerHeight, setHeaderHeight] = useSessionState(States.adminHeaderHeight);
   const [sidebar, setSidebar] = useLocalState(States.sidebar);
   const [menu, setMenu] = useLocalState<IMenu>(States.menu);
   const { elemRef: siderRef, width: siderWidth } = useResize<HTMLDivElement>();

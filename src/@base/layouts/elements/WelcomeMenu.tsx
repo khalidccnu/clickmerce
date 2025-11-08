@@ -17,17 +17,10 @@ interface IProps {
 }
 
 const WelcomeMenu: React.FC<IProps> = ({ className }) => {
-  const { isAuthenticate } = useAuthSession();
+  const { user } = useAuthSession();
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
 
   const settingsQuery = SettingsHooks.useFind();
-
-  const profileQuery = AuthHooks.useProfile({
-    config: {
-      queryKey: [],
-      enabled: isAuthenticate,
-    },
-  });
 
   const items = [
     {
@@ -54,7 +47,7 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
               <p className="font-medium text-xs text-[var(--color-gray-500)]">
                 Welcome to {settingsQuery.data?.data?.identity?.name || Env.webTitle}
               </p>
-              <p className="font-semibold">{profileQuery.data?.data?.name}</p>
+              <p className="font-semibold">{user?.name}</p>
               <ul className="flex flex-col gap-2 border-t border-t-[var(--color-gray-100)] pt-4 mt-4">
                 {items.map((item) => (
                   <li
@@ -86,7 +79,7 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
         onCancel={() => setProfileModalOpen(false)}
         classNames={{ content: '!bg-transparent !shadow-none' }}
       >
-        <ProfileCard user={profileQuery.data?.data} />
+        <ProfileCard user={user} />
       </BaseModalWithoutClicker>
     </React.Fragment>
   );

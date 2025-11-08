@@ -12,8 +12,12 @@ export const States: IStates = {
     key: 'theme',
     initialValue: ENUM_THEME_TYPES.SYSTEM,
   },
-  headerHeight: {
-    key: 'headerHeight',
+  landingHeaderHeight: {
+    key: 'landingHeaderHeight',
+    initialValue: 0,
+  },
+  adminHeaderHeight: {
+    key: 'adminHeaderHeight',
     initialValue: 0,
   },
   sidebar: {
