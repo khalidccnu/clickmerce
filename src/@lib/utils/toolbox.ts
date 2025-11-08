@@ -716,6 +716,8 @@ export const Toolbox = {
       fontWeight = 'bold',
     } = options;
 
+    if (!character) return type === 'url' ? '' : '<svg></svg>';
+
     const displayChar = character.charAt(0).toUpperCase();
 
     const textX = size / 2;
