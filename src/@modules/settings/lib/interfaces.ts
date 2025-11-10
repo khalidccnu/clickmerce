@@ -64,6 +64,7 @@ export interface ISettingsSms {
   api_key: string;
   api_secret: string;
   region: string;
+  endpoint: string;
 }
 
 export interface ISettings extends IBaseEntity {

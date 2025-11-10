@@ -222,6 +222,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       api_key: sms?.api_key || null,
       api_secret: sms?.api_secret || null,
       region: sms?.region || null,
+      endpoint: sms?.endpoint || null,
     };
 
     const settingsResult = await SupabaseAdapter.create(supabaseServiceClient, Database.settings, {

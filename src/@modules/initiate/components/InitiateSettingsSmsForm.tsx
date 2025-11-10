@@ -22,7 +22,7 @@ const InitiateSettingsSmsForm: React.FC<IProps> = ({ form }) => {
       case ENUM_SETTINGS_SMS_PROVIDER_TYPES.VONAGE:
         return ['api_key', 'api_secret'];
       case ENUM_SETTINGS_SMS_PROVIDER_TYPES.ALPHA_SMS:
-        return ['api_key'];
+        return ['endpoint', 'api_key'];
       case ENUM_SETTINGS_SMS_PROVIDER_TYPES.CUSTOM:
       default:
         return [];
@@ -104,6 +104,17 @@ const InitiateSettingsSmsForm: React.FC<IProps> = ({ form }) => {
             className="!mb-0"
           >
             <FloatInput placeholder="Region" />
+          </Form.Item>
+        </Col>
+      )}
+      {showFieldFn('endpoint') && (
+        <Col xs={24} md={12}>
+          <Form.Item
+            name={['sms', 'endpoint']}
+            rules={[{ required: true, message: 'Endpoint is required!' }]}
+            className="!mb-0"
+          >
+            <FloatInput placeholder="Endpoint" />
           </Form.Item>
         </Col>
       )}
