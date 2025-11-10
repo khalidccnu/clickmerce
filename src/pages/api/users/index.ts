@@ -136,7 +136,19 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { name, phone, email, password, is_admin, is_default_customer, is_active, roles, ...rest } = data;
+  const {
+    name,
+    phone,
+    email,
+    password,
+    is_admin,
+    is_default_customer,
+    is_system_generated,
+    is_verified,
+    is_active,
+    roles,
+    ...rest
+  } = data;
 
   try {
     const phoneCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
@@ -184,6 +196,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       password: null,
       is_admin,
       is_default_customer,
+      is_system_generated,
+      is_verified,
       is_active,
     };
 

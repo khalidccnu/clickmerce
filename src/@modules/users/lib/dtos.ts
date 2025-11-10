@@ -25,6 +25,8 @@ export const userCreateSchema = yup.object({
   roles: yup.array().of(userRoleCreateSchema).optional().nullable(),
   is_admin: yup.string().optional(),
   is_default_customer: yup.string().optional(),
+  is_system_generated: yup.string().optional(),
+  is_verified: yup.string().optional(),
   is_active: yup.string().optional(),
 });
 
@@ -38,6 +40,8 @@ export const userFilterSchema = PickType(userCreateSchema, [
   'blood_group',
   'is_admin',
   'is_default_customer',
+  'is_system_generated',
+  'is_verified',
   'is_active',
 ]).concat(baseFilterSchema);
 

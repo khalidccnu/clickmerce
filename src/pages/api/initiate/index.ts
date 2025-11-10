@@ -81,6 +81,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       email,
       password: null,
       is_admin: true,
+      is_system_generated: 'true',
+      is_verified: 'true',
       is_active: true,
     };
 
@@ -174,7 +176,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json(response);
     }
 
-    const { identity, s3, vat, tax } = settings;
+    const { identity, s3, vat, tax, email: settingsEmail, sms } = settings;
 
     const purifiedSettingsIdentity = {
       ...identity,
@@ -200,11 +202,33 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       bucket: s3?.bucket || null,
     };
 
+    const purifiedSettingsEmail = {
+      ...settingsEmail,
+      host: settingsEmail?.host || null,
+      port: settingsEmail?.port || null,
+      username: settingsEmail?.username || null,
+      password: settingsEmail?.password || null,
+      is_secure: settingsEmail?.is_secure || false,
+      api_key: settingsEmail?.api_key || null,
+      region: settingsEmail?.region || null,
+    };
+
+    const purifiedSettingsSms = {
+      ...sms,
+      account_sid: sms?.account_sid || null,
+      auth_token: sms?.auth_token || null,
+      api_key: sms?.api_key || null,
+      api_secret: sms?.api_secret || null,
+      region: sms?.region || null,
+    };
+
     const settingsResult = await SupabaseAdapter.create(supabaseServiceClient, Database.settings, {
       identity: purifiedSettingsIdentity,
       s3: purifiedSettingsS3,
       vat,
       tax,
+      email: purifiedSettingsEmail,
+      sms: purifiedSettingsSms,
     });
 
     if (!settingsResult.success) {

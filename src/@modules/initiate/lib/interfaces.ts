@@ -8,6 +8,8 @@ export interface IInitiate {
   s3: ISettingsCreate['s3'];
   vat: ISettingsCreate['vat'];
   tax: ISettingsCreate['tax'];
+  email: ISettingsCreate['email'];
+  sms: ISettingsCreate['sms'];
 }
 
 export interface IInitiateCreate {

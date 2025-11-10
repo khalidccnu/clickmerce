@@ -1,7 +1,9 @@
 import { OmitType, PartialType } from '@lib/utils/yup';
 import {
+  settingsEmailCreateSchema,
   settingsIdentityCreateSchema,
   settingsS3CreateSchema,
+  settingsSmsCreateSchema,
   settingsTaxCreateSchema,
   settingsVatCreateSchema,
 } from '@modules/settings/lib/dtos';
@@ -18,6 +20,8 @@ export const initiateCreateSchema = yup.object({
       s3: PartialType(settingsS3CreateSchema, true).optional(),
       vat: settingsVatCreateSchema.required(),
       tax: settingsTaxCreateSchema.required(),
+      email: settingsEmailCreateSchema.required(),
+      sms: settingsSmsCreateSchema.required(),
     })
     .required(),
 });

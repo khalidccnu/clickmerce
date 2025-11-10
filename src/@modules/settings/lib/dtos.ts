@@ -1,6 +1,12 @@
 import { PartialType } from '@lib/utils/yup';
 import * as yup from 'yup';
-import { settingsS3ProviderTypes, settingsTaxTypes, settingsVatTypes } from './enums';
+import {
+  settingsEmailProviderTypes,
+  settingsS3ProviderTypes,
+  settingsSmsProviderTypes,
+  settingsTaxTypes,
+  settingsVatTypes,
+} from './enums';
 
 export const settingsIdentityCreateSchema = yup.object({
   name: yup.string().min(3).required(),
@@ -39,11 +45,35 @@ export const settingsTaxCreateSchema = yup.object({
   amount: yup.number().min(0).required(),
 });
 
+export const settingsEmailCreateSchema = yup.object({
+  provider: yup.string().oneOf(settingsEmailProviderTypes).required(),
+  from_name: yup.string().min(3).required(),
+  from_email: yup.string().email().required(),
+  host: yup.string().min(3).optional().nullable(),
+  port: yup.number().min(1).optional().nullable(),
+  username: yup.string().min(3).optional().nullable(),
+  password: yup.string().min(3).optional().nullable(),
+  is_secure: yup.boolean().optional().nullable(),
+  api_key: yup.string().min(3).optional().nullable(),
+  region: yup.string().min(3).optional().nullable(),
+});
+
+export const settingsSmsCreateSchema = yup.object({
+  provider: yup.string().oneOf(settingsSmsProviderTypes).required(),
+  account_sid: yup.string().min(3).optional().nullable(),
+  auth_token: yup.string().min(3).optional().nullable(),
+  api_key: yup.string().min(3).optional().nullable(),
+  api_secret: yup.string().min(3).optional().nullable(),
+  region: yup.string().min(3).optional().nullable(),
+});
+
 export const settingsCreateSchema = yup.object({
   identity: settingsIdentityCreateSchema.required(),
   s3: settingsS3CreateSchema.required(),
   tax: settingsTaxCreateSchema.required(),
   vat: settingsVatCreateSchema.required(),
+  email: settingsEmailCreateSchema.required(),
+  sms: settingsSmsCreateSchema.required(),
   is_active: yup.string().optional(),
 });
 

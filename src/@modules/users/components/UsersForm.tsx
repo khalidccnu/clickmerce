@@ -93,6 +93,20 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
         onFinish={handleFinishFn}
       >
         <Row gutter={[16, 16]}>
+          {formType === 'create' && (
+            <Col xs={24}>
+              <Form.Item name="is_system_generated" className="!mb-0">
+                <Radio.Group buttonStyle="solid" className="w-full text-center">
+                  <Radio.Button className="w-1/2" value="true">
+                    System Generated
+                  </Radio.Button>
+                  <Radio.Button className="w-1/2" value="false">
+                    User Provided
+                  </Radio.Button>
+                </Radio.Group>
+              </Form.Item>
+            </Col>
+          )}
           <Col xs={24}>
             <Form.Item
               name="name"
@@ -112,7 +126,10 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
               name="password"
               rules={[
                 {
-                  required: formType === 'create' && Toolbox.toBool(formValues?.is_admin),
+                  required:
+                    formType === 'create' &&
+                    Toolbox.toBool(formValues?.is_admin) &&
+                    !Toolbox.toBool(formValues?.is_system_generated),
                   message: 'Password is required!',
                 },
                 {
@@ -225,6 +242,18 @@ const UsersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', ini
                 </Radio.Button>
                 <Radio.Button className="w-1/2" value="false">
                   Optional Customer
+                </Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <Form.Item name="is_verified" className="!mb-0">
+              <Radio.Group buttonStyle="solid" className="w-full text-center">
+                <Radio.Button className="w-1/2" value="true">
+                  Verified
+                </Radio.Button>
+                <Radio.Button className="w-1/2" value="false">
+                  Unverified
                 </Radio.Button>
               </Radio.Group>
             </Form.Item>

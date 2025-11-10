@@ -25,3 +25,27 @@ export enum ENUM_SETTINGS_TAX_TYPES {
 
 export type TSettingsTaxType = `${ENUM_SETTINGS_TAX_TYPES}`;
 export const settingsTaxTypes: TSettingsTaxType[] = Object.values(ENUM_SETTINGS_TAX_TYPES);
+
+export enum ENUM_SETTINGS_EMAIL_PROVIDER_TYPES {
+  GMAIL = 'GMAIL',
+  AWS_SES = 'AWS_SES',
+  SENDGRID = 'SENDGRID',
+  MAILGUN = 'MAILGUN',
+  SMTP = 'SMTP',
+  CUSTOM = 'CUSTOM',
+}
+
+export type TSettingsEmailProviderType = `${ENUM_SETTINGS_EMAIL_PROVIDER_TYPES}`;
+export const settingsEmailProviderTypes: TSettingsEmailProviderType[] = Object.values(
+  ENUM_SETTINGS_EMAIL_PROVIDER_TYPES,
+);
+
+export enum ENUM_SETTINGS_SMS_PROVIDER_TYPES {
+  TWILIO = 'TWILIO',
+  AWS_SNS = 'AWS_SNS',
+  VONAGE = 'VONAGE',
+  CUSTOM = 'CUSTOM',
+}
+
+export type TSettingsSmsProviderType = `${ENUM_SETTINGS_SMS_PROVIDER_TYPES}`;
+export const settingsSmsProviderTypes: TSettingsSmsProviderType[] = Object.values(ENUM_SETTINGS_SMS_PROVIDER_TYPES);

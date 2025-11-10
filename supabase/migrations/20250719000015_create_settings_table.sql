@@ -16,6 +16,15 @@ CREATE TABLE IF NOT EXISTS settings (
     -- Tax configuration as JSONB
     tax JSONB,
 
+    -- Email configuration as JSONB
+    email JSONB,
+
+    -- SMS configuration as JSONB
+    sms JSONB,
+
+    -- Tracking codes as JSONB
+    tracking_codes JSONB,
+
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
@@ -29,3 +38,6 @@ CREATE INDEX IF NOT EXISTS idx_settings_identity_gin ON settings USING GIN (iden
 CREATE INDEX IF NOT EXISTS idx_settings_s3_gin ON settings USING GIN (s3);
 CREATE INDEX IF NOT EXISTS idx_settings_vat_gin ON settings USING GIN (vat);
 CREATE INDEX IF NOT EXISTS idx_settings_tax_gin ON settings USING GIN (tax);
+CREATE INDEX IF NOT EXISTS idx_settings_email_gin ON settings USING GIN (email);
+CREATE INDEX IF NOT EXISTS idx_settings_sms_gin ON settings USING GIN (sms);
+CREATE INDEX IF NOT EXISTS idx_settings_tracking_codes_gin ON settings USING GIN (tracking_codes);

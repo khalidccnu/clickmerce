@@ -1,5 +1,11 @@
 import { IBaseEntity, IBaseResponse } from '@base/interfaces';
-import { TSettingsS3ProviderType, TSettingsTaxType, TSettingsVatType } from './enums';
+import {
+  TSettingsEmailProviderType,
+  TSettingsS3ProviderType,
+  TSettingsSmsProviderType,
+  TSettingsTaxType,
+  TSettingsVatType,
+} from './enums';
 
 export interface ISettingsIdentity {
   name: string;
@@ -38,11 +44,35 @@ export interface ISettingsTax {
   amount: number;
 }
 
+export interface ISettingsEmail {
+  provider: TSettingsEmailProviderType;
+  from_name: string;
+  from_email: string;
+  host: string;
+  port: number;
+  username: string;
+  password: string;
+  is_secure: boolean;
+  api_key: string;
+  region: string;
+}
+
+export interface ISettingsSms {
+  provider: TSettingsSmsProviderType;
+  account_sid: string;
+  auth_token: string;
+  api_key: string;
+  api_secret: string;
+  region: string;
+}
+
 export interface ISettings extends IBaseEntity {
   identity: ISettingsIdentity;
   s3: ISettingsS3;
   vat: ISettingsVat;
   tax: ISettingsTax;
+  email: ISettingsEmail;
+  sms: ISettingsSms;
   is_s3_configured: boolean;
 }
 
@@ -55,4 +85,6 @@ export interface ISettingsCreate {
   s3: Partial<ISettingsS3>;
   vat: Partial<ISettingsVat>;
   tax: Partial<ISettingsTax>;
+  email: Partial<ISettingsEmail>;
+  sms: Partial<ISettingsSms>;
 }

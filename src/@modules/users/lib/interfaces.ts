@@ -5,6 +5,8 @@ export interface IUsersFilter extends IBaseFilter {
   blood_group?: string;
   is_admin?: string;
   is_default_customer?: string;
+  is_system_generated?: string;
+  is_verified?: string;
 }
 
 export interface IUserInfo extends IBaseEntity {
@@ -20,6 +22,8 @@ export interface IUser extends IBaseEntity {
   email: string;
   is_admin: boolean;
   is_default_customer: boolean;
+  is_system_generated: boolean;
+  is_verified: boolean;
   user_info: IUserInfo;
   user_roles: ({ role_id: TId; user_id: TId; role: IRole } & IBaseEntity)[];
 }
@@ -38,5 +42,7 @@ export interface IUserCreate {
   roles: { id?: TId; is_deleted?: boolean }[];
   is_admin: string;
   is_default_customer: string;
+  is_system_generated: string;
+  is_verified: string;
   is_active: string;
 }

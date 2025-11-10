@@ -460,6 +460,33 @@ export type Database = {
           },
         ];
       };
+      pages: {
+        Row: {
+          content: string | null;
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          content?: string | null;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          content?: string | null;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       payment_methods: {
         Row: {
           created_at: string;
@@ -810,31 +837,40 @@ export type Database = {
       settings: {
         Row: {
           created_at: string;
+          email: Json | null;
           id: string;
           identity: Json | null;
           is_active: boolean;
           s3: Json | null;
+          sms: Json | null;
           tax: Json | null;
+          tracking_codes: Json | null;
           updated_at: string;
           vat: Json | null;
         };
         Insert: {
           created_at?: string;
+          email?: Json | null;
           id?: string;
           identity?: Json | null;
           is_active?: boolean;
           s3?: Json | null;
+          sms?: Json | null;
           tax?: Json | null;
+          tracking_codes?: Json | null;
           updated_at?: string;
           vat?: Json | null;
         };
         Update: {
           created_at?: string;
+          email?: Json | null;
           id?: string;
           identity?: Json | null;
           is_active?: boolean;
           s3?: Json | null;
+          sms?: Json | null;
           tax?: Json | null;
+          tracking_codes?: Json | null;
           updated_at?: string;
           vat?: Json | null;
         };
@@ -977,6 +1013,8 @@ export type Database = {
           is_active: boolean;
           is_admin: boolean;
           is_default_customer: boolean;
+          is_system_generated: boolean;
+          is_verified: boolean;
           name: string;
           password: string | null;
           phone: string;
@@ -989,6 +1027,8 @@ export type Database = {
           is_active?: boolean;
           is_admin?: boolean;
           is_default_customer?: boolean;
+          is_system_generated?: boolean;
+          is_verified?: boolean;
           name: string;
           password?: string | null;
           phone: string;
@@ -1001,6 +1041,8 @@ export type Database = {
           is_active?: boolean;
           is_admin?: boolean;
           is_default_customer?: boolean;
+          is_system_generated?: boolean;
+          is_verified?: boolean;
           name?: string;
           password?: string | null;
           phone?: string;

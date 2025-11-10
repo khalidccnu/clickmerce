@@ -5,15 +5,24 @@ import { Select, type SelectProps } from 'antd';
 import React from 'react';
 
 interface IProps extends SelectProps {
+  required?: boolean;
   isFloat?: boolean;
   code: string;
   onSelectCode: (code: string) => void;
 }
 
-const PhoneCodeSelect: React.FC<IProps> = ({ isFloat = false, placeholder, code, onSelectCode, ...rest }) => {
+const PhoneCodeSelect: React.FC<IProps> = ({
+  required = false,
+  isFloat = false,
+  placeholder,
+  code,
+  onSelectCode,
+  ...rest
+}) => {
   if (isFloat) {
     return (
       <FloatSelect
+        required={required}
         virtual={false}
         placeholder={placeholder || 'Code'}
         options={phoneCodes.map((phoneCode) => ({

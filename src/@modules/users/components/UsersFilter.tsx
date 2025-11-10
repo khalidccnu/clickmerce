@@ -25,6 +25,7 @@ const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
 
     const values = {
       is_admin: '',
+      is_verified: '',
       is_active: '',
       sort_order: '',
       date_range: [],
@@ -102,6 +103,28 @@ const UsersFilter: React.FC<IProps> = ({ initialValues, onChange }) => {
               <Select.Option value="true">Default Customer</Select.Option>
               <Select.Option value="false">Optional Customer</Select.Option>
             </FloatSelect>
+          </Form.Item>
+          <Form.Item name="is_system_generated" className="!mb-0">
+            <FloatSelect
+              allowClear
+              showSearch
+              virtual={false}
+              placeholder="Account Type"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+            >
+              <Select.Option value="true">System Generated</Select.Option>
+              <Select.Option value="false">User Provided</Select.Option>
+            </FloatSelect>
+          </Form.Item>
+          <Form.Item name="is_verified" className="!mb-0">
+            <Radio.Group buttonStyle="solid" className="w-full text-center">
+              <Radio.Button className="w-1/2" value="true">
+                Verified
+              </Radio.Button>
+              <Radio.Button className="w-1/2" value="false">
+                Unverified
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
           <Form.Item name="date_range" className="!mb-0">
             <FloatRangePicker placeholder={['Start Date', 'End Date']} className="w-full" />

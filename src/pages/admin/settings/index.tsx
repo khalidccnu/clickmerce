@@ -1,7 +1,9 @@
 import PageWrapper from '@base/container/PageWrapper';
 import WithAuthorization from '@modules/auth/components/WithAuthorization';
+import SettingsEmailForm from '@modules/settings/components/SettingsEmailForm';
 import SettingsIdentityForm from '@modules/settings/components/SettingsIdentityForm';
 import SettingsS3Form from '@modules/settings/components/SettingsS3Form';
+import SettingsSmsForm from '@modules/settings/components/SettingsSmsForm';
 import SettingsTaxForm from '@modules/settings/components/SettingsTaxForm';
 import SettingsVatForm from '@modules/settings/components/SettingsVatForm';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
@@ -20,6 +22,8 @@ const SettingsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const [s3FormInstance] = Form.useForm();
   const [vatFormInstance] = Form.useForm();
   const [taxFormInstance] = Form.useForm();
+  const [emailFormInstance] = Form.useForm();
+  const [smsFormInstance] = Form.useForm();
 
   const settingsQuery = SettingsHooks.useFind();
 
@@ -111,6 +115,46 @@ const SettingsPage: NextPage<IProps> = ({ settingsIdentity }) => {
               id: settingsQuery.data?.data?.id,
               data: {
                 tax: values,
+              },
+            })
+          }
+        />
+      ),
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      children: (
+        <SettingsEmailForm
+          formType="update"
+          form={emailFormInstance}
+          isLoading={settingsQuery.isLoading}
+          initialValues={settingsQuery.data?.data?.email}
+          onFinish={(values) =>
+            settingsUpdateFn.mutate({
+              id: settingsQuery.data?.data?.id,
+              data: {
+                email: values,
+              },
+            })
+          }
+        />
+      ),
+    },
+    {
+      key: 'sms',
+      label: 'Sms',
+      children: (
+        <SettingsSmsForm
+          formType="update"
+          form={smsFormInstance}
+          isLoading={settingsQuery.isLoading}
+          initialValues={settingsQuery.data?.data?.sms}
+          onFinish={(values) =>
+            settingsUpdateFn.mutate({
+              id: settingsQuery.data?.data?.id,
+              data: {
+                sms: values,
               },
             })
           }

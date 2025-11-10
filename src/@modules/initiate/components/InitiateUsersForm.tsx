@@ -30,7 +30,7 @@ const InitiateUsersForm: React.FC<IProps> = ({ form }) => {
           ]}
           className="!mb-0"
         >
-          <FloatInput placeholder="Name" />
+          <FloatInput placeholder="Name" required />
         </Form.Item>
       </Col>
       <Col xs={24}>
@@ -48,7 +48,7 @@ const InitiateUsersForm: React.FC<IProps> = ({ form }) => {
           ]}
           className="!mb-0"
         >
-          <FloatInputPassword placeholder="Password" />
+          <FloatInputPassword placeholder="Password" required />
         </Form.Item>
       </Col>
       <Col xs={24}>
@@ -80,7 +80,7 @@ const InitiateUsersForm: React.FC<IProps> = ({ form }) => {
           ]}
           className="!mb-0"
         >
-          <FloatInput placeholder="Email" />
+          <FloatInput placeholder="Email" required />
         </Form.Item>
       </Col>
       <Col xs={24}>
@@ -95,6 +95,7 @@ const InitiateUsersForm: React.FC<IProps> = ({ form }) => {
           className="!mb-0"
         >
           <FloatSelect
+            required
             allowClear
             showSearch
             virtual={false}
@@ -120,6 +121,7 @@ const InitiateUsersForm: React.FC<IProps> = ({ form }) => {
           className="!mb-0"
         >
           <FloatDatePicker
+            required
             placeholder="Birthday"
             format={Dayjs.date}
             suffixIcon={<IoCalendar />}

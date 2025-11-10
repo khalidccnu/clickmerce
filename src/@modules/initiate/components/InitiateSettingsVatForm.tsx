@@ -28,7 +28,7 @@ const InitiateSettingsVatForm = () => {
           ]}
           className="!mb-0"
         >
-          <FloatInputNumber placeholder="Amount" min={0} className="w-full" />
+          <FloatInputNumber placeholder="Amount" min={0} className="w-full" required />
         </Form.Item>
       </Col>
     </Row>

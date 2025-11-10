@@ -5,12 +5,14 @@ import { Select, type SelectProps } from 'antd';
 import React from 'react';
 
 interface IProps extends SelectProps {
+  required?: boolean;
   isFloat?: boolean;
   currency: string;
   onSelectCurrency: (currency: string) => void;
 }
 
 const CountryCurrencySelect: React.FC<IProps> = ({
+  required = false,
   isFloat = false,
   placeholder,
   currency,
@@ -20,6 +22,7 @@ const CountryCurrencySelect: React.FC<IProps> = ({
   if (isFloat) {
     return (
       <FloatSelect
+        required={required}
         virtual={false}
         placeholder={placeholder || 'Currency'}
         options={countryCurrencies.map((countryCurrency) => ({

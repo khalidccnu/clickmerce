@@ -26,7 +26,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           ]}
           className="!mb-0"
         >
-          <FloatInput placeholder="Name" />
+          <FloatInput placeholder="Name" required />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
@@ -44,7 +44,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           ]}
           className="!mb-0"
         >
-          <FloatInput placeholder="Initial Name" />
+          <FloatInput placeholder="Initial Name" required />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
@@ -101,6 +101,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           className="!mb-0"
         >
           <PhoneCodeSelect
+            required
             isFloat
             showSearch
             code={formValues?.identity?.phone_code}
@@ -120,6 +121,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           className="!mb-0"
         >
           <CountryCurrencySelect
+            required
             isFloat
             showSearch
             currency={formValues?.identity?.currency}
