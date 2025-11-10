@@ -190,6 +190,8 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       fb_url: identity.fb_url || null,
       ig_url: identity.ig_url || null,
       yt_url: identity.yt_url || null,
+      is_user_registration_acceptance: identity.is_user_registration_acceptance || false,
+      need_user_registration_verification: identity.need_user_registration_verification || false,
     };
 
     const purifiedSettingsS3 = {

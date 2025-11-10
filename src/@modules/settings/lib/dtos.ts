@@ -23,6 +23,8 @@ export const settingsIdentityCreateSchema = yup.object({
   fb_url: yup.string().url().optional().nullable(),
   ig_url: yup.string().url().optional().nullable(),
   yt_url: yup.string().url().optional().nullable(),
+  is_user_registration_acceptance: yup.string().default('false').optional(),
+  need_user_registration_verification: yup.string().default('false').optional(),
 });
 
 export const settingsS3CreateSchema = yup.object({
@@ -53,7 +55,7 @@ export const settingsEmailCreateSchema = yup.object({
   port: yup.number().min(1).optional().nullable(),
   username: yup.string().min(3).optional().nullable(),
   password: yup.string().min(3).optional().nullable(),
-  is_secure: yup.boolean().optional().nullable(),
+  is_secure: yup.boolean().default(false).optional(),
   api_key: yup.string().min(3).optional().nullable(),
   region: yup.string().min(3).optional().nullable(),
 });

@@ -67,7 +67,10 @@ export interface ISettingsSms {
 }
 
 export interface ISettings extends IBaseEntity {
-  identity: ISettingsIdentity;
+  identity: ISettingsIdentity & {
+    is_user_registration_acceptance: boolean;
+    need_user_registration_verification: boolean;
+  };
   s3: ISettingsS3;
   vat: ISettingsVat;
   tax: ISettingsTax;
@@ -81,7 +84,12 @@ export interface ISettingsResponse extends IBaseResponse {
 }
 
 export interface ISettingsCreate {
-  identity: Partial<ISettingsIdentity>;
+  identity: Partial<
+    ISettingsIdentity & {
+      is_user_registration_acceptance: string;
+      need_user_registration_verification: string;
+    }
+  >;
   s3: Partial<ISettingsS3>;
   vat: Partial<ISettingsVat>;
   tax: Partial<ISettingsTax>;

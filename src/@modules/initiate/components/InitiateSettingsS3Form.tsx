@@ -1,4 +1,5 @@
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatInputPassword from '@base/antd/components/FloatInputPassword';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { settingsS3ProviderTypes } from '@modules/settings/lib/enums';
@@ -30,7 +31,7 @@ const InitiateSettingsS3Form = () => {
       </Col>
       <Col xs={24} md={12}>
         <Form.Item name={['s3', 'secret_access_key']} className="!mb-0">
-          <FloatInput placeholder="Secret Access Key" />
+          <FloatInputPassword placeholder="Secret Access Key" />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>

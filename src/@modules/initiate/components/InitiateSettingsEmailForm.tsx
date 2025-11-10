@@ -141,7 +141,7 @@ const InitiateSettingsEmailForm: React.FC<IProps> = ({ form }) => {
             rules={[{ required: true, message: 'API key is required!' }]}
             className="!mb-0"
           >
-            <FloatInput placeholder="API Key" />
+            <FloatInputPassword placeholder="API Key" />
           </Form.Item>
         </Col>
       )}

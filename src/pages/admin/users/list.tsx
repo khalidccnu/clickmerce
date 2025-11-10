@@ -96,7 +96,13 @@ const UsersPage: NextPage<IProps> = ({ settingsIdentity }) => {
       <Drawer width={640} title="Create a new user" open={isDrawerOpen} onClose={() => setDrawerOpen(false)}>
         <UsersForm
           form={formInstance}
-          initialValues={{ is_admin: 'false', is_default_customer: 'false', is_active: 'true' }}
+          initialValues={{
+            is_admin: 'false',
+            is_default_customer: 'false',
+            is_system_generated: 'false',
+            is_verified: 'false',
+            is_active: 'true',
+          }}
           isLoading={userCreateFn.isPending}
           onFinish={(values) => userCreateFn.mutate(values)}
         />

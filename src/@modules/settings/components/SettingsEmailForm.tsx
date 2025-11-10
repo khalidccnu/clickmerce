@@ -130,7 +130,7 @@ const SettingsEmailForm: React.FC<IProps> = ({ isLoading, form, formType = 'crea
         {showFieldFn('api_key') && (
           <Col xs={24} md={12} xl={8}>
             <Form.Item name="api_key" rules={[{ required: true, message: 'API key is required!' }]} className="!mb-0">
-              <FloatInput placeholder="API Key" />
+              <FloatInputPassword placeholder="API Key" />
             </Form.Item>
           </Col>
         )}

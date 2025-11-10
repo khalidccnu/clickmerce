@@ -1,10 +1,11 @@
 import { Env } from '.environments';
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatSelect from '@base/antd/components/FloatSelect';
 import FloatTextarea from '@base/antd/components/FloatTextarea';
 import CountryCurrencySelect from '@base/components/CountryCurrencySelect';
 import InputPhone from '@base/components/InputPhone';
 import PhoneCodeSelect from '@base/components/PhoneCodeSelect';
-import { Button, Col, Form, FormInstance, Row } from 'antd';
+import { Button, Col, Form, FormInstance, Row, Select } from 'antd';
 import React, { useEffect } from 'react';
 import { ISettingsIdentity } from '../lib/interfaces';
 
@@ -207,7 +208,7 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
             <FloatInput placeholder="Instagram URL" />
           </Form.Item>
         </Col>
-        <Col xs={24} xl={8}>
+        <Col xs={24} md={12} xl={8}>
           <Form.Item
             name="yt_url"
             rules={[
@@ -219,6 +220,32 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
             className="!mb-0"
           >
             <FloatInput placeholder="YouTube URL" />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <Form.Item name="is_user_registration_acceptance" className="!mb-0">
+            <FloatSelect
+              showSearch
+              virtual={false}
+              placeholder="User Acceptance"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+            >
+              <Select.Option value="true">Accepted</Select.Option>
+              <Select.Option value="false">Not Accepted</Select.Option>
+            </FloatSelect>
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <Form.Item name="need_user_registration_verification" className="!mb-0">
+            <FloatSelect
+              showSearch
+              virtual={false}
+              placeholder="User Verification"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+            >
+              <Select.Option value="true">Need</Select.Option>
+              <Select.Option value="false">No Need</Select.Option>
+            </FloatSelect>
           </Form.Item>
         </Col>
         <Col xs={24}>

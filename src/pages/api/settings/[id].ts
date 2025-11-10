@@ -86,6 +86,12 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       identity = {
         ...existingSettings.data?.identity,
         ...identity,
+        is_user_registration_acceptance:
+          identity?.is_user_registration_acceptance ??
+          existingSettings.data?.identity.is_user_registration_acceptance?.toString(),
+        need_user_registration_verification:
+          identity?.need_user_registration_verification ??
+          existingSettings.data?.identity.need_user_registration_verification?.toString(),
       };
     }
 

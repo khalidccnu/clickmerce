@@ -40,6 +40,12 @@ const UsersView: React.FC<IProps> = ({ data }) => {
         ) : (
           <Tag color="orange">Optional Customer</Tag>
         )}
+        {data?.is_system_generated ? (
+          <Tag color="magenta">System Generated</Tag>
+        ) : (
+          <Tag color="magenta-inverse">User Provided</Tag>
+        )}
+        {data?.is_verified ? <Tag color="green">Verified</Tag> : <Tag color="red">Not Verified</Tag>}
         <Tag color="geekblue">{dayjs(data?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}</Tag>
       </Descriptions.Item>
     </Descriptions>

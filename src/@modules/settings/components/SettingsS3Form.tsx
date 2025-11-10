@@ -1,4 +1,5 @@
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatInputPassword from '@base/antd/components/FloatInputPassword';
 import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
@@ -79,7 +80,7 @@ const SettingsS3Form: React.FC<IProps> = ({ isLoading, form, formType = 'create'
             ]}
             className="!mb-0"
           >
-            <FloatInput placeholder="Secret Access Key" />
+            <FloatInputPassword placeholder="Secret Access Key" />
           </Form.Item>
         </Col>
         <Col xs={24} md={12} xl={8}>

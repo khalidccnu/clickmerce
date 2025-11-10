@@ -26,6 +26,8 @@ const SettingsSmsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
         return ['api_key', 'api_secret', 'region'];
       case ENUM_SETTINGS_SMS_PROVIDER_TYPES.VONAGE:
         return ['api_key', 'api_secret'];
+      case ENUM_SETTINGS_SMS_PROVIDER_TYPES.ALPHA_SMS:
+        return ['api_key'];
       case ENUM_SETTINGS_SMS_PROVIDER_TYPES.CUSTOM:
       default:
         return [];
@@ -88,7 +90,7 @@ const SettingsSmsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
         {showFieldFn('api_key') && (
           <Col xs={24} md={12} xl={8}>
             <Form.Item name="api_key" rules={[{ required: true, message: 'API key is required!' }]} className="!mb-0">
-              <FloatInput placeholder="API Key" />
+              <FloatInputPassword placeholder="API Key" />
             </Form.Item>
           </Col>
         )}
