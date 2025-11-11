@@ -5359,6 +5359,11 @@ optionator@^0.9.3:
     type-check "^0.4.0"
     word-wrap "^1.2.5"
 
+otp-without-db@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/otp-without-db/-/otp-without-db-1.0.6.tgz#72335080536f31aabf41f77e671b7c7a01a7102d"
+  integrity sha512-cPqPj1LYQ0ln7dECALC+pe2WXODskLCrCWVlZSrXVPBCsgjOBBD4mLTkLccTb1zK74QaCHZFnZzcNSk29UnLVw==
+
 own-keys@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/own-keys/-/own-keys-1.0.1.tgz#e4006910a2bf913585289676eebd6f390cf51358"

@@ -79,7 +79,7 @@ AxiosSecureInstance.interceptors.response.use(
         notification.error({
           message: error.response?.data?.message || error.response?.statusText || error.message,
         });
-        AuthHooks.useSignOut();
+        AuthHooks.useLogout();
       } else if (error.config?.method === 'get') {
         notification.error({
           message: error.response?.data?.message || error.response?.statusText || error.message,

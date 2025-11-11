@@ -10,7 +10,7 @@ interface IProps {
   user: IToken['user'];
 }
 
-const signOutFn = AuthHooks.useSignOut;
+const logoutFn = AuthHooks.useLogout;
 
 const ProfileCard: React.FC<IProps> = ({ user }) => {
   const [messageApi, messageHolder] = message.useMessage();
@@ -24,7 +24,7 @@ const ProfileCard: React.FC<IProps> = ({ user }) => {
           return;
         }
 
-        messageApi.loading(data.message, 1).then(() => signOutFn());
+        messageApi.loading(data.message, 1).then(() => logoutFn());
       },
     },
   });

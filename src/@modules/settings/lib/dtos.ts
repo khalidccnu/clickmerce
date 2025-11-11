@@ -23,8 +23,8 @@ export const settingsIdentityCreateSchema = yup.object({
   fb_url: yup.string().url().optional().nullable(),
   ig_url: yup.string().url().optional().nullable(),
   yt_url: yup.string().url().optional().nullable(),
-  is_user_registration_acceptance: yup.string().default('false').optional(),
-  need_user_registration_verification: yup.string().default('false').optional(),
+  is_user_registration_acceptance: yup.boolean().default(false).optional(),
+  need_user_registration_verification: yup.boolean().default(false).optional(),
 });
 
 export const settingsS3CreateSchema = yup.object({

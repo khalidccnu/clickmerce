@@ -5,6 +5,7 @@ import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { ISettings } from '@modules/settings/lib/interfaces';
+import { requiredSettingsEmailFieldsFn, requiredSettingsSmsFieldsFn } from '@modules/settings/lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -63,14 +64,32 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       return res.status(200).json(response);
     }
 
-    const { s3, ...safeSettings } = result.data?.[0];
+    const { s3, email, sms, ...restSettings } = result.data?.[0];
     const isS3Configured = Toolbox.hasAllPropsInObject(s3, null, ['custom_url']);
+
+    const requiredEmailFields = requiredSettingsEmailFieldsFn(email?.provider);
+    const isEmailConfigured = Toolbox.isEmpty(requiredEmailFields)
+      ? false
+      : Toolbox.hasAllPropsInObject(email, requiredEmailFields);
+
+    const requiredSmsFields = requiredSettingsSmsFieldsFn(sms?.provider);
+    const isSmsConfigured = Toolbox.isEmpty(requiredSmsFields)
+      ? false
+      : Toolbox.hasAllPropsInObject(sms, requiredSmsFields);
 
     const response: IBaseResponse = {
       success: true,
       statusCode: 200,
       message: 'Settings fetched successfully',
-      data: { ...safeSettings, is_s3_configured: isS3Configured },
+      data: {
+        ...restSettings,
+        is_s3_configured: isS3Configured,
+        is_email_configured: isEmailConfigured,
+        is_sms_configured: isSmsConfigured,
+        s3,
+        email,
+        sms,
+      },
       meta: result.meta,
     };
 

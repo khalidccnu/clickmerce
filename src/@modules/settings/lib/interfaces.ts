@@ -22,6 +22,8 @@ export interface ISettingsIdentity {
   fb_url: string;
   ig_url: string;
   yt_url: string;
+  is_user_registration_acceptance: boolean;
+  need_user_registration_verification: boolean;
 }
 
 export interface ISettingsS3 {
@@ -68,10 +70,7 @@ export interface ISettingsSms {
 }
 
 export interface ISettings extends IBaseEntity {
-  identity: ISettingsIdentity & {
-    is_user_registration_acceptance: boolean;
-    need_user_registration_verification: boolean;
-  };
+  identity: ISettingsIdentity;
   s3: ISettingsS3;
   vat: ISettingsVat;
   tax: ISettingsTax;
@@ -85,12 +84,7 @@ export interface ISettingsResponse extends IBaseResponse {
 }
 
 export interface ISettingsCreate {
-  identity: Partial<
-    ISettingsIdentity & {
-      is_user_registration_acceptance: string;
-      need_user_registration_verification: string;
-    }
-  >;
+  identity: Partial<ISettingsIdentity>;
   s3: Partial<ISettingsS3>;
   vat: Partial<ISettingsVat>;
   tax: Partial<ISettingsTax>;

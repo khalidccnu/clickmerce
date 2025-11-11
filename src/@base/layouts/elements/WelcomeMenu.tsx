@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { FaUser } from 'react-icons/fa';
 
-const signOutFn = AuthHooks.useSignOut;
+const logoutFn = AuthHooks.useLogout;
 
 interface IProps {
   className?: string;
@@ -30,10 +30,10 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
       onClick: () => setProfileModalOpen(true),
     },
     {
-      key: 'Signout',
+      key: 'Logout',
       icon: <AiOutlineLogout />,
       label: 'Sign out',
-      onClick: signOutFn,
+      onClick: logoutFn,
     },
   ];
 

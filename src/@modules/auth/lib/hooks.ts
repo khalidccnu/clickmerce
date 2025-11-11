@@ -14,10 +14,37 @@ export const AuthHooks = {
     });
   },
 
-  useSignIn: ({ config }: { config?: MutationConfig<typeof AuthServices.signIn> } = {}) => {
+  useLogin: ({ config }: { config?: MutationConfig<typeof AuthServices.login> } = {}) => {
     return useMutation({
-      mutationFn: AuthServices.signIn,
+      mutationFn: AuthServices.login,
       ...config,
+    });
+  },
+
+  useRegister: ({ config }: { config?: MutationConfig<typeof AuthServices.register> } = {}) => {
+    return useMutation({
+      ...config,
+      mutationFn: AuthServices.register,
+    });
+  },
+
+  usePasswordResetRequest: ({ config }: { config?: MutationConfig<typeof AuthServices.passwordResetRequest> } = {}) => {
+    return useMutation({
+      ...config,
+      mutationFn: AuthServices.passwordResetRequest,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
+    });
+  },
+
+  usePasswordReset: ({ config }: { config?: MutationConfig<typeof AuthServices.passwordReset> } = {}) => {
+    return useMutation({
+      ...config,
+      mutationFn: AuthServices.passwordReset,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
     });
   },
 
@@ -31,7 +58,27 @@ export const AuthHooks = {
     });
   },
 
-  useSignOut: () => {
+  useProfileVerifyRequest: ({ config }: { config?: MutationConfig<typeof AuthServices.profileVerifyRequest> } = {}) => {
+    return useMutation({
+      ...config,
+      mutationFn: AuthServices.profileVerifyRequest,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
+    });
+  },
+
+  useProfileVerify: ({ config }: { config?: MutationConfig<typeof AuthServices.profileVerify> } = {}) => {
+    return useMutation({
+      ...config,
+      mutationFn: AuthServices.profileVerify,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
+    });
+  },
+
+  useLogout: () => {
     clearAuthSession();
     window.location.reload();
   },

@@ -10,7 +10,7 @@ import React from 'react';
 import { FaUser } from 'react-icons/fa';
 import { IoMdLogOut } from 'react-icons/io';
 
-const signOutFn = AuthHooks.useSignOut;
+const logoutFn = AuthHooks.useLogout;
 
 interface IProps {
   className?: string;
@@ -34,7 +34,7 @@ const LandingHeaderAuthButtonGroup: React.FC<IProps> = ({ className }) => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <Button type="primary" size="large" ghost onClick={signOutFn}>
+            <Button type="primary" size="large" ghost onClick={logoutFn}>
               {screens.md ? 'Sign Out' : <IoMdLogOut />}
             </Button>
           </>

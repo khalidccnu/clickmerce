@@ -1,6 +1,6 @@
 import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps } from '@base/interfaces';
-import SignInSection from '@modules/auth/components/SignInSection';
+import LoginSection from '@modules/auth/components/LoginSection';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
@@ -15,7 +15,7 @@ const AuthPage: NextPage<IProps> = ({ settingsIdentity }) => {
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
-      <SignInSection settingsIdentity={settingsIdentity} />
+      <LoginSection settingsIdentity={settingsIdentity} />
     </PageWrapper>
   );
 };

@@ -4,8 +4,9 @@ import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
 import React, { useEffect, useMemo } from 'react';
-import { ENUM_SETTINGS_SMS_PROVIDER_TYPES, settingsSmsProviderTypes } from '../lib/enums';
+import { settingsSmsProviderTypes } from '../lib/enums';
 import { ISettingsSms } from '../lib/interfaces';
+import { requiredSettingsSmsFieldsFn } from '../lib/utils';
 
 interface IProps {
   isLoading: boolean;
@@ -18,21 +19,7 @@ interface IProps {
 const SettingsSmsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', initialValues, onFinish }) => {
   const provider = Form.useWatch('provider', form);
 
-  const visibleFieldsFn = useMemo(() => {
-    switch (provider) {
-      case ENUM_SETTINGS_SMS_PROVIDER_TYPES.TWILIO:
-        return ['account_sid', 'auth_token'];
-      case ENUM_SETTINGS_SMS_PROVIDER_TYPES.AWS_SNS:
-        return ['api_key', 'api_secret', 'region'];
-      case ENUM_SETTINGS_SMS_PROVIDER_TYPES.VONAGE:
-        return ['api_key', 'api_secret'];
-      case ENUM_SETTINGS_SMS_PROVIDER_TYPES.ALPHA_SMS:
-        return ['endpoint', 'api_key'];
-      case ENUM_SETTINGS_SMS_PROVIDER_TYPES.CUSTOM:
-      default:
-        return [];
-    }
-  }, [provider]);
+  const visibleFieldsFn = useMemo(() => requiredSettingsSmsFieldsFn(provider), [provider]);
 
   const showFieldFn = (field: string) => visibleFieldsFn.includes(field);
 

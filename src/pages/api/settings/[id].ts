@@ -7,6 +7,7 @@ import { validate } from '@lib/utils/yup';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { settingsUpdateSchema, TSettingsUpdateDto } from '@modules/settings/lib/dtos';
 import { ISettings } from '@modules/settings/lib/interfaces';
+import { requiredSettingsEmailFieldsFn, requiredSettingsSmsFieldsFn } from '@modules/settings/lib/utils';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -86,27 +87,11 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       identity = {
         ...existingSettings.data?.identity,
         ...identity,
-        is_user_registration_acceptance:
-          identity?.is_user_registration_acceptance ??
-          existingSettings.data?.identity.is_user_registration_acceptance?.toString(),
-        need_user_registration_verification:
-          identity?.need_user_registration_verification ??
-          existingSettings.data?.identity.need_user_registration_verification?.toString(),
       };
     }
 
     if (s3) {
-      const purifiedS3 = {
-        provider: s3?.provider || null,
-        access_key_id: s3?.access_key_id || null,
-        secret_access_key: s3?.secret_access_key || null,
-        endpoint: s3?.endpoint || null,
-        custom_url: s3?.custom_url || null,
-        region: s3?.region || null,
-        bucket: s3?.bucket || null,
-      };
-
-      s3 = purifiedS3;
+      s3 = { ...existingSettings.data?.s3, ...s3 };
     }
 
     if (vat) {
@@ -158,14 +143,31 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(updateResult.statusCode || 400).json(response);
     }
 
-    const { s3: s3Config, ...safeSettings } = updateResult.data;
+    const { s3: s3Config, ...restSettings } = updateResult.data;
     const isS3Configured = Toolbox.hasAllPropsInObject(s3Config, null, ['custom_url']);
+    const requiredEmailFields = requiredSettingsEmailFieldsFn(email?.provider);
+    const isEmailConfigured = Toolbox.isEmpty(requiredEmailFields)
+      ? false
+      : Toolbox.hasAllPropsInObject(email, requiredEmailFields);
+
+    const requiredSmsFields = requiredSettingsSmsFieldsFn(sms?.provider);
+    const isSmsConfigured = Toolbox.isEmpty(requiredSmsFields)
+      ? false
+      : Toolbox.hasAllPropsInObject(sms, requiredSmsFields);
 
     const response: IBaseResponse = {
       success: true,
       statusCode: 200,
       message: 'Settings updated successfully',
-      data: { ...safeSettings, is_s3_configured: isS3Configured },
+      data: {
+        ...restSettings,
+        is_s3_configured: isS3Configured,
+        is_email_configured: isEmailConfigured,
+        is_sms_configured: isSmsConfigured,
+        s3: s3Config,
+        email,
+        sms,
+      },
       meta: null,
     };
 

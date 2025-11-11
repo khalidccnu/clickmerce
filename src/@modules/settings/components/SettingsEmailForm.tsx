@@ -5,8 +5,9 @@ import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Radio, Row } from 'antd';
 import React, { useEffect, useMemo } from 'react';
-import { ENUM_SETTINGS_EMAIL_PROVIDER_TYPES, settingsEmailProviderTypes } from '../lib/enums';
+import { settingsEmailProviderTypes } from '../lib/enums';
 import { ISettingsEmail } from '../lib/interfaces';
+import { requiredSettingsEmailFieldsFn } from '../lib/utils';
 
 interface IProps {
   isLoading: boolean;
@@ -19,23 +20,7 @@ interface IProps {
 const SettingsEmailForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', initialValues, onFinish }) => {
   const provider = Form.useWatch('provider', form);
 
-  const visibleFieldsFn = useMemo(() => {
-    switch (provider) {
-      case ENUM_SETTINGS_EMAIL_PROVIDER_TYPES.GMAIL:
-        return ['username', 'password'];
-      case ENUM_SETTINGS_EMAIL_PROVIDER_TYPES.AWS_SES:
-        return ['username', 'password', 'region'];
-      case ENUM_SETTINGS_EMAIL_PROVIDER_TYPES.SENDGRID:
-        return ['api_key'];
-      case ENUM_SETTINGS_EMAIL_PROVIDER_TYPES.MAILGUN:
-        return ['host', 'port', 'username', 'password'];
-      case ENUM_SETTINGS_EMAIL_PROVIDER_TYPES.SMTP:
-        return ['host', 'port', 'username', 'password', 'is_secure'];
-      case ENUM_SETTINGS_EMAIL_PROVIDER_TYPES.CUSTOM:
-      default:
-        return [];
-    }
-  }, [provider]);
+  const visibleFieldsFn = useMemo(() => requiredSettingsEmailFieldsFn(provider), [provider]);
 
   const showFieldFn = (field: string) => visibleFieldsFn.includes(field);
 
@@ -117,10 +102,10 @@ const SettingsEmailForm: React.FC<IProps> = ({ isLoading, form, formType = 'crea
           <Col xs={24} md={12} xl={8}>
             <Form.Item name="is_secure" className="!mb-0">
               <Radio.Group buttonStyle="solid" className="w-full text-center">
-                <Radio.Button className="w-1/2" value="true">
+                <Radio.Button className="w-1/2" value={true}>
                   Secure
                 </Radio.Button>
-                <Radio.Button className="w-1/2" value="false">
+                <Radio.Button className="w-1/2" value={false}>
                   Insecure
                 </Radio.Button>
               </Radio.Group>

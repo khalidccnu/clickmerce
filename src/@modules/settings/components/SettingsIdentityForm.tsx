@@ -230,8 +230,8 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
               placeholder="User Acceptance"
               filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
             >
-              <Select.Option value="true">Accepted</Select.Option>
-              <Select.Option value="false">Not Accepted</Select.Option>
+              <Select.Option value={true}>Accepted</Select.Option>
+              <Select.Option value={false}>Not Accepted</Select.Option>
             </FloatSelect>
           </Form.Item>
         </Col>
@@ -243,8 +243,8 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
               placeholder="User Verification"
               filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
             >
-              <Select.Option value="true">Need</Select.Option>
-              <Select.Option value="false">No Need</Select.Option>
+              <Select.Option value={true}>Need</Select.Option>
+              <Select.Option value={false}>No Need</Select.Option>
             </FloatSelect>
           </Form.Item>
         </Col>
