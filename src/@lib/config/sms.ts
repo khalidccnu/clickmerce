@@ -137,7 +137,7 @@ export const smsSendFn = async ({
         result = await fetch(`${endpoint}/sendsms`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ api_key: apiKey, to, msg: text }),
+          body: JSON.stringify({ api_key: apiKey, to, sender_id: senderId, msg: text }),
         }).then((r) => r.json());
         break;
 

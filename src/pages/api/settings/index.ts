@@ -6,6 +6,7 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { ISettings } from '@modules/settings/lib/interfaces';
 import { requiredSettingsEmailFieldsFn, requiredSettingsSmsFieldsFn } from '@modules/settings/lib/utils';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -15,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'OPTIONS':
       return res.status(200).end();
     case 'GET':
-      return handleGet(req, res);
+      return handleGetSettings(req, res);
     default:
       const response: IBaseResponse = {
         success: false,
@@ -29,15 +30,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 }
 
-async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+export async function handleGetSettings(
+  req: NextApiRequest,
+  res: NextApiResponse,
+  supabase?: SupabaseClient,
+): Promise<IBaseResponse<ISettings> | void> {
   const { token } = getServerAuthSession(req);
 
-  const supabaseServerClient = createSupabaseServerClient(req, res);
+  const supabaseClient = supabase || createSupabaseServerClient(req, res);
 
   try {
     const result = await SupabaseAdapter.find<ISettings>(
-      supabaseServerClient,
-      token ? Database.settings : Database.settings_view,
+      supabaseClient,
+      token || supabase ? Database.settings : Database.settings_view,
     );
 
     if (!result.success) {
@@ -52,7 +57,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       return res.status(result.statusCode || 400).json(response);
     }
 
-    if (!token) {
+    if (!token && !supabase) {
       const response: IBaseResponse = {
         success: true,
         statusCode: 200,
@@ -93,7 +98,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       meta: result.meta,
     };
 
-    return res.status(200).json(response);
+    return supabase ? response : res.status(200).json(response);
   } catch (error) {
     const response: IBaseResponse = {
       success: false,

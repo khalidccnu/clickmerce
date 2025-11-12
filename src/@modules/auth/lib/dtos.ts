@@ -12,7 +12,7 @@ export const loginSchema = yup.object({
 
 export type TLoginDto = yup.InferType<typeof loginSchema>;
 
-export const registerSchema = PickType(userCreateSchema, ['name', 'phone', 'password']);
+export const registerSchema = PickType(userCreateSchema, ['name', 'phone', 'email', 'password']);
 
 export type TRegisterDto = yup.InferType<typeof registerSchema>;
 

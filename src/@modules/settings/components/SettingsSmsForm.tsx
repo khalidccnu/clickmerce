@@ -4,7 +4,7 @@ import FloatSelect from '@base/antd/components/FloatSelect';
 import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
 import React, { useEffect, useMemo } from 'react';
-import { settingsSmsProviderTypes } from '../lib/enums';
+import { ENUM_SETTINGS_SMS_PROVIDER_TYPES, settingsSmsProviderTypes } from '../lib/enums';
 import { ISettingsSms } from '../lib/interfaces';
 import { requiredSettingsSmsFieldsFn } from '../lib/utils';
 
@@ -50,6 +50,17 @@ const SettingsSmsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create
                 value: providerType,
               }))}
             />
+          </Form.Item>
+        </Col>
+        <Col xs={24} md={12} xl={8}>
+          <Form.Item
+            name="sender_id"
+            rules={[
+              { required: provider === ENUM_SETTINGS_SMS_PROVIDER_TYPES.TWILIO, message: 'Sender ID is required!' },
+            ]}
+            className="!mb-0"
+          >
+            <FloatInput placeholder="Sender ID" />
           </Form.Item>
         </Col>
         {showFieldFn('account_sid') && (

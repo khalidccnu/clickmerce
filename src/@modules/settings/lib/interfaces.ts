@@ -67,6 +67,7 @@ export interface ISettingsSms {
   api_secret: string;
   region: string;
   endpoint: string;
+  sender_id: string;
 }
 
 export interface ISettings extends IBaseEntity {
@@ -77,6 +78,8 @@ export interface ISettings extends IBaseEntity {
   email: ISettingsEmail;
   sms: ISettingsSms;
   is_s3_configured: boolean;
+  is_email_configured: boolean;
+  is_sms_configured: boolean;
 }
 
 export interface ISettingsResponse extends IBaseResponse {

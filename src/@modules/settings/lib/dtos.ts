@@ -68,6 +68,7 @@ export const settingsSmsCreateSchema = yup.object({
   api_secret: yup.string().min(3).optional().nullable(),
   region: yup.string().min(3).optional().nullable(),
   endpoint: yup.string().url().optional().nullable(),
+  sender_id: yup.string().min(3).optional().nullable(),
 });
 
 export const settingsCreateSchema = yup.object({

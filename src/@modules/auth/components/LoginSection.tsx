@@ -193,11 +193,11 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
                   </Button>
                 </Form.Item>
               </Form>
-              <Flex justify={settingsIdentity?.need_user_registration_verification ? 'space-between' : 'center'}>
+              <Flex justify={settingsIdentity?.is_user_registration_acceptance ? 'space-between' : 'center'}>
                 <Button type="text" onClick={() => setPRRModalOpen(true)}>
                   Forgot password?
                 </Button>
-                {settingsIdentity?.need_user_registration_verification && (
+                {settingsIdentity?.is_user_registration_acceptance && (
                   <Button type="text" onClick={() => setRegisterModalOpen(true)}>
                     New Account?
                   </Button>
