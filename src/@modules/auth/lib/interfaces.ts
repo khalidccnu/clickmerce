@@ -10,22 +10,24 @@ export interface IToken {
     email: string;
     roles: TRole[];
     permissions: TPermission[];
+    is_verified: boolean;
   };
   iat: number;
   exp: number;
 }
 
-export interface ISignIn {
+export interface ILogin {
   phone: string;
   password: string;
 }
 
-export interface ISignInSession {
+export interface ILoginSession {
   token: string;
+  need_verification: boolean;
 }
 
-export interface ISignInResponse extends IBaseResponse {
-  data: ISignInSession;
+export interface ILoginResponse extends IBaseResponse {
+  data: ILoginSession;
 }
 
 export interface ISession {

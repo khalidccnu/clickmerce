@@ -8,7 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 import { unAuthorizeSession } from '.';
 import { AUTH_TOKEN_KEY } from '../constant';
-import { ISession, ISignInSession, IToken } from '../interfaces';
+import { ILoginSession, ISession, IToken } from '../interfaces';
 
 let sessionCache: ISession = null;
 let sessionUserCache: ISession['user'] = null;
@@ -23,6 +23,15 @@ export const isJwtExpire = (token: string | IToken): boolean => {
   const expDate = new Date(decoded.exp * 1000);
 
   return expDate <= new Date();
+};
+
+export const extractToken = (token: string): IToken => {
+  try {
+    const decoded = jwtDecode<IToken>(token);
+    return decoded;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getAuthToken = (): string => {
@@ -67,7 +76,7 @@ export const getAuthSession = (): ISession => {
   }
 };
 
-export const setAuthSession = (session: ISignInSession): ISession => {
+export const setAuthSession = (session: ILoginSession): ISession => {
   try {
     const token = session.token;
 

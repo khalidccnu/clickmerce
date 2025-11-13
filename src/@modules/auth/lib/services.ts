@@ -2,7 +2,7 @@ import { IBaseResponse } from '@base/interfaces';
 import { AxiosInstance, AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { IUser, IUserCreate } from '@modules/users/lib/interfaces';
-import { ISignIn, ISignInResponse } from './interfaces';
+import { ILogin, ILoginResponse } from './interfaces';
 
 const END_POINT: string = '/auth';
 
@@ -18,7 +18,7 @@ export const AuthServices = {
     }
   },
 
-  login: async (payload: ISignIn): Promise<ISignInResponse> => {
+  login: async (payload: ILogin): Promise<ILoginResponse> => {
     try {
       const res = await AxiosInstance.post(`${END_POINT}/login`, payload);
       return Promise.resolve(res?.data);
@@ -57,7 +57,7 @@ export const AuthServices = {
     phone: string;
     hash: string;
     otp: number;
-    newPassword: string;
+    new_password: string;
   }): Promise<IBaseResponse> => {
     try {
       const res = await AxiosInstance.patch(`${END_POINT}/reset-password`, payload);

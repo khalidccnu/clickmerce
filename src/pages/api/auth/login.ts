@@ -10,6 +10,7 @@ import { IUser } from '@modules/users/lib/interfaces';
 import bcrypt from 'bcryptjs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { jwtSign } from '../lib/jwt';
+import { handleGetSettings } from '../settings';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -115,17 +116,37 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
       email: user.data.email,
       roles,
       permissions,
+      is_verified: user.data.is_verified,
     },
   });
+
   delete user.data.password;
 
-  const response: IBaseResponse<{ user: IUser; token: string }> = {
+  const settings = await handleGetSettings(req, res, supabaseServiceClient);
+
+  if (!settings || !settings.data) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 500,
+      message: 'Failed to fetch settings',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(500).json(response);
+  }
+
+  const response: IBaseResponse<{ user: IUser; token: string; need_verification: boolean }> = {
     success: true,
     statusCode: 200,
     message: 'Logged in successfully',
     data: {
       user: Env.isProduction ? null : user.data,
       token,
+      need_verification:
+        !user.data.is_verified &&
+        settings?.data?.identity?.need_user_registration_verification &&
+        (settings?.data?.is_sms_configured || settings?.data?.is_email_configured),
     },
     meta: null,
   };

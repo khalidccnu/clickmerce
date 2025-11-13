@@ -15,7 +15,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { CURRENCY_KEY, HASH_KEY, IDENTIFIER_KEY, PC_KEY, REDIRECT_PREFIX } from '../lib/constant';
 import { AuthHooks } from '../lib/hooks';
-import { setAuthSession } from '../lib/utils/client';
+import { extractToken, setAuthSession } from '../lib/utils/client';
 import RecoverPasswordForm from './RecoverPasswordForm';
 import RegisterForm from './RegisterForm';
 
@@ -46,6 +46,14 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
       onSuccess(data) {
         if (!data.success) {
           messageApi.error(data.message);
+          return;
+        }
+
+        if (data.data?.need_verification) {
+          const tokenDec = extractToken(data.data.token);
+          const phone = tokenDec?.user?.phone;
+
+          profileVerifyRequestFn.mutate({ phone });
           return;
         }
 
@@ -280,7 +288,7 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
               phone: Storage.getData(IDENTIFIER_KEY),
               hash: Storage.getData(HASH_KEY),
               otp: +otp,
-              newPassword,
+              new_password: newPassword,
             });
           }}
         />
