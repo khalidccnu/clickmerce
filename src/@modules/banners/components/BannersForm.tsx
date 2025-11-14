@@ -2,7 +2,7 @@ import FloatInput from '@base/antd/components/FloatInput';
 import CustomUploader from '@base/components/CustomUploader';
 import { Toolbox } from '@lib/utils/toolbox';
 import { GalleriesHooks } from '@modules/galleries/lib/hooks';
-import { Button, Col, Form, FormInstance, message, Radio, Row } from 'antd';
+import { Alert, Button, Col, Form, FormInstance, message, Radio, Row } from 'antd';
 import React, { useEffect } from 'react';
 import { IBannerCreate } from '../lib/interfaces';
 
@@ -75,6 +75,18 @@ const BannersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
                 onFinish={([_, file]) => handleImageUploadFn(file)}
               />
             </Form.Item>
+            <div style={{ marginTop: 8 }}>
+              <Alert
+                message={
+                  <span>
+                    Banner image must maintain a <b>932 × 357</b> aspect ratio for best results
+                  </span>
+                }
+                type="warning"
+                showIcon
+                style={{ borderRadius: 6 }}
+              />
+            </div>
           </Col>
           <Col xs={24}>
             <Form.Item

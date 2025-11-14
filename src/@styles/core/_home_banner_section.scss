@@ -1,0 +1,27 @@
+.home_banner_section {
+  .slider_wrapper {
+    position: relative;
+    .slider_controller {
+      .slider_prev_btn,
+      .slider_next_btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 3;
+        color: var(--color-primary);
+        border-radius: 100%;
+        cursor: pointer;
+        &.slider_disabled_btn {
+          cursor: not-allowed;
+          opacity: 0.5;
+        }
+      }
+      .slider_prev_btn {
+        left: 8px;
+      }
+      .slider_next_btn {
+        right: 8px;
+      }
+    }
+  }
+}

@@ -19,6 +19,7 @@
       "@apis/*": ["src/@apis/*"],
       "@base/*": ["src/@base/*"],
       "@lib/*": ["src/@lib/*"],
+      "@components/*": ["src/@components/*"],
       "@modules/*": ["src/@modules/*"],
       "@styles/*": ["src/@styles/*"]
     },
