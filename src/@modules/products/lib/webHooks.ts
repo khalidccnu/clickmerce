@@ -1,6 +1,6 @@
 import { TId } from '@base/interfaces';
-import { QueryConfig } from '@lib/config/reactQuery';
-import { useQuery } from '@tanstack/react-query';
+import { MutationConfig, QueryConfig } from '@lib/config/reactQuery';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { IProductsFilter } from './interfaces';
 import { ProductsWebServices } from './webServices';
 
@@ -12,6 +12,16 @@ export const ProductsWebHooks = {
       queryKey: [...(queryKey || []), ProductsWebServices.NAME, slug],
       queryFn: () => ProductsWebServices.findBySlug(slug),
       ...rest,
+    });
+  },
+
+  useFindBulk: ({ config }: { config?: MutationConfig<typeof ProductsWebServices.findBulk> } = {}) => {
+    return useMutation({
+      mutationFn: ProductsWebServices.findBulk,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
+      ...config,
     });
   },
 

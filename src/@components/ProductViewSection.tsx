@@ -59,7 +59,6 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
 
   const addToCartFn = ({ item }: { item: IOrderCartItem }) => {
     const cart = order?.cart || [];
-    const cartProducts = order?.cartProducts || [];
 
     const idx = cartItemIdxFn(item.productId, item.productVariationId, cart);
     const lastPriority = cart.length ? Math.max(...cart.map((c) => c.priority || 0)) : 0;
@@ -67,12 +66,10 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
 
     if (idx === -1) {
       const newCart = [...cart, { ...item, priority }];
-      const newCartProducts = [...cartProducts, { ...item, priority }];
 
       setOrder({
         ...order,
         cart: newCart,
-        cartProducts: newCartProducts,
       });
 
       message.info('Successfully added to the cart!');
@@ -80,17 +77,14 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
     }
 
     const purifiedCart = [...cart];
-    const purifiedProducts = [...cartProducts];
 
     const prevItem = { ...purifiedCart[idx], ...item };
 
     purifiedCart[idx] = prevItem;
-    purifiedProducts[idx] = prevItem;
 
     setOrder({
       ...order,
       cart: purifiedCart,
-      cartProducts: purifiedProducts,
     });
   };
 

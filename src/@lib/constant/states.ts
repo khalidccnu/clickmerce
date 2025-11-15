@@ -35,8 +35,8 @@ export const States: IStates = {
   order: {
     key: 'order',
     initialValue: {
+      wishlist: [],
       cart: [],
-      cartProducts: [],
     },
   },
 };

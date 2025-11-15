@@ -1,37 +1,33 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps } from '@base/interfaces';
-import ProductsSection from '@components/ProductsSection';
+import CartSection from '@components/CartSection';
 import { Paths } from '@lib/constant/paths';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
-import { IProduct } from '@modules/products/lib/interfaces';
-import { ProductsWebServices } from '@modules/products/lib/webServices';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
-interface IProps extends IBasePageProps {
-  products: IProduct[];
-}
+interface IProps extends IBasePageProps {}
 
-const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products }) => {
+const CartPage: NextPage<IProps> = ({ settingsIdentity }) => {
   return (
     <PageWrapper
-      title="Products"
+      title="Cart"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
-      <BaseHeroWrapper title="Products" breadcrumb={[{ name: 'products', slug: Paths.products.root }]} />
-      <ProductsSection showForProductsPage products={products} className="py-8 md:py-16" />
+      <BaseHeroWrapper title="Cart" breadcrumb={[{ name: 'cart', slug: Paths.cart }]} />
+      <CartSection className="py-8 md:py-16" />
     </PageWrapper>
   );
 };
 
-export default ProductsPage;
+export default CartPage;
 
-export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) => {
+export const getServerSideProps: GetServerSideProps<IProps> = async () => {
   try {
     const { success: settingsSuccess, data: settings } = await SettingsServices.find();
 
@@ -46,17 +42,10 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
       };
     }
 
-    const { data: products } = await ProductsWebServices.find({
-      page: query?.page ? query?.page?.toString() : '1',
-      limit: query?.limit ? query?.limit?.toString() : '12',
-      is_active: 'true',
-    });
-
     return {
       props: {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
-        products: products ?? [],
       },
     };
   } catch (error) {

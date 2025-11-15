@@ -19,6 +19,15 @@ export const ProductsWebServices = {
     }
   },
 
+  findBulk: async (payload: TId[]): Promise<IProductsResponse> => {
+    try {
+      const res = await AxiosInstance.post(`${END_POINT}/bulk`, { ids: payload });
+      return Promise.resolve(res?.data);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
     try {
       const res = await AxiosInstance.get(`${END_POINT}?${Toolbox.queryNormalizer(filters)}`);
