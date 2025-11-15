@@ -4,7 +4,7 @@
       img {
         transform: translateY(-1.5rem);
       }
-      .quick_view {
+      .view {
         transform: translate(-50%, -115%);
       }
     }
@@ -35,7 +35,7 @@
       gap: 0.5rem;
       z-index: 1;
     }
-    .quick_view {
+    .view {
       position: absolute;
       top: 100%;
       left: 50%;
@@ -78,13 +78,14 @@
         color: var(--color-white) !important;
         &::before,
         &::after {
-          width: 58%;
+          width: 61%;
         }
       }
     }
     img {
       width: 100%;
       height: auto;
+      aspect-ratio: 16 / 9;
       border-radius: 1.5rem;
       transition: transform 500ms;
     }

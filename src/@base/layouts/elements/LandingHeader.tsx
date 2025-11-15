@@ -1,9 +1,13 @@
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
 import { Paths } from '@lib/constant/paths';
+import { States } from '@lib/constant/states';
+import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
+import { Badge } from 'antd';
 import dynamic from 'next/dynamic';
 import React from 'react';
+import { BsCart3, BsHeart } from 'react-icons/bs';
 
 const LandingHeaderAuthButtonGroup = dynamic(() => import('./LandingHeaderAuthButtonGroup'), { ssr: false });
 
@@ -12,6 +16,8 @@ interface IProps {
 }
 
 const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref) => {
+  const [order] = useLocalState(States.order);
+
   return (
     <header className={cn('header', className)} ref={ref}>
       <div className="container">
@@ -19,7 +25,15 @@ const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref)
           <CustomLink href={Paths.root}>
             <BrandLogo />
           </CustomLink>
-          <LandingHeaderAuthButtonGroup className="ml-auto" />
+          <CustomLink href={Paths.wishlist} className="ml-auto">
+            <BsHeart size={20} className="mt-1" />
+          </CustomLink>
+          <Badge count={order?.cart?.length || 0} size="small" offset={[0, 0]}>
+            <CustomLink href={Paths.cart}>
+              <BsCart3 size={20} className="mt-1" />
+            </CustomLink>
+          </Badge>
+          <LandingHeaderAuthButtonGroup />
         </div>
       </div>
     </header>

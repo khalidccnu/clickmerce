@@ -60,5 +60,5 @@ export interface IBaseServices<Entity = any, FilterOptions = any, CreatePayload 
 
 export interface IBasePageProps {
   settingsIdentity: ISettingsIdentity;
-  pages: IPage[];
+  pages?: IPage[];
 }

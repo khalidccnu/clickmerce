@@ -61,6 +61,32 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     newFilters.textFilters = { conditions: { categories: { category_id: { eq: category_id } } } };
   }
 
+  // if (is_special) {
+  //   if (!newFilters.numericFilters) newFilters.numericFilters = {};
+
+  //   if (Toolbox.toBool(is_special)) {
+  //     newFilters.numericFilters = {
+  //       conditions: {
+  //         variations: {
+  //           discount: {
+  //             amount: { gt: 0 },
+  //           },
+  //         },
+  //       },
+  //     };
+  //   } else {
+  //     newFilters.numericFilters = {
+  //       conditions: {
+  //         variations: {
+  //           discount: {
+  //             amount: { lte: 0 },
+  //           },
+  //         },
+  //       },
+  //     };
+  //   }
+  // }
+
   try {
     const result = await SupabaseAdapter.find<IProduct>(supabaseServiceClient, Database.products, newFilters, {
       selection: buildSelectionFn({

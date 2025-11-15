@@ -4,6 +4,8 @@ export const Paths = {
   root: '/',
   initiate: '/initiate',
   underConstruction: '/under-construction',
+  wishlist: '/wishlist',
+  cart: '/cart',
   products: {
     root: '/products',
     toSlug: (slug: TId) => `/${slug}`,

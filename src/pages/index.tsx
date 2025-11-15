@@ -2,6 +2,7 @@ import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps } from '@base/interfaces';
 import BannerSection from '@components/BannerSection';
 import ProductsSection from '@components/ProductsSection';
+import RecommendedProductsSection from '@components/RecommendedProductsSection';
 import WhyShopWithUsSection from '@components/WhyShopWithUsSection';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IBanner } from '@modules/banners/lib/interfaces';
@@ -32,7 +33,10 @@ const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, products, featu
     >
       {Toolbox.isEmpty(banners) || <BannerSection banners={banners} />}
       {Toolbox.isEmpty(products) || <ProductsSection products={products} className="py-8 md:py-16" />}
-      {Toolbox.isEmpty(features) || <WhyShopWithUsSection features={features} className="pb-8 md:pb-16" />}
+      {Toolbox.isEmpty(products) || (
+        <RecommendedProductsSection products={products} className="py-8 md:py-16 bg-white" />
+      )}
+      {Toolbox.isEmpty(features) || <WhyShopWithUsSection features={features} className="py-8 md:py-16" />}
     </PageWrapper>
   );
 };
