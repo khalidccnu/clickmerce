@@ -4,6 +4,10 @@ export const Paths = {
   root: '/',
   initiate: '/initiate',
   underConstruction: '/under-construction',
+  products: {
+    root: '/products',
+    toSlug: (slug: TId) => `/${slug}`,
+  },
   about: '/about',
   contact: '/contact',
   privacyPolicy: '/privacy-policy',

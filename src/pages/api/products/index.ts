@@ -97,14 +97,10 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           variation.discount,
         );
 
-        // if (specialPrice === variation?.sale_price) variation['special_price'] = 0;
-        // else {
-        //   productWithSpecialPrice++;
-        //   variation['special_price'] = specialPrice;
-        // }
+        if (specialPrice && specialPrice !== variation?.sale_price) productWithSpecialPrice++;
 
-        productWithSpecialPrice++;
         variation['special_price'] = specialPrice;
+        delete variation.cost_price;
 
         return variation;
       });

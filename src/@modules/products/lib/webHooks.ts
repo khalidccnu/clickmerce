@@ -5,12 +5,12 @@ import { IProductsFilter } from './interfaces';
 import { ProductsWebServices } from './webServices';
 
 export const ProductsHooks = {
-  useFindById: ({ id, config }: { id: TId; config?: QueryConfig<typeof ProductsWebServices.findById> }) => {
+  useFindBySlug: ({ slug, config }: { slug: TId; config?: QueryConfig<typeof ProductsWebServices.findBySlug> }) => {
     const { queryKey, ...rest } = config ?? {};
 
     return useQuery({
-      queryKey: [...(queryKey || []), ProductsWebServices.NAME, id],
-      queryFn: () => ProductsWebServices.findById(id),
+      queryKey: [...(queryKey || []), ProductsWebServices.NAME, slug],
+      queryFn: () => ProductsWebServices.findBySlug(slug),
       ...rest,
     });
   },

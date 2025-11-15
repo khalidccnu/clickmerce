@@ -1,4 +1,5 @@
 import PageWrapper from '@base/container/PageWrapper';
+import { IBasePageProps } from '@base/interfaces';
 import BannerSection from '@components/BannerSection';
 import ProductsSection from '@components/ProductsSection';
 import WhyShopWithUsSection from '@components/WhyShopWithUsSection';
@@ -8,17 +9,13 @@ import { BannersServices } from '@modules/banners/lib/services';
 import { IFeature } from '@modules/features/lib/interfaces';
 import { FeaturesServices } from '@modules/features/lib/services';
 import { pageTypes } from '@modules/pages/lib/enums';
-import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ProductsWebServices } from '@modules/products/lib/webServices';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
-interface IProps {
-  settingsIdentity: ISettingsIdentity;
-  pages: IPage[];
+interface IProps extends IBasePageProps {
   banners: IBanner[];
   products: IProduct[];
   features: IFeature[];

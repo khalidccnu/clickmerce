@@ -1,3 +1,5 @@
+import CustomLink from '@base/components/CustomLink';
+import { Paths } from '@lib/constant/paths';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IProduct } from '@modules/products/lib/interfaces';
@@ -68,7 +70,9 @@ const ProductCard: React.FC<IProps> = ({ className, product }) => {
           />
         </div>
         <Button className="quick_view">Quick View</Button>
-        <Image src={featuredImage?.url} alt={product?.name} width={300} height={300} quality={100} />
+        <CustomLink href={Paths.products.toSlug(product.slug)} className="block">
+          <Image src={featuredImage?.url} alt={product?.name} width={300} height={300} quality={100} />
+        </CustomLink>
       </div>
       <div className="content_wrapper">
         <p className="title">{product?.name}</p>

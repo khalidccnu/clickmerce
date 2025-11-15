@@ -1,6 +1,7 @@
 import { IBaseResponse, TId } from '@base/interfaces';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
+import { productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -27,13 +28,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-  const { id }: { id?: TId } = req.query;
+  const { slug }: { slug?: TId } = req.query;
 
-  if (!id) {
+  if (!slug) {
     const response: IBaseResponse = {
       success: false,
       statusCode: 400,
-      message: 'Missing required id parameter',
+      message: 'Missing required slug parameter',
       data: null,
       meta: null,
     };
@@ -45,20 +46,17 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     const result = await SupabaseAdapter.findOne<IProduct>(
       supabaseServiceClient,
       Database.products,
-      { textFilters: { conditions: { id: { eq: id as string } } } },
+      { textFilters: { conditions: { slug: { eq: slug as string } } } },
       {
         selection: buildSelectionFn({
           relations: {
             dosage_form: { table: Database.dosageForms },
             generic: { table: Database.generics },
             supplier: { table: Database.suppliers, columns: ['id', 'name'] },
-            variations: {
-              table: Database.productVariations,
-              columns: ['id', 'mfg', 'exp', 'size', 'color', 'weight', 'discount', 'quantity', 'sale_price'],
-            },
+            variations: { table: Database.productVariations },
             categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
           },
-          filters: { id: { eq: id as string } },
+          filters: { slug: { eq: slug as string } },
         }),
       },
     );
@@ -74,6 +72,25 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
       return res.status(404).json(response);
     }
+
+    let productWithSpecialPrice = 0;
+
+    result.data?.variations?.map((variation) => {
+      const specialPrice = productSalePriceWithDiscountFn(
+        variation?.cost_price,
+        variation?.sale_price,
+        variation.discount,
+      );
+
+      if (specialPrice && specialPrice !== variation?.sale_price) productWithSpecialPrice++;
+
+      variation['special_price'] = specialPrice;
+      delete variation.cost_price;
+
+      return variation;
+    });
+
+    result.data['has_special_price'] = !!productWithSpecialPrice;
 
     const response: IBaseResponse<IProduct> = {
       success: true,

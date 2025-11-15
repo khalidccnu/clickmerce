@@ -10,9 +10,9 @@ const END_POINT: string = `/${Database.products}`;
 export const ProductsWebServices = {
   NAME: END_POINT,
 
-  findById: async (id: TId): Promise<IBaseResponse<IProduct>> => {
+  findBySlug: async (slug: TId): Promise<IBaseResponse<IProduct>> => {
     try {
-      const res = await AxiosInstance.get(`${END_POINT}/${id}`);
+      const res = await AxiosInstance.get(`${END_POINT}/by-slug/${slug}`);
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
