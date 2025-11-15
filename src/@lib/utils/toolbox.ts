@@ -753,8 +753,7 @@ export const Toolbox = {
     `.trim();
 
     if (type === 'url') {
-      const svgBlob = new Blob([svg], { type: 'image/svg+xml' });
-      return URL.createObjectURL(svgBlob);
+      return `data:image/svg+xml;base64,${btoa(svg)}`;
     }
 
     return svg;

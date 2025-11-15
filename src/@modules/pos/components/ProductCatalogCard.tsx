@@ -2,7 +2,7 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Badge, Button, Image } from 'antd';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { BiCartAdd } from 'react-icons/bi';
 import { FaCheck } from 'react-icons/fa';
 
@@ -17,9 +17,16 @@ interface IProps {
 
 const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
   ({ className, isFocused, hasInCart, isOutOfStock, product, onAddToCart }, ref) => {
-    const featuredImage = Toolbox.isNotEmpty(product?.images)
-      ? product.images.find((image) => image.is_featured) || product.images[0]
-      : null;
+    const featuredImage = useMemo(() => {
+      if (Toolbox.isNotEmpty(product?.images)) {
+        return product.images.find((image) => image.is_featured) || product.images[0];
+      }
+
+      return {
+        is_featured: false,
+        url: Toolbox.generateCharacterSvg({ type: 'url', character: product.name }),
+      };
+    }, [product]);
 
     const handlePriceShowFn = () => {
       if (!product?.variations || !product?.variations?.length) {
@@ -54,7 +61,7 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
           )}
           <Badge.Ribbon text={product?.quantity ? product?.quantity : 'Out of Stock'} color="var(--color-primary)">
             <Image
-              src={featuredImage?.url || Toolbox.generateCharacterSvg({ type: 'url', character: product.name })}
+              src={featuredImage?.url}
               alt={product.name}
               className="rounded-xl  object-cover"
               wrapperClassName="[&_.ant-image-mask]:rounded-xl w-full"

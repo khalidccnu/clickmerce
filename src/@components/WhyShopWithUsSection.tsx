@@ -15,10 +15,12 @@ const WhyShopWithUsSection: React.FC<IProps> = ({ className, features }) => {
     <section className={cn('why_shop_with_us_section', className)}>
       <div className="container">
         <SectionIntro
-          titlePrefix="Why"
-          title="Shop"
-          titleSuffix="With Us"
-          // subtitle="Experience quality, value, and service like never before"
+          title={
+            <>
+              Why <span>Shop</span> With Us
+            </>
+          }
+          description="Experience quality, value, and service like never before"
           className="mb-8 lg:mb-16 text-center"
         />
         <Row gutter={[16, 16]} justify="center">

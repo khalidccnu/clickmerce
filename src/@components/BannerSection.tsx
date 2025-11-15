@@ -6,7 +6,7 @@ import { Grid } from 'antd';
 import Image from 'next/image';
 import React from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import { Navigation } from 'swiper/modules';
+import { Autoplay, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 interface IProps {
@@ -14,11 +14,11 @@ interface IProps {
   banners: IBanner[];
 }
 
-const HomeBannerSection: React.FC<IProps> = ({ className, banners }) => {
+const BannerSection: React.FC<IProps> = ({ className, banners }) => {
   const screens = Grid.useBreakpoint();
 
   return (
-    <section className={cn('home_banner_section', className)}>
+    <section className={cn('banner_section', className)}>
       <div className="slider_wrapper">
         <div className="slider_controller">
           <div className="slider_prev_btn">
@@ -31,14 +31,21 @@ const HomeBannerSection: React.FC<IProps> = ({ className, banners }) => {
         </div>
         <div className="slider_content">
           <Swiper
+            loop
+            autoplay={{ delay: 5000, pauseOnMouseEnter: true }}
             spaceBetween={25}
-            modules={[Navigation]}
+            modules={[
+              Autoplay,
+              Navigation,
+              // Pagination
+            ]}
             navigation={{
               enabled: true,
               prevEl: '.slider_prev_btn',
               nextEl: '.slider_next_btn',
               disabledClass: 'slider_disabled_btn',
             }}
+            // pagination={{ el: '.slider_pagination' }}
             slidesPerView={1}
           >
             {banners.map((banner) => {
@@ -73,4 +80,4 @@ const HomeBannerSection: React.FC<IProps> = ({ className, banners }) => {
   );
 };
 
-export default HomeBannerSection;
+export default BannerSection;

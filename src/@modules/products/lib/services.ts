@@ -36,14 +36,6 @@ export const ProductsServices = {
   },
 
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
-    const relations = {
-      dosage_form: { table: Database.dosageForms },
-      generic: { table: Database.generics },
-      supplier: { table: Database.suppliers },
-      variations: { table: Database.productVariations },
-      categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
-    };
-
     const { category_id, is_low_stock, start_date, end_date, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
 
@@ -80,7 +72,16 @@ export const ProductsServices = {
 
     try {
       const res = await SupabaseAdapter.find<IProduct>(supabaseBrowserClient, END_POINT, newFilters, {
-        selection: buildSelectionFn({ relations, filters: newFilters }),
+        selection: buildSelectionFn({
+          relations: {
+            dosage_form: { table: Database.dosageForms },
+            generic: { table: Database.generics },
+            supplier: { table: Database.suppliers },
+            variations: { table: Database.productVariations },
+            categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
+          },
+          filters: newFilters,
+        }),
       });
       return Promise.resolve(res);
     } catch (error) {

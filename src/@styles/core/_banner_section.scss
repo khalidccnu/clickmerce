@@ -1,4 +1,4 @@
-.home_banner_section {
+.banner_section {
   .slider_wrapper {
     position: relative;
     .slider_controller {
@@ -22,6 +22,25 @@
       .slider_next_btn {
         right: 8px;
       }
+      // .slider_pagination {
+      //   position: absolute;
+      //   bottom: 16px;
+      //   left: 50%;
+      //   transform: translateX(-50%);
+      //   display: flex;
+      //   justify-content: center;
+      //   gap: 4px;
+      //   z-index: 3;
+      //   .swiper-pagination-bullet {
+      //     width: 8px;
+      //     height: 8px;
+      //     background-color: var(--color-primary);
+      //     opacity: 0.5;
+      //     &-active {
+      //       opacity: 1;
+      //     }
+      //   }
+      // }
     }
   }
 }

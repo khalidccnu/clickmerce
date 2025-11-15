@@ -1,5 +1,6 @@
 import PageWrapper from '@base/container/PageWrapper';
-import HomeBannerSection from '@components/HomeBannerSection';
+import BannerSection from '@components/BannerSection';
+import ProductsSection from '@components/ProductsSection';
 import WhyShopWithUsSection from '@components/WhyShopWithUsSection';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IBanner } from '@modules/banners/lib/interfaces';
@@ -9,6 +10,8 @@ import { FeaturesServices } from '@modules/features/lib/services';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
+import { IProduct } from '@modules/products/lib/interfaces';
+import { ProductsWebServices } from '@modules/products/lib/webServices';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
@@ -17,10 +20,11 @@ interface IProps {
   settingsIdentity: ISettingsIdentity;
   pages: IPage[];
   banners: IBanner[];
+  products: IProduct[];
   features: IFeature[];
 }
 
-const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, features }) => {
+const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, products, features }) => {
   return (
     <PageWrapper
       title="Home"
@@ -29,8 +33,9 @@ const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, features }) => 
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
-      {Toolbox.isEmpty(banners) || <HomeBannerSection banners={banners} />}
-      {Toolbox.isEmpty(features) || <WhyShopWithUsSection features={features} className="py-8 md:py-16" />}
+      {Toolbox.isEmpty(banners) || <BannerSection banners={banners} />}
+      {Toolbox.isEmpty(products) || <ProductsSection products={products} className="py-8 md:py-16" />}
+      {Toolbox.isEmpty(features) || <WhyShopWithUsSection features={features} className="pb-8 md:pb-16" />}
     </PageWrapper>
   );
 };
@@ -59,6 +64,12 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       sort_order: 'DESC',
     });
 
+    const { data: products } = await ProductsWebServices.find({
+      page: '1',
+      limit: '12',
+      is_active: 'true',
+    });
+
     const { data: features } = await FeaturesServices.find({
       page: '1',
       limit: '50',
@@ -70,6 +81,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
         banners: banners ?? [],
+        products: products ?? [],
         features: features ?? [],
       },
     };
