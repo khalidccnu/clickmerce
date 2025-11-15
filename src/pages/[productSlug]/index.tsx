@@ -1,6 +1,7 @@
 import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps, TId } from '@base/interfaces';
 import ProductViewSection from '@components/ProductViewSection';
+import RelatedProductsSection from '@components/RelatedProductsSection';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { IProduct } from '@modules/products/lib/interfaces';
@@ -22,6 +23,7 @@ const ProductPage: NextPage<IProps> = ({ settingsIdentity, product }) => {
       image={settingsIdentity?.social_image_url}
     >
       <ProductViewSection product={product} className="py-8 md:py-16" />
+      <RelatedProductsSection categoryId={product.categories?.[0]?.id} className="pb-8 md:pb-16" />
     </PageWrapper>
   );
 };

@@ -32,4 +32,11 @@ export const States: IStates = {
       openMenuKeys: [],
     },
   },
+  order: {
+    key: 'order',
+    initialValue: {
+      cart: [],
+      cartProducts: [],
+    },
+  },
 };

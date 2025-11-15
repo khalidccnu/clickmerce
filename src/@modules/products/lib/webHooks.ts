@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { IProductsFilter } from './interfaces';
 import { ProductsWebServices } from './webServices';
 
-export const ProductsHooks = {
+export const ProductsWebHooks = {
   useFindBySlug: ({ slug, config }: { slug: TId; config?: QueryConfig<typeof ProductsWebServices.findBySlug> }) => {
     const { queryKey, ...rest } = config ?? {};
 

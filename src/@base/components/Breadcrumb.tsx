@@ -30,7 +30,7 @@ const Breadcrumb: React.FC<IProps> = ({ className, items }) => {
           </li>
           <li
             className={cn('breadcrumb_link text-gray-300 capitalize', {
-              'active text-[var(--color-primary)]': idx === items.length - 1,
+              'active text-[var(--color-primary)] line-clamp-1': idx === items.length - 1,
             })}
           >
             <Link href={item.slug}>{item.name}</Link>

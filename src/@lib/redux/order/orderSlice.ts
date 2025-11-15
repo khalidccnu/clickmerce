@@ -8,7 +8,7 @@ import { message } from 'antd';
 import { loadOrderCustomerId, loadOrderInvId, loadOrderPaymentMethodId, loadOrderVatTax } from './orderThunks';
 import { cartItemIdxFn } from './utils';
 
-interface IOrderCartItem {
+export interface IOrderCartItem {
   productId: TId;
   productVariationId: TId;
   selectedQuantity?: number;
@@ -73,9 +73,7 @@ const orderSlice = createSlice({
       const { item } = action.payload;
 
       const itemIdx = cartItemIdxFn(item.productId, item.productVariationId, state.cart);
-      const lastPriority = state.cart.length
-        ? state.cart.reduce((max, cartItem) => Math.max(max, cartItem.priority || 0), 0)
-        : 0;
+      const lastPriority = state.cart.length ? Math.max(...state.cart.map((c) => c.priority || 0)) : 0;
       const priority = lastPriority + 1;
 
       if (itemIdx === -1) {
