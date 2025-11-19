@@ -151,42 +151,22 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
   } = data;
 
   try {
-    const phoneCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
+    const existUser = await SupabaseAdapter.findOne<IUser & { password: string }>(
       supabaseServiceClient,
       Database.users,
-      { textFilters: { conditions: { phone: { eq: phone } } } },
+      { textFilters: { type: 'or', conditions: { phone: { eq: phone }, email: { eq: email } } } },
     );
 
-    if (phoneCheck.data) {
+    if (existUser.data) {
       const response: IBaseResponse = {
         success: false,
         statusCode: 409,
-        message: 'Phone already exists',
+        message: 'Phone or email already exists',
         data: null,
         meta: null,
       };
 
       return res.status(409).json(response);
-    }
-
-    if (email) {
-      const emailCheck = await SupabaseAdapter.findOne<IUser & { password: string }>(
-        supabaseServiceClient,
-        Database.users,
-        { textFilters: { conditions: { email: { eq: email } } } },
-      );
-
-      if (emailCheck.data) {
-        const response: IBaseResponse = {
-          success: false,
-          statusCode: 409,
-          message: 'Email already exists',
-          data: null,
-          meta: null,
-        };
-
-        return res.status(409).json(response);
-      }
     }
 
     const userPayload = {

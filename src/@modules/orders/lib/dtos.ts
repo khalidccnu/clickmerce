@@ -4,6 +4,28 @@ import { productDiscountTypes } from '@modules/products/lib/enums';
 import * as yup from 'yup';
 import { orderStatusTypes } from './enums';
 
+export const orderQuickCreateSchema = yup.object({
+  name: yup.string().min(3).required(),
+  phone: yup
+    .string()
+    .matches(/^\+\d+$/, ({ path }) => `${path} must start with + followed by numbers`)
+    .required(),
+  email: yup.string().email().optional().nullable(),
+  products: yup
+    .array()
+    .of(
+      yup.object({
+        id: yup.string().uuid().required(),
+        variation_id: yup.string().uuid().required(),
+        selected_quantity: yup.number().min(1).required(),
+      }),
+    )
+    .required(),
+  delivery_zone_id: yup.string().uuid().required(),
+  payment_method_id: yup.string().uuid().required(),
+  coupon: yup.string().required().nullable(),
+});
+
 export const orderCreateSchema = yup.object({
   code: yup.string().required(),
   products: yup
@@ -64,6 +86,7 @@ export const orderFilterSchema = yup
   })
   .concat(baseFilterSchema);
 
+export type TOrderQuickCreateDto = yup.InferType<typeof orderQuickCreateSchema>;
 export type TOrderCreateDto = yup.InferType<typeof orderCreateSchema>;
 export type TOrderUpdateDto = yup.InferType<typeof orderUpdateSchema>;
 export type TOrderReturnDto = yup.InferType<typeof orderReturnSchema>;

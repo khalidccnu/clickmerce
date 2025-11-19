@@ -1,6 +1,7 @@
 import FloatInput from '@base/antd/components/FloatInput';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import InputPhone from '@base/components/InputPhone';
+import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
@@ -9,12 +10,15 @@ import { useAuthSession } from '@modules/auth/lib/utils/client';
 import { CouponsHooks } from '@modules/coupons/lib/hooks';
 import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
+import { OrdersHooks } from '@modules/orders/lib/hooks';
+import { IOrderQuickCreate } from '@modules/orders/lib/interfaces';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
 import { IPaymentMethod } from '@modules/payment-methods/lib/interfaces';
 import { ProductsWebHooks } from '@modules/products/lib/webHooks';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { ISettings } from '@modules/settings/lib/interfaces';
 import { Button, Card, Col, Divider, Form, message, Row, Typography } from 'antd';
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaCheck } from 'react-icons/fa';
 
@@ -27,14 +31,26 @@ interface IProps {
 }
 
 const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
+  const router = useRouter();
   const { user } = useAuthSession();
   const [form] = Form.useForm();
   const formValues = Form.useWatch([], form);
   const [messageApi, messageHolder] = message.useMessage();
-  const [order] = useLocalState(States.order);
+  const [order, setOrder] = useLocalState(States.order);
   const [paymentMethodsSearchTerm, setPaymentMethodsSearchTerm] = useState(null);
   const [deliveryZonesSearchTerm, setDeliveryZonesSearchTerm] = useState(null);
   const [couponDiscount, setCouponDiscount] = useState(0);
+
+  const handleFinishFn = (values: IOrderQuickCreate) => {
+    values.products =
+      order?.cart?.map((cartItem) => ({
+        id: cartItem.productId,
+        variation_id: cartItem.productVariationId,
+        selected_quantity: cartItem.selectedQuantity,
+      })) || [];
+
+    orderCreateFn.mutate(values);
+  };
 
   const validateCouponFn = CouponsHooks.useValidate({
     config: {
@@ -46,6 +62,25 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
 
         setCouponDiscount(res.data?.discount || 0);
         messageApi.success('Coupon applied successfully');
+      },
+    },
+  });
+
+  const orderCreateFn = OrdersHooks.useQuickCreate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        messageApi.success(res.message).then(() => {
+          setOrder({ ...order, cart: [] });
+          router.push({
+            pathname: Paths.orderSuccess,
+            query: { order_id: res.data?.id },
+          });
+        });
       },
     },
   });
@@ -151,7 +186,7 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
             <Card className="shadow-sm rounded-lg">
               <Title level={4}>Billing Information</Title>
               <Divider style={{ marginBlock: 16 }} />
-              <Form autoComplete="off" size="large" layout="vertical" form={form}>
+              <Form autoComplete="off" size="large" layout="vertical" form={form} onFinish={handleFinishFn}>
                 <Row gutter={[16, 16]}>
                   <Col xs={24}>
                     <Row gutter={[16, 16]}>
@@ -319,7 +354,7 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
               </Col>
               <Col xs={24}>
                 <Card className="shadow-sm rounded-lg">
-                  <Button type="primary" size="large" block>
+                  <Button type="primary" size="large" block onClick={form.submit} loading={orderCreateFn.isPending}>
                     Place Order
                   </Button>
                 </Card>

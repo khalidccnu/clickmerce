@@ -62,6 +62,19 @@ export const OrdersHooks = {
     });
   },
 
+  useQuickCreate: ({ config }: { config?: MutationConfig<typeof OrdersServices.quickCreate> } = {}) => {
+    return useMutation({
+      mutationFn: OrdersServices.quickCreate,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        queryClient.invalidateQueries({ queryKey: [OrdersServices.NAME] });
+        queryClient.invalidateQueries({ queryKey: [ProductsServices.NAME] });
+      },
+      ...config,
+    });
+  },
+
   useUpdate: ({ config }: { config?: MutationConfig<typeof OrdersServices.update> } = {}) => {
     return useMutation({
       mutationFn: OrdersServices.update,

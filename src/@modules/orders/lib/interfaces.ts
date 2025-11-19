@@ -60,6 +60,20 @@ export interface IOrderCreate {
   is_draft?: boolean;
 }
 
+export interface IOrderQuickCreate {
+  name: string;
+  phone: string;
+  email: string;
+  products: {
+    id: TId;
+    variation_id: TId;
+    selected_quantity: number;
+  }[];
+  payment_method_id: TId;
+  delivery_zone_id: TId;
+  coupon: TId;
+}
+
 export interface IOrderReturnUpdate {
   redeem_amount: number;
   products: {
