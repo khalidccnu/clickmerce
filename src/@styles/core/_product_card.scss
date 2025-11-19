@@ -43,7 +43,7 @@
       white-space: nowrap;
       background-color: var(--color-black);
       height: auto;
-      padding: 0.75rem 2rem;
+      padding: 0.5rem 1rem;
       border: 0.3rem solid var(--color-white) !important;
       border-radius: 2rem;
       color: var(--color-white);
@@ -78,7 +78,7 @@
         color: var(--color-white) !important;
         &::before,
         &::after {
-          width: 61%;
+          width: 67%;
         }
       }
     }

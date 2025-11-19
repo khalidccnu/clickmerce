@@ -12,7 +12,9 @@ export const DeliveryZonesServices = {
 
   findById: async (id: TId): Promise<IBaseResponse<IDeliveryZone>> => {
     try {
-      const res = await SupabaseAdapter.findById<IDeliveryZone>(supabaseBrowserClient, END_POINT, id);
+      const res = await SupabaseAdapter.findById<IDeliveryZone>(supabaseBrowserClient, END_POINT, id, {
+        selection: buildSelectionFn({ relations: { delivery_service_type: { table: 'delivery_service_types' } } }),
+      });
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);

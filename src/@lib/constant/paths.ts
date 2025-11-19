@@ -6,6 +6,7 @@ export const Paths = {
   underConstruction: '/under-construction',
   wishlist: '/wishlist',
   cart: '/cart',
+  checkout: '/checkout',
   products: {
     root: '/products',
     toSlug: (slug: TId) => `/${slug}`,

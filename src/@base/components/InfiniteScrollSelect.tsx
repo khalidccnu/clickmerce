@@ -9,6 +9,7 @@ import { useInView } from 'react-intersection-observer';
 
 interface IProps<D = any> extends SelectProps {
   isFloat?: boolean;
+  required?: boolean;
   initialOptions?: D[];
   option: (props: { idx: number; item: D }) => DefaultOptionType;
   onChangeSearchTerm: (searchTerm: string) => void;
@@ -18,6 +19,7 @@ interface IProps<D = any> extends SelectProps {
 
 const InfiniteScrollSelect = <D = any,>({
   isFloat = false,
+  required = false,
   initialOptions = [],
   option,
   onChangeSearchTerm,
@@ -62,6 +64,7 @@ const InfiniteScrollSelect = <D = any,>({
     return (
       <FloatSelect
         {...rest}
+        required={required}
         filterOption={false}
         onSearch={Toolbox.debounce(onChangeSearchTerm, 1000)}
         onBlur={() => onChangeSearchTerm(null)}

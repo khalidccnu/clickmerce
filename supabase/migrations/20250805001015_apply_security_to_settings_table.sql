@@ -5,5 +5,5 @@ SELECT setup_table_security('Basic Management', 'settings', null, null, ARRAY['p
 
 -- Create a view for public read access
 CREATE OR REPLACE VIEW settings_view AS
-SELECT id, created_at, updated_at, identity, is_active
+SELECT id, created_at, updated_at, identity, vat, tax, is_active
 FROM settings;

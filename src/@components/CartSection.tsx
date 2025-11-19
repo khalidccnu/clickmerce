@@ -1,3 +1,4 @@
+import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
@@ -6,6 +7,7 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { ProductsWebHooks } from '@modules/products/lib/webHooks';
 import { Button, Col, InputNumber, message, Popconfirm, Row, Space, Table, TableColumnsType } from 'antd';
+import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaTrash, FaTrashAlt } from 'react-icons/fa';
 import { RiShoppingBag3Line } from 'react-icons/ri';
@@ -15,6 +17,7 @@ interface IProps {
 }
 
 const CartSection: React.FC<IProps> = ({ className }) => {
+  const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [order, setOrder] = useLocalState(States.order);
   const [refetchKey, setRefetchKey] = useState(null);
@@ -265,6 +268,7 @@ const CartSection: React.FC<IProps> = ({ className }) => {
                 type="primary"
                 icon={<RiShoppingBag3Line size={16} />}
                 disabled={!order?.cart?.length}
+                onClick={() => router.push(Paths.checkout)}
               >
                 Proceed to Checkout
               </Button>
