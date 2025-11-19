@@ -71,4 +71,16 @@ export const CouponsHooks = {
       ...config,
     });
   },
+
+  useValidate: ({ config }: { config?: MutationConfig<typeof CouponsServices.validate> } = {}) => {
+    return useMutation({
+      mutationFn: CouponsServices.validate,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        queryClient.invalidateQueries({ queryKey: [CouponsServices.NAME] });
+      },
+      ...config,
+    });
+  },
 };

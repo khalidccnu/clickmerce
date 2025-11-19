@@ -1099,21 +1099,27 @@ export type Database = {
           id: string | null;
           identity: Json | null;
           is_active: boolean | null;
+          tax: Json | null;
           updated_at: string | null;
+          vat: Json | null;
         };
         Insert: {
           created_at?: string | null;
           id?: string | null;
           identity?: Json | null;
           is_active?: boolean | null;
+          tax?: Json | null;
           updated_at?: string | null;
+          vat?: Json | null;
         };
         Update: {
           created_at?: string | null;
           id?: string | null;
           identity?: Json | null;
           is_active?: boolean | null;
+          tax?: Json | null;
           updated_at?: string | null;
+          vat?: Json | null;
         };
         Relationships: [];
       };

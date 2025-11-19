@@ -59,7 +59,7 @@ const FloatInput: React.FC<IProps> = ({
       <Input
         {...rest}
         className={className}
-        style={style}
+        style={{ position: 'static', ...style }}
         onFocus={handleFocusFn}
         onBlur={handleBlurFn}
         onMouseEnter={handleMouseEnterFn}

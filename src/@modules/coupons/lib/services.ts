@@ -1,4 +1,5 @@
 import { IBaseResponse, TId } from '@base/interfaces';
+import { AxiosInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
@@ -75,6 +76,15 @@ export const CouponsServices = {
     try {
       const res = await SupabaseAdapter.update<ICoupon>(supabaseBrowserClient, END_POINT, payload.id, payload.data);
       return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
+  validate: async (payload: { code: TId; subtotal: number }): Promise<IBaseResponse<{ discount: number }>> => {
+    try {
+      const res = await AxiosInstance.post(`/${END_POINT}/validate`, payload);
+      return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
     }

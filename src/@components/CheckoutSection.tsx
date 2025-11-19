@@ -6,6 +6,7 @@ import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
+import { CouponsHooks } from '@modules/coupons/lib/hooks';
 import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
@@ -15,6 +16,7 @@ import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/setti
 import { ISettings } from '@modules/settings/lib/interfaces';
 import { Button, Card, Col, Divider, Form, message, Row, Typography } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
+import { FaCheck } from 'react-icons/fa';
 
 const { Title, Text } = Typography;
 
@@ -32,6 +34,21 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
   const [order] = useLocalState(States.order);
   const [paymentMethodsSearchTerm, setPaymentMethodsSearchTerm] = useState(null);
   const [deliveryZonesSearchTerm, setDeliveryZonesSearchTerm] = useState(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+
+  const validateCouponFn = CouponsHooks.useValidate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        setCouponDiscount(res.data?.discount || 0);
+        messageApi.success('Coupon applied successfully');
+      },
+    },
+  });
 
   const productsBulkQuery = ProductsWebHooks.useFindBulk({
     config: {
@@ -217,14 +234,36 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                         <Divider style={{ marginBlock: 0 }} />
                       </Col>
                       <Col xs={24} lg={16}>
-                        <Form.Item className="!mb-0">
-                          <FloatInput placeholder="Coupon" />
+                        <Form.Item name="coupon" className="!mb-0">
+                          <FloatInput
+                            placeholder="Coupon"
+                            suffix={couponDiscount ? <FaCheck color="green" /> : undefined}
+                          />
                         </Form.Item>
                       </Col>
                       <Col xs={24} lg={8}>
                         <Form.Item className="!mb-0">
-                          <Button type="primary" block ghost>
-                            Apply Coupon
+                          <Button
+                            type="primary"
+                            block
+                            ghost
+                            danger={!!couponDiscount}
+                            onClick={() => {
+                              if (couponDiscount) {
+                                setCouponDiscount(0);
+                                form.setFieldsValue({ coupon: null });
+                                return;
+                              }
+
+                              validateCouponFn.mutate({
+                                code: formValues?.coupon,
+                                subtotal,
+                              });
+                            }}
+                            disabled={!formValues?.coupon || !subtotal}
+                            loading={validateCouponFn.isPending}
+                          >
+                            {couponDiscount ? 'Remove' : 'Apply'}
                           </Button>
                         </Form.Item>
                       </Col>
@@ -252,15 +291,30 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                     <Text>VAT</Text>
                     <Text strong>{Toolbox.withCurrency(vatAmount)}</Text>
                   </div>
-                  <div className="flex justify-between mb-3">
+                  <div className="flex justify-between">
                     <Text>Tax</Text>
                     <Text strong>{Toolbox.withCurrency(taxAmount)}</Text>
                   </div>
+                  {!couponDiscount || (
+                    <div className="flex justify-between text-lg mt-2">
+                      <Text>Discount</Text>
+                      <Text strong>- {Toolbox.withCurrency(couponDiscount)}</Text>
+                    </div>
+                  )}
                   <Divider />
                   <div className="flex justify-between text-lg">
                     <Text strong>Grand Total</Text>
                     <Text strong>{Toolbox.withCurrency(grandTotal)}</Text>
                   </div>
+                  {!couponDiscount || (
+                    <React.Fragment>
+                      <Divider />
+                      <div className="flex justify-between text-lg">
+                        <Text strong>Payable Amount</Text>
+                        <Text strong>{Toolbox.withCurrency(grandTotal - couponDiscount)}</Text>
+                      </div>
+                    </React.Fragment>
+                  )}
                 </Card>
               </Col>
               <Col xs={24}>
