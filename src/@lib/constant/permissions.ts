@@ -70,6 +70,11 @@ export const Permissions = {
   ORDER_RETURNS_UPDATE: 'order_returns:update',
   ORDER_RETURNS_DELETE: 'order_returns:delete',
 
+  ORDER_PAYMENT_REQUESTS_READ: 'order_payment_requests:read',
+  ORDER_PAYMENT_REQUESTS_WRITE: 'order_payment_requests:write',
+  ORDER_PAYMENT_REQUESTS_UPDATE: 'order_payment_requests:update',
+  ORDER_PAYMENT_REQUESTS_DELETE: 'order_payment_requests:delete',
+
   DELIVERY_SERVICE_TYPES_READ: 'delivery_service_types:read',
   DELIVERY_SERVICE_TYPES_WRITE: 'delivery_service_types:write',
   DELIVERY_SERVICE_TYPES_UPDATE: 'delivery_service_types:update',

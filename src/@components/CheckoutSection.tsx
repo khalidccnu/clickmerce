@@ -309,7 +309,7 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                                   })) || [],
                               });
                             }}
-                            disabled={!formValues?.coupon || !subtotal}
+                            disabled={!formValues?.coupon || !order?.cart?.length}
                             loading={validateCouponFn.isPending}
                           >
                             {couponDiscount ? 'Remove' : 'Apply'}
@@ -368,7 +368,14 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
               </Col>
               <Col xs={24}>
                 <Card className="shadow-sm rounded-lg">
-                  <Button type="primary" size="large" block onClick={form.submit} loading={orderCreateFn.isPending}>
+                  <Button
+                    type="primary"
+                    size="large"
+                    block
+                    disabled={!order?.cart?.length}
+                    onClick={form.submit}
+                    loading={orderCreateFn.isPending}
+                  >
                     Place Order
                   </Button>
                 </Card>

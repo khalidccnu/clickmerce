@@ -33,6 +33,7 @@ export interface IOrder extends IBaseEntity {
   round_off_amount: number;
   payment_method: IPaymentMethod;
   delivery_zone: IDeliveryZone;
+  payment_reference: string;
   payment_status: TOrderPaymentStatusType;
   status: TOrderStatusType;
 }

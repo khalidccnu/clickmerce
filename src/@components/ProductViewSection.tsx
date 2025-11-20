@@ -304,7 +304,10 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
                   key: 'description',
                   label: 'Description',
                   children: (
-                    <div dangerouslySetInnerHTML={{ __html: product.description || 'No description available' }} />
+                    <div
+                      className="prose"
+                      dangerouslySetInnerHTML={{ __html: product.description || 'No description available' }}
+                    />
                   ),
                 },
               ]}

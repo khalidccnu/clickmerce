@@ -84,6 +84,10 @@ export const Paths = {
         root: '/admin/sale/order-returns',
         list: '/admin/sale/order-returns/list',
       },
+      orderPaymentRequests: {
+        root: '/admin/sale/order-payment-requests',
+        list: '/admin/sale/order-payment-requests/list',
+      },
     },
     delivery: {
       root: '/admin/delivery',

@@ -11,7 +11,7 @@ import { FaTools, FaUsers, FaUserShield, FaUserTag, FaWallet } from 'react-icons
 import { FiShoppingCart } from 'react-icons/fi';
 import { GiMedicines } from 'react-icons/gi';
 import { GrGallery, GrUserAdmin } from 'react-icons/gr';
-import { IoCubeOutline, IoReturnUpBack } from 'react-icons/io5';
+import { IoCubeOutline, IoReceiptSharp, IoReturnUpBack } from 'react-icons/io5';
 import { LiaCartArrowDownSolid } from 'react-icons/lia';
 import {
   MdArticle,
@@ -192,6 +192,25 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
                 </CustomLink>
               ),
               allowedPermissions: ['order_returns:read'],
+            },
+            {
+              key: Paths.admin.sale.orderPaymentRequests.list,
+              icon: <IoReceiptSharp />,
+              label: (
+                <CustomLink
+                  href={{
+                    pathname: Paths.admin.sale.orderPaymentRequests.list,
+                    query: {
+                      page: 1,
+                      limit: 10,
+                      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+                    },
+                  }}
+                >
+                  Order Payment Requests
+                </CustomLink>
+              ),
+              allowedPermissions: ['order_payment_requests:read'],
             },
           ],
         },

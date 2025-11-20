@@ -88,7 +88,7 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, order }) => {
       dataIndex: 'sale_price',
       title: 'Price',
       render: (_, record) =>
-        record.sale_discount_price !== record.sale_price ? (
+        record.sale_discount_price && record.sale_discount_price !== record.sale_price ? (
           <p>
             {Toolbox.withCurrency(record.sale_discount_price)} <del>{Toolbox.withCurrency(record.sale_price)}</del>
           </p>

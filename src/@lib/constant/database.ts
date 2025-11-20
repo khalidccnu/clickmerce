@@ -17,6 +17,7 @@ export const Database = {
   categories: 'categories',
   orders: 'orders',
   orderReturns: 'order_returns',
+  orderPaymentRequests: 'order_payment_requests',
   deliveryServiceTypes: 'delivery_service_types',
   deliveryZones: 'delivery_zones',
   coupons: 'coupons',
