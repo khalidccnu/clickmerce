@@ -84,13 +84,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
       if (specialPrice && specialPrice !== variation?.sale_price) productWithSpecialPrice++;
 
-      variation['special_price'] = specialPrice;
+      variation['sale_discount_price'] = specialPrice;
       delete variation.cost_price;
 
       return variation;
     });
 
-    result.data['has_special_price'] = !!productWithSpecialPrice;
+    result.data['has_sale_discount_price'] = !!productWithSpecialPrice;
 
     const response: IBaseResponse<IProduct> = {
       success: true,

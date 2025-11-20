@@ -37,7 +37,7 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
     }
 
     const regularPrices = product.variations.map((v) => v?.sale_price);
-    const specialPrices = product.variations.map((v) => v?.['special_price']);
+    const specialPrices = product.variations.map((v) => v?.['sale_discount_price']);
 
     const minRegularPrice = Math.min(...regularPrices);
     const maxRegularPrice = Math.max(...regularPrices);
@@ -231,7 +231,7 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
             <div className="mt-4">
               <Typography.Text strong>Price:</Typography.Text>
               <div className="mt-1 flex items-baseline gap-2">
-                {product?.['has_special_price'] ? (
+                {product?.['has_sale_discount_price'] ? (
                   <React.Fragment>
                     <Typography.Text strong>{priceInfo.special}</Typography.Text>
                     <Typography.Text delete className="text-md text-gray-500">

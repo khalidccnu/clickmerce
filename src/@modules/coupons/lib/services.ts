@@ -81,7 +81,14 @@ export const CouponsServices = {
     }
   },
 
-  validate: async (payload: { code: TId; subtotal: number }): Promise<IBaseResponse<{ discount: number }>> => {
+  validate: async (payload: {
+    code: TId;
+    products: {
+      id: TId;
+      variation_id: TId;
+      selected_quantity: number;
+    }[];
+  }): Promise<IBaseResponse<{ discount: number }>> => {
     try {
       const res = await AxiosInstance.post(`/${END_POINT}/validate`, payload);
       return Promise.resolve(res?.data);

@@ -1,7 +1,7 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
+import AboutSection from '@components/AboutSection';
 import { Paths } from '@lib/constant/paths';
-import AboutSection from '@modules/about/AboutSection';
 import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';

@@ -12,6 +12,7 @@ import { DeliveryZonesHooks } from '@modules/delivery-zones/lib/hooks';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
 import { OrdersHooks } from '@modules/orders/lib/hooks';
 import { IOrderQuickCreate } from '@modules/orders/lib/interfaces';
+import { ENUM_PAYMENT_METHOD_REFERENCE_TYPES } from '@modules/payment-methods/lib/enums';
 import { PaymentMethodsHooks } from '@modules/payment-methods/lib/hooks';
 import { IPaymentMethod } from '@modules/payment-methods/lib/interfaces';
 import { ProductsWebHooks } from '@modules/products/lib/webHooks';
@@ -57,6 +58,8 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
       onSuccess: (res) => {
         if (!res.success) {
           messageApi.error(res.message);
+          setCouponDiscount(0);
+          form.setFieldsValue({ coupon: null });
           return;
         }
 
@@ -75,9 +78,15 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
         }
 
         messageApi.success(res.message).then(() => {
+          const redirectUrl =
+            paymentMethodQuery.data?.data?.reference_type === ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO
+              ? Paths.order.success
+              : Paths.order.payment;
+
+          form.resetFields();
           setOrder({ ...order, cart: [] });
           router.push({
-            pathname: Paths.orderSuccess,
+            pathname: redirectUrl,
             query: { order_id: res.data?.id },
           });
         });
@@ -141,7 +150,7 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
           name: product?.name,
           stock: variation?.quantity,
           sale_price: variation?.sale_price,
-          special_price: variation?.['special_price'],
+          sale_discount_price: variation?.['sale_discount_price'],
           quantity: cartItem?.selectedQuantity ?? 1,
         };
       });
@@ -150,7 +159,7 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
   }, [productsBulkQuery.data?.data, order?.cart]);
 
   const subtotal = dataSource.reduce((acc, item) => {
-    const price = item.special_price ?? item.sale_price ?? 0;
+    const price = item.sale_discount_price ?? item.sale_price ?? 0;
     return acc + price * item.quantity;
   }, 0);
 
@@ -292,7 +301,12 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
 
                               validateCouponFn.mutate({
                                 code: formValues?.coupon,
-                                subtotal,
+                                products:
+                                  order?.cart?.map((cartItem) => ({
+                                    id: cartItem.productId,
+                                    variation_id: cartItem.productVariationId,
+                                    selected_quantity: cartItem.selectedQuantity,
+                                  })) || [],
                               });
                             }}
                             disabled={!formValues?.coupon || !subtotal}

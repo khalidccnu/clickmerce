@@ -7,7 +7,11 @@ export const Paths = {
   wishlist: '/wishlist',
   cart: '/cart',
   checkout: '/checkout',
-  orderSuccess: '/order-success',
+  order: {
+    success: '/order/success',
+    failed: '/order/failed',
+    payment: '/order/payment',
+  },
   products: {
     root: '/products',
     toSlug: (slug: TId) => `/${slug}`,

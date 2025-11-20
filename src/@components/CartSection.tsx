@@ -34,7 +34,7 @@ const CartSection: React.FC<IProps> = ({ className }) => {
   });
 
   const updateCartFn = ({ item }: { item: IOrderCartItem }) => {
-    const { productId, productVariationId, selectedQuantity, discount } = item;
+    const { productId, productVariationId, selectedQuantity } = item;
     const purifiedCart = order?.cart || [];
 
     const itemIdx = cartItemIdxFn(productId, productVariationId, purifiedCart);
@@ -44,16 +44,12 @@ const CartSection: React.FC<IProps> = ({ className }) => {
       return;
     }
 
-    if (!selectedQuantity && !discount) {
+    if (!selectedQuantity) {
       return;
     }
 
     if (selectedQuantity) {
       purifiedCart[itemIdx].selectedQuantity = selectedQuantity;
-    }
-
-    if (discount) {
-      purifiedCart[itemIdx].discount = discount;
     }
 
     setOrder({
@@ -91,7 +87,7 @@ const CartSection: React.FC<IProps> = ({ className }) => {
           name: product?.name,
           stock: variation?.quantity,
           sale_price: variation?.sale_price,
-          special_price: variation?.['special_price'],
+          sale_discount_price: variation?.['sale_discount_price'],
           quantity: cartItem?.selectedQuantity ?? 1,
         };
       });
@@ -155,9 +151,10 @@ const CartSection: React.FC<IProps> = ({ className }) => {
       dataIndex: 'sale_price',
       title: 'Price',
       render: (_, record) =>
-        record?.['special_price'] !== record?.sale_price ? (
+        record?.['sale_discount_price'] !== record?.sale_price ? (
           <p>
-            {Toolbox.withCurrency(record?.['special_price'])} <del>{Toolbox.withCurrency(record?.sale_price)}</del>
+            {Toolbox.withCurrency(record?.['sale_discount_price'])}{' '}
+            <del>{Toolbox.withCurrency(record?.sale_price)}</del>
           </p>
         ) : (
           Toolbox.withCurrency(record?.sale_price)
@@ -192,8 +189,8 @@ const CartSection: React.FC<IProps> = ({ className }) => {
       dataIndex: 'total',
       render: (_, record) => {
         const unitPrice =
-          record?.special_price && record.special_price !== record.sale_price
-            ? record.special_price
+          record?.sale_discount_price && record.sale_discount_price !== record.sale_price
+            ? record.sale_discount_price
             : record.sale_price;
 
         const total = unitPrice * record.quantity;

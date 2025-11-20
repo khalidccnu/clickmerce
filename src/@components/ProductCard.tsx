@@ -33,7 +33,7 @@ const ProductCard: React.FC<IProps> = ({ className, product }) => {
     }
 
     const regularPrices = product.variations.map((v) => v?.sale_price);
-    const specialPrices = product.variations.map((v) => v?.['special_price']);
+    const specialPrices = product.variations.map((v) => v?.['sale_discount_price']);
 
     const minRegularPrice = Math.min(...regularPrices);
     const maxRegularPrice = Math.max(...regularPrices);
@@ -59,7 +59,7 @@ const ProductCard: React.FC<IProps> = ({ className, product }) => {
   return (
     <div className={cn('product_card', className)}>
       <div className="image_wrapper">
-        {product?.['has_special_price'] && <span className="special_badge">Sale</span>}
+        {product?.['has_sale_discount_price'] && <span className="special_badge">Sale</span>}
         <div className="btn_container">
           <Button
             type="primary"
@@ -81,12 +81,12 @@ const ProductCard: React.FC<IProps> = ({ className, product }) => {
         <p className="price">
           <span
             className={cn('regular', {
-              'line-through mr-1': product?.['has_special_price'],
+              'line-through mr-1': product?.['has_sale_discount_price'],
             })}
           >
             {priceInfo.regular}
           </span>
-          {product?.['has_special_price'] && <span className="special">{priceInfo.special}</span>}
+          {product?.['has_sale_discount_price'] && <span className="special">{priceInfo.special}</span>}
         </p>
       </div>
     </div>

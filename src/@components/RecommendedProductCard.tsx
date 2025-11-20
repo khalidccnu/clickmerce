@@ -22,7 +22,7 @@ const RecommendedProductCard: React.FC<IProps> = ({ className, wrapperClassName,
     }
 
     const regularPrices = product.variations.map((v) => v?.sale_price);
-    const specialPrices = product.variations.map((v) => v?.['special_price']);
+    const specialPrices = product.variations.map((v) => v?.['sale_discount_price']);
 
     const minRegularPrice = Math.min(...regularPrices);
     const maxRegularPrice = Math.max(...regularPrices);
@@ -48,18 +48,18 @@ const RecommendedProductCard: React.FC<IProps> = ({ className, wrapperClassName,
   return (
     <div className={cn('recommended_product_card', className)}>
       <div className={cn('wrapper', wrapperClassName)}>
-        {product?.['has_special_price'] && <span className="special_badge">Sale</span>}
+        {product?.['has_sale_discount_price'] && <span className="special_badge">Sale</span>}
         <div className="content_wrapper">
           <p className="title">{product?.name}</p>
           <p className="price">
             <span
               className={cn('regular', {
-                'line-through mr-1': product?.['has_special_price'],
+                'line-through mr-1': product?.['has_sale_discount_price'],
               })}
             >
               {priceInfo.regular}
             </span>
-            {product?.['has_special_price'] && <span className="special">{priceInfo.special}</span>}
+            {product?.['has_sale_discount_price'] && <span className="special">{priceInfo.special}</span>}
           </p>
         </div>
         <div className="flex items-center gap-2 justify-between">

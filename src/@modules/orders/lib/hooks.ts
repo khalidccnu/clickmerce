@@ -16,6 +16,16 @@ export const OrdersHooks = {
     });
   },
 
+  useQuickFindById: ({ id, config }: { id: TId; config?: QueryConfig<typeof OrdersServices.quickFindById> }) => {
+    const { queryKey, ...rest } = config ?? {};
+
+    return useQuery({
+      queryKey: [...(queryKey || []), OrdersServices.NAME, id],
+      queryFn: () => OrdersServices.quickFindById(id),
+      ...rest,
+    });
+  },
+
   useFind: ({ options, config }: { options: IOrdersFilter; config?: QueryConfig<typeof OrdersServices.find> }) => {
     const { queryKey, ...rest } = config ?? {};
 

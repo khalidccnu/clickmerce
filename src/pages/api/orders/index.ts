@@ -459,6 +459,10 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
                     generic: { table: Database.generics },
                     supplier: { table: Database.suppliers },
                     variations: { table: Database.productVariations },
+                    categories: {
+                      table: Database.productCategories,
+                      nested: { category: { table: Database.categories } },
+                    },
                   },
                 }),
               },

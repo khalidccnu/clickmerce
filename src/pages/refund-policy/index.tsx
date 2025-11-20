@@ -1,10 +1,10 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
+import RefundPolicySection from '@components/RefundPolicySection';
 import { Paths } from '@lib/constant/paths';
 import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
-import RefundPolicySection from '@modules/refund-policy/RefundPolicySection';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';

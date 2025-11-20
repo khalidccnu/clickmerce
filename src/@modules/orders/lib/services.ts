@@ -26,6 +26,15 @@ export const OrdersServices = {
     }
   },
 
+  quickFindById: async (id: TId): Promise<IBaseResponse<IOrder>> => {
+    try {
+      const res = await AxiosSecureInstance.get(`${END_POINT}/quick/${id}`);
+      return Promise.resolve(res?.data);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
   find: async (filters: IOrdersFilter): Promise<IOrdersResponse> => {
     try {
       const res = await AxiosSecureInstance.get(`${END_POINT}?${Toolbox.queryNormalizer(filters)}`);
