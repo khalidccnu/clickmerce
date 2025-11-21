@@ -75,11 +75,19 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            customer: { table: Database.users, foreignKey: 'customer_id' },
+            customer: { table: Database.users, foreignKey: 'customer_id', columns: ['id', 'name', 'phone', 'email'] },
             payment_method: { table: Database.paymentMethods },
             delivery_zone: { table: Database.deliveryZones },
-            created_by: { table: Database.users, foreignKey: 'created_by_id' },
-            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
+            created_by: {
+              table: Database.users,
+              foreignKey: 'created_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
+            updated_by: {
+              table: Database.users,
+              foreignKey: 'updated_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
           },
           filters: { id: { eq: id as string } },
         }),
@@ -193,7 +201,7 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { pay_amount, status } = data;
+  const { pay_amount, status, ...rest } = data;
 
   const supabaseServerClient = createSupabaseServerClient(req, res);
 
@@ -210,7 +218,8 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
             customer: {
               table: Database.users,
               foreignKey: 'customer_id',
-              nested: { user_info: { table: Database.usersInfo } },
+              columns: ['id', 'name', 'phone', 'email'],
+              nested: { user_info: { table: Database.usersInfo, columns: ['id', 'balance'] } },
             },
           },
           filters: { id },
@@ -343,6 +352,13 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       }
     }
 
+    if (Toolbox.isNotEmpty(rest)) {
+      updateResult = await SupabaseAdapter.update<IOrder>(supabaseServerClient, Database.orders, id as string, {
+        ...rest,
+        updated_by_id: user?.id,
+      });
+    }
+
     const updatedOrder = await SupabaseAdapter.findOne<IOrder>(
       supabaseServerClient,
       Database.orders,
@@ -350,11 +366,19 @@ async function handleUpdate(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            customer: { table: Database.users, foreignKey: 'customer_id' },
+            customer: { table: Database.users, foreignKey: 'customer_id', columns: ['id', 'name', 'phone', 'email'] },
             payment_method: { table: Database.paymentMethods },
             delivery_zone: { table: Database.deliveryZones },
-            created_by: { table: Database.users, foreignKey: 'created_by_id' },
-            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
+            created_by: {
+              table: Database.users,
+              foreignKey: 'created_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
+            updated_by: {
+              table: Database.users,
+              foreignKey: 'updated_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
           },
           filters: { id: { eq: id as string } },
         }),
@@ -445,7 +469,8 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
             customer: {
               table: Database.users,
               foreignKey: 'customer_id',
-              nested: { user_info: { table: Database.usersInfo } },
+              columns: ['id', 'name', 'phone', 'email'],
+              nested: { user_info: { table: Database.usersInfo, columns: ['id', 'balance'] } },
             },
           },
           filters: { id },
@@ -690,11 +715,19 @@ async function handleReturn(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            customer: { table: Database.users, foreignKey: 'customer_id' },
+            customer: { table: Database.users, foreignKey: 'customer_id', columns: ['id', 'name', 'phone', 'email'] },
             payment_method: { table: Database.paymentMethods },
             delivery_zone: { table: Database.deliveryZones },
-            created_by: { table: Database.users, foreignKey: 'created_by_id' },
-            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
+            created_by: {
+              table: Database.users,
+              foreignKey: 'created_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
+            updated_by: {
+              table: Database.users,
+              foreignKey: 'updated_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
           },
           filters: { id: { eq: id as string } },
         }),

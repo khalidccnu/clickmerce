@@ -3,12 +3,15 @@ import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { Dayjs } from '@lib/constant/dayjs';
 import { Paths } from '@lib/constant/paths';
 import { getAccess } from '@modules/auth/lib/utils/client';
+import OrdersPayForm from '@modules/orders/components/OrdersPayForm';
+import { OrdersHooks } from '@modules/orders/lib/hooks';
 import type { PaginationProps, TableColumnsType } from 'antd';
-import { Button, message, Popconfirm, Space, Table } from 'antd';
+import { Button, Form, message, Popconfirm, Space, Table } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { AiFillDelete, AiFillEye } from 'react-icons/ai';
+import { AiFillCloseCircle, AiFillEye } from 'react-icons/ai';
+import { FaCheckCircle } from 'react-icons/fa';
 import { OrderPaymentRequestsHooks } from '../lib/hooks';
 import { IOrderPaymentRequest } from '../lib/interfaces';
 import OrderPaymentRequestsView from './OrderPaymentRequestsView';
@@ -22,7 +25,25 @@ interface IProps {
 const OrderPaymentRequestsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const router = useRouter();
+  const [payFormInstance] = Form.useForm();
   const [viewItem, setViewItem] = useState<IOrderPaymentRequest>(null);
+  const [payItem, setPayItem] = useState<IOrderPaymentRequest>(null);
+
+  const orderUpdateFn = OrdersHooks.useUpdate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        orderPaymentRequestDeleteFn.mutate(payItem.id);
+        messageApi.success('Order payment has been successfully processed.');
+
+        setPayItem(null);
+      },
+    },
+  });
 
   const orderPaymentRequestDeleteFn = OrderPaymentRequestsHooks.useDelete({
     config: {
@@ -31,8 +52,6 @@ const OrderPaymentRequestsList: React.FC<IProps> = ({ isLoading, data, paginatio
           messageApi.error(res.message);
           return;
         }
-
-        messageApi.success(res.message);
       },
     },
   });
@@ -95,17 +114,35 @@ const OrderPaymentRequestsList: React.FC<IProps> = ({ isLoading, data, paginatio
             <Button type="dashed" onClick={() => setViewItem(item)}>
               <AiFillEye />
             </Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                getAccess({
+                  allowedPermissions: ['orders:update'],
+                  func: () => {
+                    setPayItem(item);
+                  },
+                });
+              }}
+            >
+              <FaCheckCircle />
+            </Button>
             <Popconfirm
-              title="Are you sure to delete this order payment request?"
+              title="Are you sure to decline this order payment request?"
               onConfirm={() => {
                 getAccess({
                   allowedPermissions: ['order_payment_requests:delete'],
-                  func: () => orderPaymentRequestDeleteFn.mutate(id),
+                  func: () =>
+                    orderPaymentRequestDeleteFn.mutate(id, {
+                      onSuccess: () => {
+                        messageApi.success('Order payment request has been declined.');
+                      },
+                    }),
                 });
               }}
             >
               <Button type="primary" danger ghost>
-                <AiFillDelete />
+                <AiFillCloseCircle />
               </Button>
             </Popconfirm>
           </Space>
@@ -132,6 +169,26 @@ const OrderPaymentRequestsList: React.FC<IProps> = ({ isLoading, data, paginatio
         footer={null}
       >
         <OrderPaymentRequestsView orderPaymentRequest={viewItem} />
+      </BaseModalWithoutClicker>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title={`Make Payment for ${payItem?.order?.code}`}
+        footer={null}
+        open={!!payItem?.id}
+        onCancel={() => setPayItem(null)}
+      >
+        <OrdersPayForm
+          form={payFormInstance}
+          initialValues={payItem?.order}
+          isLoading={orderUpdateFn.isPending}
+          onFinish={(values) =>
+            orderUpdateFn.mutate({
+              id: payItem?.order?.id,
+              data: { ...values, payment_reference: payItem?.payment_reference },
+            })
+          }
+        />
       </BaseModalWithoutClicker>
     </React.Fragment>
   );

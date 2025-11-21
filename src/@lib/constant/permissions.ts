@@ -112,6 +112,11 @@ export const Permissions = {
   FEATURES_UPDATE: 'features:update',
   FEATURES_DELETE: 'features:delete',
 
+  REVIEWS_READ: 'reviews:read',
+  REVIEWS_WRITE: 'reviews:write',
+  REVIEWS_UPDATE: 'reviews:update',
+  REVIEWS_DELETE: 'reviews:delete',
+
   PAGES_READ: 'pages:read',
   PAGES_WRITE: 'pages:write',
   PAGES_UPDATE: 'pages:update',

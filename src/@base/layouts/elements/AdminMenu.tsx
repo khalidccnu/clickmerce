@@ -23,6 +23,7 @@ import {
   MdOutlineInventory2,
   MdOutlineMap,
   MdOutlineViewCarousel,
+  MdRateReview,
   MdSpaceDashboard,
   MdSwapHoriz,
 } from 'react-icons/md';
@@ -302,6 +303,12 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
               icon: <MdExtension />,
               label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.features.list)}>Features</CustomLink>,
               allowedPermissions: ['features:read'],
+            },
+            {
+              key: Paths.admin.cms.reviews.list,
+              icon: <MdRateReview />,
+              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.reviews.list)}>Reviews</CustomLink>,
+              allowedPermissions: ['reviews:read'],
             },
             {
               key: Paths.admin.cms.pages.list,

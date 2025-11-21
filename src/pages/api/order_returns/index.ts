@@ -62,8 +62,13 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     const result = await SupabaseAdapter.find<IOrderReturn>(supabaseServerClient, Database.orderReturns, newFilters, {
       selection: buildSelectionFn({
         relations: {
-          order: { table: Database.orders, nested: { customer: { table: Database.users, foreignKey: 'customer_id' } } },
-          created_by: { table: Database.users, foreignKey: 'created_by_id' },
+          order: {
+            table: Database.orders,
+            nested: {
+              customer: { table: Database.users, foreignKey: 'customer_id', columns: ['id', 'name', 'phone', 'email'] },
+            },
+          },
+          created_by: { table: Database.users, foreignKey: 'created_by_id', columns: ['id', 'name', 'phone', 'email'] },
         },
         filters: newFilters,
       }),

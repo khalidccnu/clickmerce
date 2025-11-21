@@ -65,11 +65,11 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     const result = await SupabaseAdapter.find<IOrder>(supabaseServerClient, Database.orders, data, {
       selection: buildSelectionFn({
         relations: {
-          customer: { table: Database.users, foreignKey: 'customer_id' },
+          customer: { table: Database.users, foreignKey: 'customer_id', columns: ['id', 'name', 'phone', 'email'] },
           payment_method: { table: Database.paymentMethods },
           delivery_zone: { table: Database.deliveryZones },
-          created_by: { table: Database.users, foreignKey: 'created_by_id' },
-          updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
+          created_by: { table: Database.users, foreignKey: 'created_by_id', columns: ['id', 'name', 'phone', 'email'] },
+          updated_by: { table: Database.users, foreignKey: 'updated_by_id', columns: ['id', 'name', 'phone', 'email'] },
         },
         filters: data,
       }),
@@ -430,12 +430,21 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
             customer: {
               table: Database.users,
               foreignKey: 'customer_id',
-              nested: { user_info: { table: Database.usersInfo } },
+              columns: ['id', 'name', 'phone', 'email'],
+              nested: { user_info: { table: Database.usersInfo, columns: ['id', 'balance'] } },
             },
             payment_method: { table: Database.paymentMethods, foreignKey: 'payment_method_id' },
             delivery_zone: { table: Database.deliveryZones, foreignKey: 'delivery_zone_id' },
-            created_by: { table: Database.users, foreignKey: 'created_by_id' },
-            updated_by: { table: Database.users, foreignKey: 'updated_by_id' },
+            created_by: {
+              table: Database.users,
+              foreignKey: 'created_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
+            updated_by: {
+              table: Database.users,
+              foreignKey: 'updated_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
           },
           filters: { id: orderResponse.data.id as string },
         }),

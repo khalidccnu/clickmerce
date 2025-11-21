@@ -47,7 +47,13 @@ export const OrderPaymentRequestsServices = {
           relations: {
             order: {
               table: Database.orders,
-              nested: { customer: { table: Database.users, foreignKey: 'customer_id' } },
+              nested: {
+                customer: {
+                  table: Database.users,
+                  foreignKey: 'customer_id',
+                  columns: ['id', 'name', 'phone', 'email'],
+                },
+              },
             },
           },
           filters: newFilters,

@@ -44,6 +44,7 @@ export const orderCreateSchema = yup.object({
     .required(),
   redeem_amount: yup.number().min(0).required(),
   pay_amount: yup.number().min(0).required(),
+  payment_reference: yup.string().optional().nullable(),
   payment_method_id: yup.string().uuid().required(),
   delivery_zone_id: yup.string().uuid().required(),
   customer_id: yup.string().uuid().required(),
@@ -53,7 +54,10 @@ export const orderCreateSchema = yup.object({
   is_draft: yup.boolean().optional(),
 });
 
-export const orderUpdateSchema = PartialType(PickType(orderCreateSchema, ['pay_amount', 'status']), true);
+export const orderUpdateSchema = PartialType(
+  PickType(orderCreateSchema, ['pay_amount', 'payment_reference', 'status']),
+  true,
+);
 
 export const orderReturnSchema = yup.object({
   products: yup

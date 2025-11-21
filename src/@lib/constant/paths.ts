@@ -128,6 +128,10 @@ export const Paths = {
         root: '/admin/cms/features',
         list: '/admin/cms/features/list',
       },
+      reviews: {
+        root: '/admin/cms/reviews',
+        list: '/admin/cms/reviews/list',
+      },
       pages: {
         root: '/admin/cms/pages',
         list: '/admin/cms/pages/list',

@@ -68,9 +68,19 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           relations: {
             order: {
               table: Database.orders,
-              nested: { customer: { table: Database.users, foreignKey: 'customer_id' } },
+              nested: {
+                customer: {
+                  table: Database.users,
+                  foreignKey: 'customer_id',
+                  columns: ['id', 'name', 'phone', 'email'],
+                },
+              },
             },
-            created_by: { table: Database.users, foreignKey: 'created_by_id' },
+            created_by: {
+              table: Database.users,
+              foreignKey: 'created_by_id',
+              columns: ['id', 'name', 'phone', 'email'],
+            },
           },
           filters: { id: { eq: id as string } },
         }),

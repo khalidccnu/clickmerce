@@ -62,7 +62,10 @@ export const OrdersServices = {
     }
   },
 
-  update: async (payload: { id: TId; data: Partial<IOrderCreate> }): Promise<IBaseResponse<IOrder>> => {
+  update: async (payload: {
+    id: TId;
+    data: Partial<IOrderCreate & { payment_reference: string }>;
+  }): Promise<IBaseResponse<IOrder>> => {
     try {
       const res = await AxiosSecureInstance.patch(`${END_POINT}/${payload.id}`, payload.data);
       return Promise.resolve(res?.data);
