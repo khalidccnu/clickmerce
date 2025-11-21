@@ -2,6 +2,7 @@ import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps, TId } from '@base/interfaces';
 import OrderPaymentSection from '@components/OrderPaymentSection';
 import { Paths } from '@lib/constant/paths';
+import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { OrdersServices } from '@modules/orders/lib/services';
 import { pageTypes } from '@modules/pages/lib/enums';
@@ -49,7 +50,11 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
       };
     }
 
-    if (order.payment_method?.reference_type === ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO) {
+    if (
+      order.payment_method?.reference_type === ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO ||
+      order?.payment_status !== ENUM_ORDER_PAYMENT_STATUS_TYPES.PROCESSING ||
+      order?.payment_reference
+    ) {
       return {
         redirect: {
           destination: `${Paths.order.success}?order_id=${order.id}`,

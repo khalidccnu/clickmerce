@@ -2,19 +2,7 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
 import { Dayjs } from '@lib/constant/dayjs';
 import { getAccess } from '@modules/auth/lib/utils/client';
-import {
-  Button,
-  Drawer,
-  Form,
-  PaginationProps,
-  Popconfirm,
-  Rate,
-  Space,
-  Table,
-  TableColumnsType,
-  Typography,
-  message,
-} from 'antd';
+import { Button, Drawer, Form, PaginationProps, Popconfirm, Rate, Space, Table, TableColumnsType, message } from 'antd';
 import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import { AiFillDelete, AiFillEdit, AiFillEye } from 'react-icons/ai';
@@ -91,18 +79,19 @@ const ReviewsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
       key: 'rate',
       dataIndex: 'rate',
       title: 'Rate',
-      render: (rate) => <Rate disabled allowHalf value={rate} />,
+      width: 180,
+      render: (rate) => <Rate disabled allowHalf value={rate} style={{ color: 'var(--color-primary' }} />,
     },
-    {
-      key: 'comment',
-      dataIndex: 'comment',
-      title: 'Comment',
-      render: (comment) => (
-        <Typography.Paragraph ellipsis={{ rows: 3, expandable: true }} style={{ marginBottom: 0 }}>
-          {comment}
-        </Typography.Paragraph>
-      ),
-    },
+    // {
+    //   key: 'comment',
+    //   dataIndex: 'comment',
+    //   title: 'Comment',
+    //   render: (comment) => (
+    //     <Typography.Paragraph ellipsis={{ rows: 3, expandable: true }} style={{ marginBottom: 0 }}>
+    //       {comment}
+    //     </Typography.Paragraph>
+    //   ),
+    // },
     {
       key: 'created_at',
       dataIndex: 'created_at',

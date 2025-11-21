@@ -11,6 +11,7 @@ import {
 import { IOrderPaymentRequest } from '@modules/order-payment-requests/lib/interfaces';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
+import { ENUM_PAYMENT_METHOD_REFERENCE_TYPES } from '@modules/payment-methods/lib/enums';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -59,7 +60,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(404).json(response);
     }
 
-    if (order.data?.payment_status !== ENUM_ORDER_PAYMENT_STATUS_TYPES.PROCESSING || order.data?.payment_reference) {
+    if (
+      order?.data?.payment_method?.reference_type === ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO ||
+      order.data?.payment_status !== ENUM_ORDER_PAYMENT_STATUS_TYPES.PROCESSING ||
+      order.data?.payment_reference
+    ) {
       const response: IBaseResponse = {
         success: false,
         statusCode: 400,

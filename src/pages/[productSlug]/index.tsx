@@ -1,19 +1,24 @@
 import PageWrapper from '@base/container/PageWrapper';
-import { IBasePageProps, TId } from '@base/interfaces';
+import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
+import { IBasePageProps, IMetaResponse, TId } from '@base/interfaces';
 import ProductViewSection from '@components/ProductViewSection';
 import RelatedProductsSection from '@components/RelatedProductsSection';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ProductsWebServices } from '@modules/products/lib/webServices';
+import { IReview } from '@modules/reviews/lib/interfaces';
+import { ReviewsServices } from '@modules/reviews/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {
   product: IProduct;
+  reviews: IReview[];
+  reviewsMeta: IMetaResponse;
 }
 
-const ProductPage: NextPage<IProps> = ({ settingsIdentity, product }) => {
+const ProductPage: NextPage<IProps> = ({ settingsIdentity, product, reviews, reviewsMeta }) => {
   return (
     <PageWrapper
       title={product?.name}
@@ -22,7 +27,7 @@ const ProductPage: NextPage<IProps> = ({ settingsIdentity, product }) => {
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
-      <ProductViewSection product={product} className="py-8 md:py-16" />
+      <ProductViewSection product={product} reviews={reviews} reviewsMeta={reviewsMeta} className="py-8 md:py-16" />
       <RelatedProductsSection categoryId={product.categories?.[0]?.id} className="pb-8 md:pb-16" />
     </PageWrapper>
   );
@@ -49,11 +54,19 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ params })
       };
     }
 
+    const { data: reviews, meta: reviewsMeta } = await ReviewsServices.findQuick({
+      page: '1',
+      limit: '12',
+      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+    });
+
     return {
       props: {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
         product: product ?? null,
+        reviews: reviews ?? [],
+        reviewsMeta: reviewsMeta ?? null,
       },
     };
   } catch (error) {

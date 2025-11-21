@@ -1,5 +1,6 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import Breadcrumb from '@base/components/Breadcrumb';
+import { IMetaResponse } from '@base/interfaces';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
@@ -8,7 +9,8 @@ import { cartItemIdxFn, hasProductInCartFn, hasProductVariationInCartFn } from '
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IProduct } from '@modules/products/lib/interfaces';
-import { Button, Col, Grid, message, Row, Space, Tabs, Tag, Typography } from 'antd';
+import { IReview } from '@modules/reviews/lib/interfaces';
+import { Alert, Button, Col, Grid, message, Row, Space, Tabs, Tag, Typography } from 'antd';
 import Image from 'next/image';
 import React, { useMemo, useState } from 'react';
 import { BsBasket2, BsFillBasket2Fill, BsHeart, BsHeartFill } from 'react-icons/bs';
@@ -17,14 +19,17 @@ import { FcCancel } from 'react-icons/fc';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { Navigation, Thumbs } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import ProductViewReviews from './ProductViewReviews';
 import ProductViewVariations from './ProductViewVariations';
 
 interface IProps {
   className?: string;
   product: IProduct;
+  reviews: IReview[];
+  reviewsMeta: IMetaResponse;
 }
 
-const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
+const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, reviewsMeta }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const screens = Grid.useBreakpoint();
   const [order, setOrder] = useLocalState(States.order);
@@ -303,12 +308,16 @@ const ProductViewSection: React.FC<IProps> = ({ className, product }) => {
                 {
                   key: 'description',
                   label: 'Description',
-                  children: (
-                    <div
-                      className="prose"
-                      dangerouslySetInnerHTML={{ __html: product.description || 'No description available' }}
-                    />
+                  children: product?.description ? (
+                    <div className="prose" dangerouslySetInnerHTML={{ __html: product.description }} />
+                  ) : (
+                    <Alert type="info" message="No description available" showIcon />
                   ),
+                },
+                {
+                  key: 'reviews',
+                  label: 'Reviews',
+                  children: <ProductViewReviews productId={product?.id} reviews={reviews} reviewsMeta={reviewsMeta} />,
                 },
               ]}
             />

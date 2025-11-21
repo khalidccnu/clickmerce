@@ -25,6 +25,22 @@ export const ReviewsHooks = {
     });
   },
 
+  useFindQuick: ({
+    options,
+    config,
+  }: {
+    options: IReviewsFilter;
+    config?: QueryConfig<typeof ReviewsServices.findQuick>;
+  }) => {
+    const { queryKey, ...rest } = config ?? {};
+
+    return useQuery({
+      queryKey: [...(queryKey || []), ReviewsServices.NAME, options],
+      queryFn: () => ReviewsServices.findQuick(options),
+      ...rest,
+    });
+  },
+
   useFindInfinite: ({
     options,
     config,

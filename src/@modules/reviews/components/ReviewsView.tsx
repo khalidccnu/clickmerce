@@ -21,7 +21,7 @@ const ReviewsView: React.FC<IProps> = ({ review }) => {
         >
           <Descriptions.Item label="Rate">
             <span className="text-[var(--color-primary)]">
-              <Rate disabled allowHalf value={review?.rate} />
+              <Rate disabled allowHalf value={review?.rate} style={{ color: 'var(--color-primary' }} />
             </span>
           </Descriptions.Item>
           <Descriptions.Item label="Date">

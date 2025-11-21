@@ -140,7 +140,7 @@ const ReviewsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
               ]}
               className="!mb-0"
             >
-              <Rate allowHalf />
+              <Rate allowHalf style={{ color: 'var(--color-primary' }} />
             </Form.Item>
           </Col>
           <Col xs={24}>

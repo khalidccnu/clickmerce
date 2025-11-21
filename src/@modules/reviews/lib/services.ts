@@ -1,4 +1,5 @@
 import { IBaseResponse, TId } from '@base/interfaces';
+import { AxiosInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
@@ -48,6 +49,15 @@ export const ReviewsServices = {
         }),
       });
       return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
+  findQuick: async (filters: IReviewsFilter): Promise<IReviewsResponse> => {
+    try {
+      const res = await AxiosInstance.get(`/${END_POINT}/quick?${Toolbox.queryNormalizer(filters)}`);
+      return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
     }

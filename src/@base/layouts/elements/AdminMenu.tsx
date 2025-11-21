@@ -307,7 +307,20 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
             {
               key: Paths.admin.cms.reviews.list,
               icon: <MdRateReview />,
-              label: <CustomLink href={Toolbox.appendPagination(Paths.admin.cms.reviews.list)}>Reviews</CustomLink>,
+              label: (
+                <CustomLink
+                  href={{
+                    pathname: Paths.admin.cms.reviews.list,
+                    query: {
+                      page: 1,
+                      limit: 10,
+                      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+                    },
+                  }}
+                >
+                  Reviews
+                </CustomLink>
+              ),
               allowedPermissions: ['reviews:read'],
             },
             {
