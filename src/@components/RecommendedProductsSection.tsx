@@ -1,10 +1,22 @@
+import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import SectionIntro from '@base/components/SectionIntro';
+import { States } from '@lib/constant/states';
+import useLocalState from '@lib/hooks/useLocalState';
+import { IOrderCartItem } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
+import {
+  cartItemIdxFn,
+  hasProductInCartFn,
+  hasProductVariationInCartFn,
+  wishlistItemIdxFn,
+} from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
-import React from 'react';
+import { message } from 'antd';
+import React, { useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { Navigation, Pagination } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import ProductViewVariations from './ProductViewVariations';
 import RecommendedProductCard from './RecommendedProductCard';
 
 interface IProps {
@@ -13,8 +25,127 @@ interface IProps {
 }
 
 const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) => {
+  const [messageApi, messageHolder] = message.useMessage();
+  const [order, setOrder] = useLocalState(States.order);
+  const [product, setProduct] = useState<IProduct>(null);
+
+  const addToWishlistFn = (product: IProduct) => {
+    const wishlist = order?.wishlist || [];
+    const item = { productId: product.id, productVariationId: null };
+
+    const idx = wishlistItemIdxFn(item.productId, wishlist);
+    const lastPriority = wishlist.length ? Math.max(...wishlist.map((c) => c.priority || 0)) : 0;
+    const priority = lastPriority + 1;
+
+    if (idx === -1) {
+      const newWishlist = [...wishlist, { ...item, priority }];
+
+      setOrder({
+        ...order,
+        wishlist: newWishlist,
+      });
+
+      message.info('Successfully added to the wishlist!');
+      return;
+    }
+
+    const purifiedWishlist = [...wishlist];
+    const sanitizedWishlist = purifiedWishlist.filter((item) => item.productId !== product.id);
+
+    message.info('Successfully removed from the wishlist!');
+    setOrder({
+      ...order,
+      wishlist: sanitizedWishlist,
+    });
+  };
+
+  const addToCartFn = ({ item }: { item: IOrderCartItem }) => {
+    const cart = order?.cart || [];
+
+    const idx = cartItemIdxFn(item.productId, item.productVariationId, cart);
+    const lastPriority = cart.length ? Math.max(...cart.map((c) => c.priority || 0)) : 0;
+    const priority = lastPriority + 1;
+
+    if (idx === -1) {
+      const newCart = [...cart, { ...item, priority }];
+
+      setOrder({
+        ...order,
+        cart: newCart,
+      });
+
+      message.info('Successfully added to the cart!');
+      return;
+    }
+
+    const purifiedCart = [...cart];
+
+    const prevItem = { ...purifiedCart[idx], ...item };
+
+    purifiedCart[idx] = prevItem;
+
+    setOrder({
+      ...order,
+      cart: purifiedCart,
+    });
+  };
+
+  const handleAddToCartFn = (product: IProduct) => {
+    const purifiedCart = order?.cart || [];
+    const hasInCart = hasProductInCartFn(product.id, purifiedCart);
+
+    if (hasInCart && product?.variations?.length === 1) {
+      messageApi.warning(` ${product?.name} is already in the cart!`);
+      return;
+    }
+
+    if (!product?.quantity) {
+      messageApi.warning(`${product?.name} is out of stock!`);
+      return;
+    }
+
+    if (product?.variations?.length === 1) {
+      const variation = product.variations[0];
+
+      addToCartFn({
+        item: {
+          productId: product.id,
+          productVariationId: variation.id,
+          selectedQuantity: 1,
+        },
+      });
+    } else {
+      setProduct(product);
+    }
+  };
+
+  const handleAddToCartWithVariationFn = (product: IProduct, productVariation: IProduct['variations'][number]) => {
+    const hasInCart = hasProductVariationInCartFn(productVariation.id, order?.cart);
+
+    if (hasInCart) {
+      messageApi.warning(` ${product?.name} is already in the cart!`);
+      return;
+    }
+
+    if (!productVariation?.quantity) {
+      messageApi.warning(`${product?.name} is out of stock!`);
+      return;
+    }
+
+    addToCartFn({
+      item: {
+        productId: product.id,
+        productVariationId: productVariation.id,
+        selectedQuantity: 1,
+      },
+    });
+
+    setProduct(null);
+  };
+
   return (
     <section className={cn('recommended_products_section', className)}>
+      {messageHolder}
       <div className="container">
         <SectionIntro
           title={
@@ -51,6 +182,8 @@ const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) =
                     product={product}
                     className="group-[.swiper-slide-active]:bg-gray-300/50 h-full rounded-lg overflow-hidden"
                     wrapperClassName="bg-gray-50 max-w-xs h-full px-10 py-12 group-[.swiper-slide-active]:mx-auto group-[.swiper-slide-active]:bg-white"
+                    onCartUpdate={handleAddToCartFn}
+                    onWishlistUpdate={addToWishlistFn}
                   />
                 </SwiperSlide>
               ))}
@@ -67,6 +200,16 @@ const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) =
           </div>
         </div>
       </div>
+      <BaseModalWithoutClicker
+        destroyOnHidden
+        width={540}
+        title={`Variations (${product?.name})`}
+        footer={null}
+        open={!!product}
+        onCancel={() => setProduct(null)}
+      >
+        <ProductViewVariations product={product} onAddToCart={handleAddToCartWithVariationFn} />
+      </BaseModalWithoutClicker>
     </section>
   );
 };

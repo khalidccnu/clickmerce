@@ -1,10 +1,9 @@
 import CustomLink from '@base/components/CustomLink';
 import { Paths } from '@lib/constant/paths';
 import { cn } from '@lib/utils/cn';
-import { Toolbox } from '@lib/utils/toolbox';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
-import { Button, Grid } from 'antd';
+import { Avatar, Button, Grid } from 'antd';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { FaUser } from 'react-icons/fa';
@@ -26,14 +25,9 @@ const LandingHeaderAuthButtonGroup: React.FC<IProps> = ({ className }) => {
       {isLoading ||
         (isAuthenticate ? (
           <>
-            <div className="relative w-11 h-11 p-1 border border-gray-300 rounded-full">
-              <CustomLink type="hoverable" title={Paths.users.root} href={Paths.users.root} />
-              <img
-                src={Toolbox.generateCharacterSvg({ character: user?.name, type: 'url' })}
-                alt={user?.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
+            <CustomLink href={Paths.users.root}>
+              <Avatar>{user?.name?.charAt(0)?.toUpperCase()}</Avatar>
+            </CustomLink>
             <Button type="primary" size="large" ghost onClick={logoutFn}>
               {screens.md ? 'Sign Out' : <IoMdLogOut />}
             </Button>

@@ -1,3 +1,7 @@
+import { TId } from '@base/interfaces';
+import { IOrderState } from '@lib/redux/order/orderSlice';
+import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
+import { IProductVariation } from '@modules/products/lib/interfaces';
 import {
   ENUM_ORDER_PAYMENT_STATUS_TYPES,
   ENUM_ORDER_STATUS_TYPES,
@@ -49,4 +53,51 @@ export const OrderPaymentStatusColorFn = (status: TOrderPaymentStatusType) => {
     default:
       return 'default';
   }
+};
+
+export const hasProductInCartFn = (productId: TId, cart: IOrderState['cart']) => {
+  const item = cart.find((cartItem) => cartItem.productId === productId);
+  return !!item;
+};
+
+export const hasProductVariationInCartFn = (variationId: TId, cart: IOrderState['cart']) => {
+  const item = cart.find((cartItem) => cartItem.productVariationId === variationId);
+  return !!item;
+};
+
+export const cartItemFn = (productId: TId, variationId: TId, cart: IOrderState['cart']) => {
+  return cart.find((cartItem) => cartItem.productId === productId && cartItem.productVariationId === variationId);
+};
+
+export const cartItemIdxFn = (productId: TId, variationId: TId, cart: IOrderState['cart']) => {
+  return cart.findIndex((cartItem) => cartItem.productId === productId && cartItem.productVariationId === variationId);
+};
+
+export const productSalePriceWithDiscountFn = (
+  costPrice: number,
+  salePrice: number,
+  discount: IProductVariation['discount'],
+) => {
+  if (!discount?.amount) return salePrice;
+
+  const profit = salePrice - costPrice;
+  let discountSalePrice = 0;
+  const { type, amount } = discount;
+
+  if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
+    discountSalePrice = salePrice - amount;
+  } else if (type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
+    discountSalePrice = costPrice + profit * (1 - amount / 100);
+  }
+
+  return Math.max(costPrice, discountSalePrice || salePrice);
+};
+
+export const hasProductInWishlistFn = (productId: TId, wishlist: IOrderState['cart']) => {
+  const item = wishlist.find((wishlistItem) => wishlistItem.productId === productId);
+  return !!item;
+};
+
+export const wishlistItemIdxFn = (productId: TId, wishlist: IOrderState['cart']) => {
+  return wishlist.findIndex((wishlistItem) => wishlistItem.productId === productId);
 };

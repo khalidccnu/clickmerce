@@ -10,12 +10,12 @@ import {
   orderVatSnap,
 } from '@lib/redux/order/orderSelector';
 import { clearCartFn, setCartProducts } from '@lib/redux/order/orderSlice';
-import { productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { AuthServices } from '@modules/auth/lib/services';
 import Receipt from '@modules/orders/components/Receipt';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
+import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { ProductsHooks } from '@modules/products/lib/hooks';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { SettingsHooks } from '@modules/settings/lib/hooks';

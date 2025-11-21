@@ -22,12 +22,14 @@ const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref)
     <header className={cn('header', className)} ref={ref}>
       <div className="container">
         <div className="wrapper flex items-center gap-2 md:gap-4">
-          <CustomLink href={Paths.root}>
+          <CustomLink href={Paths.root} style={{ marginRight: 'auto' }}>
             <BrandLogo />
           </CustomLink>
-          <CustomLink href={Paths.wishlist} className="ml-auto">
-            <BsHeart size={20} className="mt-1" />
-          </CustomLink>
+          <Badge count={order?.wishlist?.length || 0} size="small" offset={[0, 0]}>
+            <CustomLink href={Paths.wishlist}>
+              <BsHeart size={20} className="mt-2" />
+            </CustomLink>
+          </Badge>
           <Badge count={order?.cart?.length || 0} size="small" offset={[0, 0]}>
             <CustomLink href={Paths.cart}>
               <BsCart3 size={20} className="mt-1" />

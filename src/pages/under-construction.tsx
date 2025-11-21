@@ -1,17 +1,13 @@
 import PageWrapper from '@base/container/PageWrapper';
+import { IBasePageProps } from '@base/interfaces';
 import { ImagePaths } from '@lib/constant/imagePaths';
 import { pageTypes } from '@modules/pages/lib/enums';
-import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 import Image from 'next/image';
 
-interface IProps {
-  settingsIdentity: ISettingsIdentity;
-  pages: IPage[];
-}
+interface IProps extends IBasePageProps {}
 
 const UnderConstructionPage: NextPage<IProps> = () => {
   return (

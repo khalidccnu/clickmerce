@@ -1,9 +1,9 @@
 import { IBaseResponse, TId } from '@base/interfaces';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
-import { productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { IOrder } from '@modules/orders/lib/interfaces';
+import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { NextApiRequest, NextApiResponse } from 'next';
 

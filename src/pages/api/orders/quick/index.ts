@@ -1,7 +1,6 @@
 import { IBaseResponse } from '@base/interfaces';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
-import { productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
@@ -11,6 +10,7 @@ import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
 import { orderQuickCreateSchema, TOrderQuickCreateDto } from '@modules/orders/lib/dtos';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES, ENUM_ORDER_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
+import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ENUM_SETTINGS_TAX_TYPES } from '@modules/settings/lib/enums';

@@ -1,12 +1,13 @@
+import { ShoppingCartOutlined } from '@ant-design/icons';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
-import { cartItemIdxFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import { cartItemIdxFn } from '@modules/orders/lib/utils';
 import { ProductsWebHooks } from '@modules/products/lib/webHooks';
-import { Button, Col, InputNumber, message, Popconfirm, Row, Space, Table, TableColumnsType } from 'antd';
+import { Button, Col, Empty, InputNumber, message, Popconfirm, Row, Space, Spin, Table, TableColumnsType } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useEffect, useMemo, useState } from 'react';
 import { FaTrash, FaTrashAlt } from 'react-icons/fa';
@@ -226,52 +227,67 @@ const CartSection: React.FC<IProps> = ({ className }) => {
     <section className={cn('cart_section', className)}>
       {messageHolder}
       <div className="container">
-        <Row gutter={[16, 16]}>
-          <Col xs={24}>
-            <Table
-              bordered
-              pagination={false}
-              loading={productsBulkQuery.isPending}
-              dataSource={dataSource}
-              columns={columns}
-              scroll={{ x: true }}
-            />
-          </Col>
-          <Col xs={24} className="text-end">
-            <Space wrap>
-              <Popconfirm
-                title="Are you sure you want to clear the cart?"
-                onConfirm={() => {
-                  setOrder({ ...order, cart: [] });
-                  messageApi.info('Cart cleared!');
-                }}
-                okText="Yes"
-                cancelText="No"
-                okButtonProps={{ danger: true }}
-              >
+        {productsBulkQuery.isPending || !productsBulkQuery.isSuccess ? (
+          <div className="flex justify-center py-8">
+            <Spin />
+          </div>
+        ) : order?.cart?.length ? (
+          <Row gutter={[16, 16]}>
+            <Col xs={24}>
+              <Table
+                bordered
+                pagination={false}
+                loading={productsBulkQuery.isPending || !productsBulkQuery.isSuccess}
+                dataSource={dataSource}
+                columns={columns}
+                scroll={{ x: true }}
+              />
+            </Col>
+            <Col xs={24} className="text-end">
+              <Space wrap>
+                <Popconfirm
+                  title="Are you sure you want to clear the cart?"
+                  onConfirm={() => {
+                    setOrder({ ...order, cart: [] });
+                    messageApi.info('Cart cleared!');
+                  }}
+                  okText="Yes"
+                  cancelText="No"
+                  okButtonProps={{ danger: true }}
+                >
+                  <Button
+                    size="large"
+                    type="primary"
+                    icon={<FaTrashAlt size={16} />}
+                    danger
+                    ghost
+                    disabled={!order?.cart?.length}
+                  >
+                    Clear Cart
+                  </Button>
+                </Popconfirm>
                 <Button
                   size="large"
                   type="primary"
-                  icon={<FaTrashAlt size={16} />}
-                  danger
-                  ghost
+                  icon={<RiShoppingBag3Line size={16} />}
                   disabled={!order?.cart?.length}
+                  onClick={() => router.push(Paths.checkout)}
                 >
-                  Clear Cart
+                  Proceed to Checkout
                 </Button>
-              </Popconfirm>
-              <Button
-                size="large"
-                type="primary"
-                icon={<RiShoppingBag3Line size={16} />}
-                disabled={!order?.cart?.length}
-                onClick={() => router.push(Paths.checkout)}
-              >
-                Proceed to Checkout
-              </Button>
-            </Space>
-          </Col>
-        </Row>
+              </Space>
+            </Col>
+          </Row>
+        ) : (
+          <Empty
+            image={<ShoppingCartOutlined style={{ fontSize: 86, color: 'var(--color-primary)' }} />}
+            description={<span className="text-gray-700 text-lg font-medium">Your cart is empty</span>}
+          >
+            <Button type="primary" onClick={() => router.push(Paths.products.root)}>
+              Shop Now
+            </Button>
+          </Empty>
+        )}
       </div>
     </section>
   );

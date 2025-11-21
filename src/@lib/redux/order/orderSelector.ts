@@ -1,11 +1,11 @@
 import { RootState } from '@lib/redux/store';
 import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
+import { cartItemFn, productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
 import { ENUM_SETTINGS_TAX_TYPES, ENUM_SETTINGS_VAT_TYPES } from '@modules/settings/lib/enums';
 import { createSelector } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import dayjs from 'dayjs';
-import { cartItemFn, productSalePriceWithDiscountFn } from './utils';
 
 const orderState = (state: RootState) => state.orderSlice;
 

@@ -1,34 +1,31 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps } from '@base/interfaces';
-import AboutSection from '@components/AboutSection';
+import WishlistSection from '@components/WishlistSection';
 import { Paths } from '@lib/constant/paths';
-import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
-import { IPage } from '@modules/pages/lib/interfaces';
+import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
-interface IProps extends IBasePageProps {
-  aboutPage: IPage;
-}
+interface IProps extends IBasePageProps {}
 
-const AboutPage: NextPage<IProps> = ({ settingsIdentity, aboutPage }) => {
+const WishlistPage: NextPage<IProps> = ({ settingsIdentity }) => {
   return (
     <PageWrapper
-      title="About"
+      title="Wishlist"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
-      <BaseHeroWrapper title="About" breadcrumb={[{ name: 'about', slug: Paths.about }]} />
-      <AboutSection className="py-10 md:py-16" aboutPage={aboutPage} />
+      <BaseHeroWrapper title="Wishlist" breadcrumb={[{ name: 'wishlist', slug: Paths.wishlist }]} />
+      <WishlistSection className="py-8 md:py-16" />
     </PageWrapper>
   );
 };
 
-export default AboutPage;
+export default WishlistPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async () => {
   try {
@@ -39,20 +36,9 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       limit: pageTypes.length.toString(),
     });
 
-    const aboutPage = pages?.find((page) => page.type === ENUM_PAGE_TYPES.ABOUT);
-
-    if (!settingsSuccess || !pagesSuccess || !aboutPage?.is_active) {
+    if (!settingsSuccess || !pagesSuccess) {
       return {
         notFound: true,
-      };
-    }
-
-    if (!aboutPage?.content) {
-      return {
-        redirect: {
-          destination: Paths.underConstruction,
-          permanent: false,
-        },
       };
     }
 
@@ -60,7 +46,6 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       props: {
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
-        aboutPage: aboutPage ?? null,
       },
     };
   } catch (error) {

@@ -1,12 +1,12 @@
 import { TId } from '@base/interfaces';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
+import { cartItemIdxFn } from '@modules/orders/lib/utils';
 import { ENUM_PRODUCT_DISCOUNT_TYPES, TProductDiscountType } from '@modules/products/lib/enums';
 import { IProductVariation } from '@modules/products/lib/interfaces';
 import { ISettingsTax, ISettingsVat } from '@modules/settings/lib/interfaces';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { loadOrderCustomerId, loadOrderInvId, loadOrderPaymentMethodId, loadOrderVatTax } from './orderThunks';
-import { cartItemIdxFn } from './utils';
 
 export interface IOrderCartItem {
   productId: TId;

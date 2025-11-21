@@ -5,9 +5,15 @@ import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
-import { cartItemIdxFn, hasProductInCartFn, hasProductVariationInCartFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import {
+  cartItemIdxFn,
+  hasProductInCartFn,
+  hasProductInWishlistFn,
+  hasProductVariationInCartFn,
+  wishlistItemIdxFn,
+} from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { IReview } from '@modules/reviews/lib/interfaces';
 import { Alert, Button, Col, Grid, message, Row, Space, Tabs, Tag, Typography } from 'antd';
@@ -62,6 +68,36 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
     };
   }, [product?.variations]);
 
+  const addToWishlistFn = (product: IProduct) => {
+    const wishlist = order?.wishlist || [];
+    const item = { productId: product.id, productVariationId: null };
+
+    const idx = wishlistItemIdxFn(item.productId, wishlist);
+    const lastPriority = wishlist.length ? Math.max(...wishlist.map((c) => c.priority || 0)) : 0;
+    const priority = lastPriority + 1;
+
+    if (idx === -1) {
+      const newWishlist = [...wishlist, { ...item, priority }];
+
+      setOrder({
+        ...order,
+        wishlist: newWishlist,
+      });
+
+      message.info('Successfully added to the wishlist!');
+      return;
+    }
+
+    const purifiedWishlist = [...wishlist];
+    const sanitizedWishlist = purifiedWishlist.filter((item) => item.productId !== product.id);
+
+    message.info('Successfully removed from the wishlist!');
+    setOrder({
+      ...order,
+      wishlist: sanitizedWishlist,
+    });
+  };
+
   const addToCartFn = ({ item }: { item: IOrderCartItem }) => {
     const cart = order?.cart || [];
 
@@ -115,7 +151,6 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
           productId: product.id,
           productVariationId: variation.id,
           selectedQuantity: 1,
-          discount: variation?.discount,
         },
       });
     } else {
@@ -141,15 +176,14 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
         productId: product.id,
         productVariationId: productVariation.id,
         selectedQuantity: 1,
-        discount: productVariation?.discount,
       },
     });
 
     setVariationModalOpen(false);
   };
 
-  const isFavorite = false;
-  const isCart = false;
+  const isFavorite = hasProductInWishlistFn(product.id, order?.wishlist || []);
+  const isCart = product?.variations?.length <= 1 ? hasProductInCartFn(product.id, order?.cart || []) : false;
 
   return (
     <section className={cn('product_view_section', className)}>
@@ -296,6 +330,7 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
                 size={screens.md ? 'large' : 'middle'}
                 ghost
                 icon={isFavorite ? <BsHeartFill size={20} className="mt-1" /> : <BsHeart size={20} className="mt-1" />}
+                onClick={() => addToWishlistFn(product)}
               >
                 Add to Wishlist
               </Button>

@@ -1,6 +1,9 @@
 import { Paths } from '@lib/constant/paths';
+import { States } from '@lib/constant/states';
+import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import { hasProductInCartFn, hasProductInWishlistFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Button } from 'antd';
 import Image from 'next/image';
@@ -11,10 +14,13 @@ import { BsBasket2, BsFillBasket2Fill, BsHeart, BsHeartFill } from 'react-icons/
 interface IProps {
   className?: string;
   product: IProduct;
+  onCartUpdate: (product: IProduct) => void;
+  onWishlistUpdate: (product: IProduct) => void;
 }
 
-const ProductCard: React.FC<IProps> = ({ className, product }) => {
+const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWishlistUpdate }) => {
   const router = useRouter();
+  const [order] = useLocalState(States.order);
 
   const featuredImage = useMemo(() => {
     if (Toolbox.isNotEmpty(product?.images)) {
@@ -53,8 +59,8 @@ const ProductCard: React.FC<IProps> = ({ className, product }) => {
     };
   }, [product?.variations]);
 
-  const isFavorite = false;
-  const isCart = false;
+  const isFavorite = hasProductInWishlistFn(product.id, order?.wishlist || []);
+  const isCart = product?.variations?.length <= 1 ? hasProductInCartFn(product.id, order?.cart || []) : false;
 
   return (
     <div className={cn('product_card', className)}>
@@ -64,10 +70,12 @@ const ProductCard: React.FC<IProps> = ({ className, product }) => {
           <Button
             type="primary"
             icon={isFavorite ? <BsHeartFill size={20} className="mt-1" /> : <BsHeart size={20} className="mt-1" />}
+            onClick={() => onWishlistUpdate(product)}
           />
           <Button
             type="primary"
             icon={isCart ? <BsFillBasket2Fill size={20} className="mt-1" /> : <BsBasket2 size={20} className="mt-1" />}
+            onClick={() => onCartUpdate(product)}
             ghost
           />
         </div>

@@ -23,7 +23,7 @@ const ReviewCard: React.FC<IProps> = ({ className, review }) => {
       <Rate disabled allowHalf value={review?.rate} style={{ marginBottom: 8, color: 'var(--color-primary' }} />
       <p className="text-gray-500 text-sm md:text-base">{review?.comment}</p>
       <div className="flex items-center gap-2 mt-2">
-        <Avatar size={24}>{review?.user?.name?.charAt(0)}</Avatar>
+        <Avatar size={24}>{review?.user?.name?.charAt(0)?.toUpperCase()}</Avatar>
         <p className="text-base font-semibold text-[--color-primary]">{review?.user?.name}</p>
       </div>
       {!review?.image || (
@@ -41,7 +41,7 @@ const ReviewCard: React.FC<IProps> = ({ className, review }) => {
             />
           )}
           <FaEye
-            size={12}
+            size={16}
             className="cursor-pointer hover:text-[--color-primary] transition-colors duration-500"
             onClick={() => setPreviewImage(review?.image)}
           />

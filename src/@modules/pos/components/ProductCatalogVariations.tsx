@@ -1,8 +1,8 @@
 import { Dayjs } from '@lib/constant/dayjs';
 import { useAppSelector } from '@lib/redux/hooks';
-import { hasProductVariationInCartFn } from '@lib/redux/order/utils';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import { hasProductVariationInCartFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Alert, Button } from 'antd';
 import dayjs from 'dayjs';

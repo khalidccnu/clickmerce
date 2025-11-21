@@ -1,17 +1,15 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
+import { IBasePageProps } from '@base/interfaces';
 import TermsAndConditionsSection from '@components/TermsAndConditionsSection';
 import { Paths } from '@lib/constant/paths';
 import { ENUM_PAGE_TYPES, pageTypes } from '@modules/pages/lib/enums';
 import { IPage } from '@modules/pages/lib/interfaces';
 import { PagesServices } from '@modules/pages/lib/services';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
 
-interface IProps {
-  settingsIdentity: ISettingsIdentity;
-  pages: IPage[];
+interface IProps extends IBasePageProps {
   termsAndConditionsPage: IPage;
 }
 

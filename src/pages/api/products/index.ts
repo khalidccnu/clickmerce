@@ -1,10 +1,10 @@
 import { IBaseResponse } from '@base/interfaces';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
-import { productSalePriceWithDiscountFn } from '@lib/redux/order/utils';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
+import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { productFilterSchema, TProductFilterDto } from '@modules/products/lib/dtos';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { NextApiRequest, NextApiResponse } from 'next';
