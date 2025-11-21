@@ -66,6 +66,18 @@ export const GalleriesHooks = {
     });
   },
 
+  useQuickCreate: ({ config }: { config?: MutationConfig<typeof GalleriesServices.quickCreate> } = {}) => {
+    return useMutation({
+      mutationFn: GalleriesServices.quickCreate,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        queryClient.invalidateQueries({ queryKey: [GalleriesServices.NAME] });
+      },
+      ...config,
+    });
+  },
+
   useUpdate: ({ config }: { config?: MutationConfig<typeof GalleriesServices.update> } = {}) => {
     return useMutation({
       mutationFn: GalleriesServices.update,

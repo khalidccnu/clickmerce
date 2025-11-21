@@ -20,7 +20,7 @@ const WhyShopWithUsCard: React.FC<IProps> = ({ className, feature }) => {
         <Image src={feature.image} alt={feature.title} width={75} height={75} />
       </div>
       <p className="text-lg font-semibold mb-2 mt-4 text-[--color-primary]">{feature.title}</p>
-      <p className="text-gray-500 text-sm leading-relaxed">{feature.description}</p>
+      <p className="text-gray-500 text-sm md:text-base leading-relaxed">{feature.description}</p>
     </div>
   );
 };

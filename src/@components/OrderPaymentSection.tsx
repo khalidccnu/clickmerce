@@ -1,11 +1,14 @@
+import CustomUploader from '@base/components/CustomUploader';
 import { TId } from '@base/interfaces';
 import { Dayjs } from '@lib/constant/dayjs';
 import { Paths } from '@lib/constant/paths';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import { GalleriesHooks } from '@modules/galleries/lib/hooks';
 import { OrderPaymentRequestsHooks } from '@modules/order-payment-requests/lib/hooks';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { OrderPaymentStatusColorFn, OrderStatusColorFn } from '@modules/orders/lib/utils';
+import { ENUM_PAYMENT_METHOD_REFERENCE_TYPES } from '@modules/payment-methods/lib/enums';
 import { Button, Card, Input, message, Space, Tag } from 'antd';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/router';
@@ -22,6 +25,31 @@ const OrderPaymentSection: React.FC<IProps> = ({ className, order }) => {
   const { order_id } = Toolbox.parseQueryParams<{ order_id?: TId }>(router.asPath);
   const [messageApi, messageHolder] = message.useMessage();
   const [reference, setReference] = useState<string>(null);
+
+  const handleImageUploadFn = (file: File) => {
+    if (!file) {
+      setReference(null);
+      return;
+    }
+
+    const formData: any = Toolbox.withFormData({ files: file, type: 'FILE', make_public: 'true' });
+
+    galleriesCreateFn.mutate(formData);
+  };
+
+  const galleriesCreateFn = GalleriesHooks.useQuickCreate({
+    config: {
+      onSuccess: (res) => {
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        setReference(res.data?.[0]?.file_url);
+        messageApi.success(res.message);
+      },
+    },
+  });
 
   const orderPaymentRequestQuickCreateFn = OrderPaymentRequestsHooks.useQuickCreate({
     config: {
@@ -68,13 +96,24 @@ const OrderPaymentSection: React.FC<IProps> = ({ className, order }) => {
         </Card>
         <Card title={`Payment Information (${order.payment_method.name})`}>
           <div className="prose" dangerouslySetInnerHTML={{ __html: order.payment_method.description }} />
-          <Input
-            style={{ marginTop: 16, width: '100%', maxWidth: 480 }}
-            size="large"
-            placeholder="Transaction Id"
-            value={reference}
-            onChange={(e) => setReference(e?.target?.value)}
-          />
+          {order?.payment_method?.reference_type === ENUM_PAYMENT_METHOD_REFERENCE_TYPES.TRX ? (
+            <Input
+              style={{ marginTop: 16, width: '100%', maxWidth: 480 }}
+              size="large"
+              placeholder="Transaction Id"
+              value={reference}
+              onChange={(e) => setReference(e?.target?.value)}
+            />
+          ) : (
+            <div style={{ marginTop: 16, width: '100%', maxWidth: 480 }}>
+              <CustomUploader
+                type="DRAGGER"
+                listType="picture-card"
+                initialValues={[reference]}
+                onFinish={([_, file]) => handleImageUploadFn(file)}
+              />
+            </div>
+          )}
         </Card>
         <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
           <Button size="large" type="primary" href={Paths.root} icon={<FaHome />} ghost>

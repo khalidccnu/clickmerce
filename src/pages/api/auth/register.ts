@@ -71,11 +71,11 @@ async function handleRegister(req: NextApiRequest, res: NextApiResponse) {
     textFilters: { type: 'or', conditions: { phone: { eq: phone }, email: { eq: email } } },
   });
 
-  if (existingUser.success && existingUser.data) {
+  if (!existingUser.success) {
     const response: IBaseResponse = {
       success: false,
       statusCode: 409,
-      message: 'User already exists',
+      message: 'User registration failed',
       data: null,
       meta: null,
     };
@@ -83,14 +83,36 @@ async function handleRegister(req: NextApiRequest, res: NextApiResponse) {
     return res.status(409).json(response);
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  let createUserRes: IBaseResponse<IUser & { password: string }>;
+  const hashedPassword = await bcrypt.hash(password, 12);
 
-  const createUserRes = await SupabaseAdapter.create<IUser>(supabaseServiceClient, Database.users, {
-    name,
-    phone,
-    email,
-    password: hashedPassword,
-  });
+  if (existingUser.data?.is_system_generated) {
+    createUserRes = await SupabaseAdapter.update<IUser & { password: string }>(
+      supabaseServiceClient,
+      Database.users,
+      existingUser.data.id,
+      { ...data, password: hashedPassword, is_system_generated: false },
+    );
+  } else {
+    if (existingUser.data) {
+      const response: IBaseResponse = {
+        success: false,
+        statusCode: 409,
+        message: 'User already exists',
+        data: null,
+        meta: null,
+      };
+
+      return res.status(409).json(response);
+    }
+
+    createUserRes = await SupabaseAdapter.create<IUser & { password: string }>(supabaseServiceClient, Database.users, {
+      name,
+      phone,
+      email,
+      password: hashedPassword,
+    });
+  }
 
   if (!createUserRes.success || !createUserRes.data) {
     const response: IBaseResponse = {

@@ -42,6 +42,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
 
   const user = await SupabaseAdapter.findOne<IUser & { password: string }>(supabaseServiceClient, Database.users, {
     textFilters: { conditions: { phone: { eq: phone } } },
+    booleanFilters: { conditions: { is_system_generated: { eq: false } } },
   });
 
   if (!user.success || !user.data) {

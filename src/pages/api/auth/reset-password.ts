@@ -39,6 +39,7 @@ async function handleResetPassword(req: NextApiRequest, res: NextApiResponse) {
 
   const existingUser = await SupabaseAdapter.findOne<IUser>(supabaseServiceClient, Database.users, {
     textFilters: { conditions: { phone: { eq: phone } } },
+    booleanFilters: { conditions: { is_system_generated: { eq: false } } },
   });
 
   if (existingUser.success && !existingUser.data) {

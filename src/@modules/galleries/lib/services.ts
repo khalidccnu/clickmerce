@@ -1,10 +1,11 @@
 import { IBaseResponse, TId } from '@base/interfaces';
-import { AxiosSecureInstance } from '@lib/config/axiosInstance';
+import { AxiosInstance, AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
+import { AxiosResponse } from 'axios';
 import { IGalleriesFilter, IGalleriesResponse, IGallery, IGalleryCreate } from './interfaces';
 
 const END_POINT: string = Database.galleries;
@@ -51,6 +52,20 @@ export const GalleriesServices = {
       }
 
       return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
+  quickCreate: async (payload: IGalleryCreate): Promise<IGalleriesResponse> => {
+    try {
+      let res: AxiosResponse<IGalleriesResponse>;
+      const { data } = await AxiosSecureInstance.post('/uploads', payload);
+
+      if (Toolbox.isNotEmpty(data?.data)) {
+        res = await AxiosInstance.post(`/${END_POINT}/quick`, { items: data?.data });
+      }
+      return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);
     }
