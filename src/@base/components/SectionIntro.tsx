@@ -23,17 +23,26 @@ const SectionIntro: React.FC<IProps> = ({
   return (
     <div className={cn('section_intro', className)}>
       <div className="intro_wrapper">
-        {subtitle && <p className={cn('intro_subtitle mb-2 text-gray-700 text-base', subtitleClassName)}>{subtitle}</p>}
+        {subtitle && (
+          <p className={cn('intro_subtitle mb-2 text-gray-700 dark:text-gray-300 text-base', subtitleClassName)}>
+            {subtitle}
+          </p>
+        )}
         <h2
           className={cn(
-            'intro_title text-3xl md:text-4xl font-semibold [&_span]:text-[var(--color-primary)]',
+            'intro_title text-3xl md:text-4xl font-semibold [&_span]:text-[var(--color-primary)] dark:text-white',
             titleClassName,
           )}
         >
           {title}
         </h2>
         {description && (
-          <p className={cn('intro_description mt-4 text-base md:text-lg text-gray-500', descriptionClassName)}>
+          <p
+            className={cn(
+              'intro_description mt-4 text-base md:text-lg text-gray-500 dark:text-gray-300',
+              descriptionClassName,
+            )}
+          >
             {description}
           </p>
         )}

@@ -13,7 +13,7 @@ export const DeliveryZonesServices = {
   findById: async (id: TId): Promise<IBaseResponse<IDeliveryZone>> => {
     try {
       const res = await SupabaseAdapter.findById<IDeliveryZone>(supabaseBrowserClient, END_POINT, id, {
-        selection: buildSelectionFn({ relations: { delivery_service_type: { table: 'delivery_service_types' } } }),
+        selection: buildSelectionFn({ relations: { delivery_service_type: { table: Database.deliveryServiceTypes } } }),
       });
       return Promise.resolve(res);
     } catch (error) {
@@ -35,7 +35,7 @@ export const DeliveryZonesServices = {
 
     try {
       const res = await SupabaseAdapter.find<IDeliveryZone>(supabaseBrowserClient, END_POINT, newFilters, {
-        selection: buildSelectionFn({ relations: { delivery_service_type: { table: 'delivery_service_types' } } }),
+        selection: buildSelectionFn({ relations: { delivery_service_type: { table: Database.deliveryServiceTypes } } }),
       });
       return Promise.resolve(res);
     } catch (error) {

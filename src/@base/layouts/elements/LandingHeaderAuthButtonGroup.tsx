@@ -28,16 +28,14 @@ const LandingHeaderAuthButtonGroup: React.FC<IProps> = ({ className }) => {
             <CustomLink href={Paths.users.root}>
               <Avatar>{user?.name?.charAt(0)?.toUpperCase()}</Avatar>
             </CustomLink>
-            <Button type="primary" size="large" ghost onClick={logoutFn}>
+            <Button type="primary" ghost onClick={logoutFn}>
               {screens.md ? 'Sign Out' : <IoMdLogOut />}
             </Button>
           </>
         ) : (
           router.pathname === Paths.auth.signIn || (
             <CustomLink href={Paths.auth.signIn}>
-              <Button type="primary" size="large">
-                {screens.md ? 'Sign In' : <FaUser />}
-              </Button>
+              <Button type="primary">{screens.md ? 'Sign In' : <FaUser />}</Button>
             </CustomLink>
           )
         ))}

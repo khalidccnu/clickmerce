@@ -1,4 +1,7 @@
+import { Env } from '.environments';
 import { IBaseResponse } from '@base/interfaces';
+import { mailerSendFn } from '@lib/config/mailer';
+import { smsSendFn } from '@lib/config/sms';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
@@ -18,6 +21,7 @@ import { ISettings } from '@modules/settings/lib/interfaces';
 import { IUser } from '@modules/users/lib/interfaces';
 import dayjs from 'dayjs';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { handleGetSettings } from '../../settings';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -47,7 +51,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
 
   const { name, phone, email, products, delivery_zone_id, payment_method_id, coupon, ...rest } = data;
   const user = { name, phone, email };
-  let user_id = null;
+  let sanitizedUser: IUser & { password: string } = null;
 
   try {
     const existUser = await SupabaseAdapter.findOne<IUser & { password: string }>(
@@ -57,7 +61,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     );
 
     if (existUser.data) {
-      user_id = existUser.data.id;
+      sanitizedUser = existUser.data;
     } else {
       const createResult = await SupabaseAdapter.create<IUser & { password: string }>(
         supabaseServiceClient,
@@ -97,7 +101,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         return res.status(500).json(response);
       }
 
-      user_id = newUser.id;
+      sanitizedUser = newUser;
     }
 
     const operations = [];
@@ -387,7 +391,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       delivery_charge,
       payment_status: paymentStatus,
       status: ENUM_ORDER_STATUS_TYPES.PENDING,
-      customer_id: user_id,
+      customer_id: sanitizedUser?.id,
       payment_method_id,
       delivery_zone_id,
     };
@@ -528,6 +532,49 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       data: enrichedOrder,
       meta: null,
     };
+
+    const settings = await handleGetSettings(req, res, supabaseServiceClient);
+
+    if (!settings || !settings.data) {
+      return res.status(500).json(response);
+    }
+
+    if (!settings.data?.is_sms_configured) {
+      if (settings.data?.is_email_configured && sanitizedUser?.email) {
+        await mailerSendFn({
+          from_email: settings?.data?.email?.from_email,
+          from_name: settings?.data?.email?.from_name,
+          to: sanitizedUser?.email,
+          subject: `Order Confirmation for ${settings?.data?.identity?.name || Env.webTitle}`,
+          html: `Your ${settings?.data?.identity?.name || Env.webTitle} order is placed successfully. Your order code is: ${enrichedOrder.code}.`,
+          provider: settings?.data?.email?.provider,
+          apiKey: settings?.data?.email?.api_key,
+          host: settings?.data?.email?.host,
+          port: settings?.data?.email?.port,
+          secure: settings?.data?.email?.is_secure,
+          username: settings?.data?.email?.username,
+          pass: settings?.data?.email?.password,
+          region: settings?.data?.email?.region,
+        });
+      }
+
+      return res.status(500).json(response);
+    }
+
+    const message = `Your ${settings?.data?.identity?.name || Env.webTitle} order is placed successfully. Your order code is: ${enrichedOrder.code}.`;
+
+    await smsSendFn({
+      provider: settings?.data?.sms?.provider,
+      accountSid: settings?.data?.sms?.account_sid,
+      apiKey: settings?.data?.sms?.api_key,
+      apiSecret: settings?.data?.sms?.api_secret,
+      authToken: settings?.data?.sms?.auth_token,
+      endpoint: settings?.data?.sms?.endpoint,
+      region: settings?.data?.sms?.region,
+      senderId: settings?.data?.sms?.sender_id,
+      to: sanitizedUser?.phone,
+      message,
+    });
 
     return res.status(201).json(response);
   } catch (error) {

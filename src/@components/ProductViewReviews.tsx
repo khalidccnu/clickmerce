@@ -47,7 +47,9 @@ const ProductViewReviews: React.FC<IProps> = ({ className, productId, reviews, r
       return <Alert type="info" message="No reviews available" showIcon style={{ gridColumn: '1 / -1' }} />;
     }
 
-    return list.map((review) => <ReviewCard key={review.id} review={review} className="bg-white" />);
+    return list.map((review) => (
+      <ReviewCard key={review.id} review={review} className="bg-white dark:bg-[var(--color-rich-black)]" />
+    ));
   }, [initialCSR, reviewsQuery.isLoading, reviewsQuery.data?.data, reviews]);
 
   return (

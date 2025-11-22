@@ -281,7 +281,9 @@ const CartSection: React.FC<IProps> = ({ className }) => {
         ) : (
           <Empty
             image={<ShoppingCartOutlined style={{ fontSize: 86, color: 'var(--color-primary)' }} />}
-            description={<span className="text-gray-700 text-lg font-medium">Your cart is empty</span>}
+            description={
+              <span className="text-gray-700 dark:text-gray-300 text-lg font-medium">Your cart is empty</span>
+            }
           >
             <Button type="primary" onClick={() => router.push(Paths.products.root)}>
               Shop Now

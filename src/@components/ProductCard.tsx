@@ -84,7 +84,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
         </Button>
         <Image src={featuredImage?.url} alt={product?.name} width={300} height={300} quality={100} />
       </div>
-      <div className="content_wrapper">
+      <div className="content_wrapper dark:text-white">
         <p className="title">{product?.name}</p>
         <p className="price">
           <span

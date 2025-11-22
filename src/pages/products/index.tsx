@@ -1,6 +1,6 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
-import { IBasePageProps } from '@base/interfaces';
+import { IBasePageProps, IMetaResponse } from '@base/interfaces';
 import ProductsSection from '@components/ProductsSection';
 import { Paths } from '@lib/constant/paths';
 import { pageTypes } from '@modules/pages/lib/enums';
@@ -12,9 +12,10 @@ import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {
   products: IProduct[];
+  productsMeta: IMetaResponse;
 }
 
-const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products }) => {
+const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMeta }) => {
   return (
     <PageWrapper
       title="Products"
@@ -24,7 +25,7 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products }) => {
       image={settingsIdentity?.social_image_url}
     >
       <BaseHeroWrapper title="Products" breadcrumb={[{ name: 'products', slug: Paths.products.root }]} />
-      <ProductsSection showForProductsPage products={products} className="py-8 md:py-16" />
+      <ProductsSection showForProductsPage products={products} meta={productsMeta} className="py-8 md:py-16" />
     </PageWrapper>
   );
 };
@@ -46,7 +47,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
       };
     }
 
-    const { data: products } = await ProductsWebServices.find({
+    const { data: products, meta: productsMeta } = await ProductsWebServices.find({
       page: query?.page ? query?.page?.toString() : '1',
       limit: query?.limit ? query?.limit?.toString() : '12',
       is_active: 'true',
@@ -57,6 +58,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
         settingsIdentity: settings?.identity ?? null,
         pages: pages ?? [],
         products: products ?? [],
+        productsMeta: productsMeta ?? null,
       },
     };
   } catch (error) {

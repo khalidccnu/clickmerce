@@ -1,7 +1,10 @@
+import { Env } from '.environments';
 import { IBaseResponse } from '@base/interfaces';
+import { mailerSendFn } from '@lib/config/mailer';
+import { smsSendFn } from '@lib/config/sms';
 import { supabaseServiceClient } from '@lib/config/supabase/serviceClient';
 import { Database } from '@lib/constant/database';
-import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
+import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
 import {
@@ -13,6 +16,7 @@ import { ENUM_ORDER_PAYMENT_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { ENUM_PAYMENT_METHOD_REFERENCE_TYPES } from '@modules/payment-methods/lib/enums';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { handleGetSettings } from '../../settings';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -94,11 +98,33 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(400).json(response);
     }
 
-    await SupabaseAdapter.create<IOrderPaymentRequest>(supabaseServiceClient, Database.orderPaymentRequests, {
-      code: Toolbox.generateKey({ prefix: 'OPR', type: 'upper' }),
-      ...rest,
-      order_id,
-    });
+    const code = Toolbox.generateKey({ prefix: 'OPR', type: 'upper' });
+
+    const newOrderPaymentRequest = await SupabaseAdapter.create<IOrderPaymentRequest>(
+      supabaseServiceClient,
+      Database.orderPaymentRequests,
+      {
+        code,
+        ...rest,
+        order_id,
+      },
+      {
+        selection: buildSelectionFn({
+          relations: {
+            order: {
+              table: Database.orders,
+              nested: {
+                customer: {
+                  table: Database.users,
+                  foreignKey: 'customer_id',
+                  columns: ['id', 'name', 'phone', 'email'],
+                },
+              },
+            },
+          },
+        }),
+      },
+    );
 
     const response: IBaseResponse<IOrderPaymentRequest> = {
       success: true,
@@ -107,6 +133,49 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       data: null,
       meta: null,
     };
+
+    const settings = await handleGetSettings(req, res, supabaseServiceClient);
+
+    if (!settings || !settings.data) {
+      return res.status(500).json(response);
+    }
+
+    if (!settings.data?.is_sms_configured) {
+      if (settings.data?.is_email_configured && newOrderPaymentRequest?.data?.order?.customer?.email) {
+        await mailerSendFn({
+          from_email: settings?.data?.email?.from_email,
+          from_name: settings?.data?.email?.from_name,
+          to: newOrderPaymentRequest?.data?.order?.customer?.email,
+          subject: `Order Payment Request Confirmation for ${settings?.data?.identity?.name || Env.webTitle}`,
+          html: `Your ${settings?.data?.identity?.name || Env.webTitle} order payment request is placed successfully. Your order payment request code is: ${code}.`,
+          provider: settings?.data?.email?.provider,
+          apiKey: settings?.data?.email?.api_key,
+          host: settings?.data?.email?.host,
+          port: settings?.data?.email?.port,
+          secure: settings?.data?.email?.is_secure,
+          username: settings?.data?.email?.username,
+          pass: settings?.data?.email?.password,
+          region: settings?.data?.email?.region,
+        });
+      }
+
+      return res.status(500).json(response);
+    }
+
+    const message = `Your ${settings?.data?.identity?.name || Env.webTitle} order payment request is placed successfully. Your order payment request code is: ${code}.`;
+
+    await smsSendFn({
+      provider: settings?.data?.sms?.provider,
+      accountSid: settings?.data?.sms?.account_sid,
+      apiKey: settings?.data?.sms?.api_key,
+      apiSecret: settings?.data?.sms?.api_secret,
+      authToken: settings?.data?.sms?.auth_token,
+      endpoint: settings?.data?.sms?.endpoint,
+      region: settings?.data?.sms?.region,
+      senderId: settings?.data?.sms?.sender_id,
+      to: newOrderPaymentRequest?.data?.order?.customer?.phone,
+      message,
+    });
 
     return res.status(201).json(response);
   } catch (error) {

@@ -183,7 +183,7 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, order }) => {
                 <span className="text-green-600">-{Toolbox.withCurrency(order.redeem_amount)}</span>
               </div>
             )}
-            <div className="flex justify-between font-semibold border-t pt-2">
+            <div className="flex justify-between font-semibold border-t dark:border-white/10 pt-2">
               <span>Grand Total</span>
               <span>{Toolbox.withCurrency(order.grand_total_amount)}</span>
             </div>

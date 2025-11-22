@@ -181,7 +181,7 @@ const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) =
                   <RecommendedProductCard
                     product={product}
                     className="group-[.swiper-slide-active]:bg-gray-300/50 h-full rounded-lg overflow-hidden"
-                    wrapperClassName="bg-gray-50 max-w-xs h-full px-10 py-12 group-[.swiper-slide-active]:mx-auto group-[.swiper-slide-active]:bg-white"
+                    wrapperClassName="bg-gray-50 max-w-lg h-full px-10 py-12 group-[.swiper-slide-active]:mx-auto group-[.swiper-slide-active]:bg-white dark:group-[.swiper-slide-active]:bg-[var(--color-dark-gray)] dark:group-[.swiper-slide-active]:text-white"
                     onCartUpdate={handleAddToCartFn}
                     onWishlistUpdate={addToWishlistFn}
                   />

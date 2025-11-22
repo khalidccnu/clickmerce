@@ -10,7 +10,7 @@ interface IStates {
 export const States: IStates = {
   theme: {
     key: 'theme',
-    initialValue: ENUM_THEME_TYPES.SYSTEM,
+    initialValue: ENUM_THEME_TYPES.LIGHT,
   },
   landingHeaderHeight: {
     key: 'landingHeaderHeight',

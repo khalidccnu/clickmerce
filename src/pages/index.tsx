@@ -39,10 +39,15 @@ const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, products, featu
       {Toolbox.isEmpty(banners) || <BannerSection banners={banners} />}
       {Toolbox.isEmpty(products) || <ProductsSection products={products} className="py-8 md:py-16" />}
       {Toolbox.isEmpty(products) || (
-        <RecommendedProductsSection products={products} className="py-8 md:py-16 bg-white" />
+        <RecommendedProductsSection
+          products={products}
+          className="py-8 md:py-16 bg-white dark:bg-[var(--color-rich-black)]"
+        />
       )}
       {Toolbox.isEmpty(features) || <WhyShopWithUsSection features={features} className="py-8 md:py-16" />}
-      {Toolbox.isEmpty(reviews) || <ReviewsSection reviews={reviews} className="py-8 md:py-16 bg-white" />}
+      {Toolbox.isEmpty(reviews) || (
+        <ReviewsSection reviews={reviews} className="py-8 md:py-16 bg-white dark:bg-[var(--color-rich-black)]" />
+      )}
     </PageWrapper>
   );
 };
