@@ -102,7 +102,13 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.inventory.root,
           icon: <MdOutlineInventory2 />,
           label: 'Inventory',
-          allowedPermissions: ['products:read', 'dosage_forms:read', 'generics:read', 'suppliers:read'],
+          allowedPermissions: [
+            'products:read',
+            'categories:read',
+            'dosage_forms:read',
+            'generics:read',
+            'suppliers:read',
+          ],
           children: [
             {
               key: Paths.admin.inventory.products.list,
@@ -154,7 +160,7 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.sale.root,
           icon: <FiShoppingCart />,
           label: 'Sale',
-          allowedPermissions: ['orders:read'],
+          allowedPermissions: ['orders:read', 'order_returns:read', 'order_payment_requests:read'],
           children: [
             {
               key: Paths.admin.sale.orders.list,
@@ -290,7 +296,7 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.cms.root,
           icon: <MdDashboardCustomize />,
           label: 'CMS',
-          allowedPermissions: ['banners:read', 'features:read'],
+          allowedPermissions: ['banners:read', 'features:read', 'reviews:read', 'pages:read'],
           children: [
             {
               key: Paths.admin.cms.banners.list,

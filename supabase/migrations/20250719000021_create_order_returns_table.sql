@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS order_returns (
     
     code VARCHAR UNIQUE,
     products JSONB,
+    note TEXT,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
 
     order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,

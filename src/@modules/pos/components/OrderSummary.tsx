@@ -1,6 +1,7 @@
 import { Env } from '.environments';
 import FloatInputNumber from '@base/antd/components/FloatInputNumber';
 import FloatSelect from '@base/antd/components/FloatSelect';
+import FloatTextarea from '@base/antd/components/FloatTextarea';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import { Dayjs } from '@lib/constant/dayjs';
@@ -62,6 +63,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const dispatch = useAppDispatch();
   const [status, setStatus] = useState<TOrderStatusType>(ENUM_ORDER_STATUS_TYPES.DELIVERED);
+  const [note, setNote] = useState<string>(null);
 
   const handlePdfFn = async (order: IOrder) => {
     try {
@@ -377,6 +379,38 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                 size="large"
               />
             </Col>
+            <Col xs={24}>
+              <FloatSelect
+                showSearch
+                virtual={false}
+                placeholder="Status"
+                filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+                options={orderStatusTypes
+                  .map((orderStatusType) => {
+                    if (orderStatusType === ENUM_ORDER_STATUS_TYPES.CANCELLED) return;
+
+                    return {
+                      key: orderStatusType,
+                      label: Toolbox.toPrettyText(orderStatusType),
+                      value: orderStatusType,
+                    };
+                  })
+                  .filter(Boolean)}
+                value={status}
+                onChange={setStatus}
+                style={{ width: '100%' }}
+                size="large"
+              />
+            </Col>
+            <Col xs={24}>
+              <FloatTextarea
+                placeholder="Note (Optional)"
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                value={note}
+                onChange={(e) => setNote(e?.target?.value)}
+                size="large"
+              />
+            </Col>
             {/* <Col xs={24}>
               <Button
                 type="primary"
@@ -403,6 +437,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                       discount: item.discount,
                     })),
                     is_draft: true,
+                    note,
                   });
                 }}
                 ghost
@@ -435,6 +470,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                       selected_quantity: item.selectedQuantity,
                       discount: item.discount,
                     })),
+                    note,
                   });
                 }}
               >

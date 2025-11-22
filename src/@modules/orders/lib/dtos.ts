@@ -24,6 +24,7 @@ export const orderQuickCreateSchema = yup.object({
   delivery_zone_id: yup.string().uuid().required(),
   payment_method_id: yup.string().uuid().required(),
   coupon: yup.string().required().nullable(),
+  note: yup.string().optional().nullable(),
 });
 
 export const orderCreateSchema = yup.object({
@@ -52,6 +53,7 @@ export const orderCreateSchema = yup.object({
   status: yup.string().oneOf(orderStatusTypes).optional(),
   is_round_off: yup.boolean().required(),
   is_draft: yup.boolean().optional(),
+  note: yup.string().optional().nullable(),
 });
 
 export const orderUpdateSchema = PartialType(

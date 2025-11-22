@@ -100,6 +100,7 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity }) => {
           initialValues={{
             type: ENUM_PRODUCT_TYPES.GENERAL,
             variations: [{ discount: { type: ENUM_PRODUCT_DISCOUNT_TYPES.FIXED, amount: 0 } }],
+            is_recommend: 'false',
             is_active: 'true',
           }}
           isLoading={productCreateFn.isPending}

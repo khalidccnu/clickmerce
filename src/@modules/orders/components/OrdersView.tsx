@@ -36,6 +36,9 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
           <Descriptions.Item label="Status">
             <Tag color={OrderStatusColorFn(order?.status)}>{Toolbox.toPrettyText(order?.status)}</Tag>
           </Descriptions.Item>
+          <Descriptions.Item label="Note" span={4}>
+            {order?.note || 'N/A'}
+          </Descriptions.Item>
         </Descriptions>
       </Card>
       <Card title="Customer Information" size="small">

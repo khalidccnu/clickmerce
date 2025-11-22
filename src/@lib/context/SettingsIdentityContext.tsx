@@ -1,8 +1,7 @@
-import { IPage } from '@modules/pages/lib/interfaces';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { IBasePageProps } from '@base/interfaces';
 import { createContext, useContext } from 'react';
 
-const SettingsIdentityContext = createContext<{ settingsIdentity: ISettingsIdentity; pages: IPage[] }>(null);
+const SettingsIdentityContext = createContext<IBasePageProps>(null);
 
 export const useSettingsIdentity = () => {
   const context = useContext(SettingsIdentityContext);

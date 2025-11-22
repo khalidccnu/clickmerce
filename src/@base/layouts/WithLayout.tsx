@@ -1,10 +1,10 @@
+import { IBasePageProps } from '@base/interfaces';
 import { AuthPaths } from '@lib/constant/authPaths';
 import { Paths } from '@lib/constant/paths';
 import SettingsIdentityContext from '@lib/context/SettingsIdentityContext';
+import AnalyticsProvider from '@lib/providers/AnalyticsProvider';
 import { initializeRedux, persistor } from '@lib/redux/store';
 import { Toolbox } from '@lib/utils/toolbox';
-import { IPage } from '@modules/pages/lib/interfaces';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import React, { type PropsWithChildren } from 'react';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
@@ -12,13 +12,11 @@ import AdminLayout from './AdminLayout';
 import LandingLayout from './LandingLayout';
 import PosLayout from './PosLayout';
 
-interface IProps extends PropsWithChildren {
+interface IProps extends PropsWithChildren<IBasePageProps> {
   pathname: string;
-  settingsIdentity: ISettingsIdentity;
-  pages: IPage[];
 }
 
-const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, pages, children }) => {
+const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, settingsTrackingCodes, pages, children }) => {
   const { store } = initializeRedux();
 
   if (pathname === Paths.admin.pos) {
@@ -46,8 +44,14 @@ const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, pages, child
   }
 
   return (
-    <SettingsIdentityContext.Provider value={{ settingsIdentity, pages }}>
-      <LandingLayout>{children}</LandingLayout>
+    <SettingsIdentityContext.Provider value={{ settingsIdentity, settingsTrackingCodes, pages }}>
+      <AnalyticsProvider
+        gtmId={settingsTrackingCodes?.gtm_id}
+        gtagId={settingsTrackingCodes?.gtag_id}
+        fbPixelId={settingsTrackingCodes?.fb_pixel_id}
+      >
+        <LandingLayout>{children}</LandingLayout>
+      </AnalyticsProvider>
     </SettingsIdentityContext.Provider>
   );
 };

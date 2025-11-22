@@ -46,7 +46,7 @@ const InitiateSettingsEmailForm: React.FC<IProps> = ({ form }) => {
           rules={[{ required: true, message: 'From name is required!' }]}
           className="!mb-0"
         >
-          <FloatInput placeholder="From Name" />
+          <FloatInput placeholder="From Name" required />
         </Form.Item>
       </Col>
       <Col xs={24} md={12}>
@@ -58,7 +58,7 @@ const InitiateSettingsEmailForm: React.FC<IProps> = ({ form }) => {
           ]}
           className="!mb-0"
         >
-          <FloatInput placeholder="From Email" />
+          <FloatInput placeholder="From Email" required />
         </Form.Item>
       </Col>
       {showFieldFn('host') && (

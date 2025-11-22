@@ -230,7 +230,7 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
                         height={500}
                         src={image.url}
                         alt={product.name}
-                        className="w-full h-auto object-cover"
+                        className="w-full h-auto object-cover rounded-2xl"
                       />
                     </SwiperSlide>
                   ))}

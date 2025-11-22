@@ -131,7 +131,12 @@ async function handleRegister(req: NextApiRequest, res: NextApiResponse) {
       success: true,
       statusCode: 201,
       message: 'User registered successfully',
-      data: null,
+      data: {
+        need_verification:
+          !createUserRes.data.is_verified &&
+          settings?.data?.identity?.need_user_registration_verification &&
+          (settings?.data?.is_sms_configured || settings?.data?.is_email_configured),
+      },
       meta: null,
     };
 
@@ -164,6 +169,10 @@ async function handleRegister(req: NextApiRequest, res: NextApiResponse) {
       phone: createUserRes.data?.phone,
       hash,
       otp: Env.isProduction ? null : +otp,
+      need_verification:
+        !createUserRes.data.is_verified &&
+        settings?.data?.identity?.need_user_registration_verification &&
+        (settings?.data?.is_sms_configured || settings?.data?.is_email_configured),
     },
     meta: null,
   };

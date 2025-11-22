@@ -42,6 +42,7 @@ export type Database = {
         Row: {
           created_at: string;
           id: string;
+          image: string | null;
           is_active: boolean;
           name: string;
           slug: string;
@@ -50,6 +51,7 @@ export type Database = {
         Insert: {
           created_at?: string;
           id?: string;
+          image?: string | null;
           is_active?: boolean;
           name: string;
           slug: string;
@@ -58,6 +60,7 @@ export type Database = {
         Update: {
           created_at?: string;
           id?: string;
+          image?: string | null;
           is_active?: boolean;
           name?: string;
           slug?: string;
@@ -340,6 +343,7 @@ export type Database = {
           created_by_id: string | null;
           id: string;
           is_active: boolean;
+          note: string | null;
           order_id: string;
           products: Json | null;
           updated_at: string;
@@ -350,6 +354,7 @@ export type Database = {
           created_by_id?: string | null;
           id?: string;
           is_active?: boolean;
+          note?: string | null;
           order_id: string;
           products?: Json | null;
           updated_at?: string;
@@ -360,6 +365,7 @@ export type Database = {
           created_by_id?: string | null;
           id?: string;
           is_active?: boolean;
+          note?: string | null;
           order_id?: string;
           products?: Json | null;
           updated_at?: string;
@@ -394,6 +400,7 @@ export type Database = {
           id: string;
           is_active: boolean;
           is_draft: boolean;
+          note: string | null;
           pay_amount: number | null;
           payment_method_id: string | null;
           payment_reference: string | null;
@@ -420,6 +427,7 @@ export type Database = {
           id?: string;
           is_active?: boolean;
           is_draft?: boolean;
+          note?: string | null;
           pay_amount?: number | null;
           payment_method_id?: string | null;
           payment_reference?: string | null;
@@ -446,6 +454,7 @@ export type Database = {
           id?: string;
           is_active?: boolean;
           is_draft?: boolean;
+          note?: string | null;
           pay_amount?: number | null;
           payment_method_id?: string | null;
           payment_reference?: string | null;
@@ -734,6 +743,7 @@ export type Database = {
           id: string;
           images: Json | null;
           is_active: boolean;
+          is_recommend: boolean;
           medicine_type: string | null;
           name: string;
           quantity: number;
@@ -753,6 +763,7 @@ export type Database = {
           id?: string;
           images?: Json | null;
           is_active?: boolean;
+          is_recommend?: boolean;
           medicine_type?: string | null;
           name: string;
           quantity?: number;
@@ -772,6 +783,7 @@ export type Database = {
           id?: string;
           images?: Json | null;
           is_active?: boolean;
+          is_recommend?: boolean;
           medicine_type?: string | null;
           name?: string;
           quantity?: number;
@@ -1189,6 +1201,7 @@ export type Database = {
           identity: Json | null;
           is_active: boolean | null;
           tax: Json | null;
+          tracking_codes: Json | null;
           updated_at: string | null;
           vat: Json | null;
         };
@@ -1198,6 +1211,7 @@ export type Database = {
           identity?: Json | null;
           is_active?: boolean | null;
           tax?: Json | null;
+          tracking_codes?: Json | null;
           updated_at?: string | null;
           vat?: Json | null;
         };
@@ -1207,6 +1221,7 @@ export type Database = {
           identity?: Json | null;
           is_active?: boolean | null;
           tax?: Json | null;
+          tracking_codes?: Json | null;
           updated_at?: string | null;
           vat?: Json | null;
         };
@@ -1268,6 +1283,7 @@ export type Database = {
           id: string;
           images: Json | null;
           is_active: boolean;
+          is_recommend: boolean;
           medicine_type: string | null;
           name: string;
           quantity: number;
@@ -1296,6 +1312,7 @@ export type Database = {
           id: string;
           images: Json | null;
           is_active: boolean;
+          is_recommend: boolean;
           medicine_type: string | null;
           name: string;
           quantity: number;

@@ -2,6 +2,7 @@ import PageWrapper from '@base/container/PageWrapper';
 import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { IBasePageProps } from '@base/interfaces';
 import BannerSection from '@components/BannerSection';
+import CategoriesSection from '@components/CategoriesSection';
 import ProductsSection from '@components/ProductsSection';
 import RecommendedProductsSection from '@components/RecommendedProductsSection';
 import ReviewsSection from '@components/ReviewsSection';
@@ -9,6 +10,8 @@ import WhyShopWithUsSection from '@components/WhyShopWithUsSection';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IBanner } from '@modules/banners/lib/interfaces';
 import { BannersServices } from '@modules/banners/lib/services';
+import { ICategory } from '@modules/categories/lib/interfaces';
+import { CategoriesServices } from '@modules/categories/lib/services';
 import { IFeature } from '@modules/features/lib/interfaces';
 import { FeaturesServices } from '@modules/features/lib/services';
 import { pageTypes } from '@modules/pages/lib/enums';
@@ -22,12 +25,22 @@ import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {
   banners: IBanner[];
+  categories: ICategory[];
   products: IProduct[];
+  recommendProducts: IProduct[];
   features: IFeature[];
   reviews: IReview[];
 }
 
-const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, products, features, reviews }) => {
+const HomePage: NextPage<IProps> = ({
+  settingsIdentity,
+  banners,
+  categories,
+  products,
+  recommendProducts,
+  features,
+  reviews,
+}) => {
   return (
     <PageWrapper
       title="Home"
@@ -38,9 +51,9 @@ const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, products, featu
     >
       {Toolbox.isEmpty(banners) || <BannerSection banners={banners} />}
       {Toolbox.isEmpty(products) || <ProductsSection products={products} className="py-8 md:py-16" />}
-      {Toolbox.isEmpty(products) || (
+      {Toolbox.isEmpty(recommendProducts) || (
         <RecommendedProductsSection
-          products={products}
+          products={recommendProducts}
           className="py-8 md:py-16 bg-white dark:bg-[var(--color-rich-black)]"
         />
       )}
@@ -48,6 +61,7 @@ const HomePage: NextPage<IProps> = ({ settingsIdentity, banners, products, featu
       {Toolbox.isEmpty(reviews) || (
         <ReviewsSection reviews={reviews} className="py-8 md:py-16 bg-white dark:bg-[var(--color-rich-black)]" />
       )}
+      {Toolbox.isEmpty(categories) || <CategoriesSection categories={categories} className="py-8 md:py-16" />}
     </PageWrapper>
   );
 };
@@ -76,9 +90,22 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       sort_order: ENUM_SORT_ORDER_TYPES.DESC,
     });
 
+    const { data: categories } = await CategoriesServices.find({
+      page: '1',
+      limit: '12',
+      is_active: 'true',
+    });
+
     const { data: products } = await ProductsWebServices.find({
       page: '1',
       limit: '12',
+      is_active: 'true',
+    });
+
+    const { data: recommendProducts } = await ProductsWebServices.find({
+      page: '1',
+      limit: '12',
+      is_recommend: 'true',
       is_active: 'true',
     });
 
@@ -97,9 +124,12 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
     return {
       props: {
         settingsIdentity: settings?.identity ?? null,
+        settingsTrackingCodes: settings?.tracking_codes ?? null,
         pages: pages ?? [],
         banners: banners ?? [],
+        categories: categories ?? [],
         products: products ?? [],
+        recommendProducts: recommendProducts ?? [],
         features: features ?? [],
         reviews: reviews ?? [],
       },

@@ -1,5 +1,5 @@
 import { IPage } from '@modules/pages/lib/interfaces';
-import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { ISettingsIdentity, ISettingsTrackingCodes } from '@modules/settings/lib/interfaces';
 import { IUser } from '@modules/users/lib/interfaces';
 
 export type TId = string | number;
@@ -60,5 +60,6 @@ export interface IBaseServices<Entity = any, FilterOptions = any, CreatePayload 
 
 export interface IBasePageProps {
   settingsIdentity: ISettingsIdentity;
+  settingsTrackingCodes: ISettingsTrackingCodes;
   pages?: IPage[];
 }

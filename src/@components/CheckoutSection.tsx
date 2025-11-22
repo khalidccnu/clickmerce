@@ -1,5 +1,6 @@
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import FloatInput from '@base/antd/components/FloatInput';
+import FloatTextarea from '@base/antd/components/FloatTextarea';
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import InputPhone from '@base/components/InputPhone';
 import { Paths } from '@lib/constant/paths';
@@ -364,6 +365,11 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                               >
                                 {couponDiscount ? 'Remove' : 'Apply'}
                               </Button>
+                            </Form.Item>
+                          </Col>
+                          <Col xs={24}>
+                            <Form.Item name="note" className="!mb-0">
+                              <FloatTextarea placeholder="Note (Optional)" autoSize={{ minRows: 1, maxRows: 5 }} />
                             </Form.Item>
                           </Col>
                         </Row>

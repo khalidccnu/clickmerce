@@ -18,6 +18,7 @@ import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ENUM_SETTINGS_TAX_TYPES } from '@modules/settings/lib/enums';
 import { ISettings } from '@modules/settings/lib/interfaces';
+import { ENUM_TRANSACTION_TYPES } from '@modules/transactions/lib/enums';
 import { IUser } from '@modules/users/lib/interfaces';
 import dayjs from 'dayjs';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -429,6 +430,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
               table: Database.users,
               foreignKey: 'customer_id',
               columns: ['id', 'name', 'phone', 'email'],
+              nested: { user_info: { table: Database.usersInfo, columns: ['id', 'balance'] } },
             },
             payment_method: { table: Database.paymentMethods, foreignKey: 'payment_method_id' },
             delivery_zone: {
@@ -525,6 +527,21 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       };
     }
 
+    await SupabaseAdapter.create(supabaseServiceClient, Database.transactions, {
+      code: Toolbox.generateKey({ prefix: 'TXN', type: 'upper' }),
+      type: ENUM_TRANSACTION_TYPES.DEBIT,
+      amount: enrichedOrder.grand_total_amount,
+      note: `Payment for Order #${enrichedOrder.code}`,
+      user_id: enrichedOrder.customer_id,
+    });
+
+    const customerBalance = enrichedOrder?.customer?.user_info?.balance || 0;
+    const customerNewBalance = customerBalance - enrichedOrder.grand_total_amount + (enrichedOrder.pay_amount || 0);
+
+    await SupabaseAdapter.update(supabaseServiceClient, Database.usersInfo, enrichedOrder?.customer?.user_info?.id, {
+      balance: customerNewBalance,
+    });
+
     const response: IBaseResponse<IOrder> = {
       success: true,
       statusCode: 201,
@@ -536,7 +553,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     const settings = await handleGetSettings(req, res, supabaseServiceClient);
 
     if (!settings || !settings.data) {
-      return res.status(500).json(response);
+      return res.status(201).json(response);
     }
 
     if (!settings.data?.is_sms_configured) {
@@ -571,7 +588,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         });
       }
 
-      return res.status(500).json(response);
+      return res.status(201).json(response);
     }
 
     const message = `Your ${settings?.data?.identity?.name || Env.webTitle} order is placed successfully. Your order code is: ${enrichedOrder.code}.`;

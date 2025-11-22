@@ -118,7 +118,7 @@ const OrderPaymentRequestsList: React.FC<IProps> = ({ isLoading, data, paginatio
               type="primary"
               onClick={() => {
                 getAccess({
-                  allowedPermissions: ['orders:update'],
+                  allowedPermissions: ['order_payment_requests:update'],
                   func: () => {
                     setPayItem(item);
                   },

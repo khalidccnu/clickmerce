@@ -137,7 +137,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     const settings = await handleGetSettings(req, res, supabaseServiceClient);
 
     if (!settings || !settings.data) {
-      return res.status(500).json(response);
+      return res.status(201).json(response);
     }
 
     if (!settings.data?.is_sms_configured) {
@@ -172,7 +172,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         });
       }
 
-      return res.status(500).json(response);
+      return res.status(201).json(response);
     }
 
     const message = `Your ${settings?.data?.identity?.name || Env.webTitle} order payment request is placed successfully. Your order payment request code is: ${code}.`;

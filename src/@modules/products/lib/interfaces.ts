@@ -19,6 +19,7 @@ export interface IProductsFilter extends IBaseFilter {
   supplier_id?: TId;
   is_expired?: string;
   is_low_stock?: string;
+  is_recommend?: string;
 }
 
 export interface IProductImage {
@@ -57,6 +58,7 @@ export interface IProduct extends IBaseEntity {
   variations: (IProductVariation & IBaseEntity)[];
   categories: ({ category_id: TId; product_id: TId; category: ICategory } & IBaseEntity)[];
   description: string;
+  is_recommend: boolean;
 }
 
 export interface IProductsResponse extends IBaseResponse {
@@ -78,5 +80,6 @@ export interface IProductCreate {
   variations: Partial<IProductVariation & { id?: TId; is_deleted?: boolean }>[];
   categories: { id?: TId; is_deleted?: boolean }[];
   description: string;
+  is_recommend: string;
   is_active: string;
 }

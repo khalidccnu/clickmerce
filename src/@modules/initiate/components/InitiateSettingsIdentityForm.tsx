@@ -213,6 +213,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           className="!mb-0"
         >
           <FloatSelect
+            required
             allowClear
             showSearch
             virtual={false}
@@ -236,6 +237,7 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           className="!mb-0"
         >
           <FloatSelect
+            required
             allowClear
             showSearch
             virtual={false}

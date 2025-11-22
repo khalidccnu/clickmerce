@@ -5,9 +5,10 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { CategoriesHooks } from '@modules/categories/lib/hooks';
 import { ICategory } from '@modules/categories/lib/interfaces';
+import { IProductsFilter } from '@modules/products/lib/interfaces';
 import { Grid, Radio, Tag } from 'antd';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface IProps {
   className?: string;
@@ -16,6 +17,7 @@ interface IProps {
 
 const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
   const router = useRouter();
+  const { category_id } = Toolbox.parseQueryParams<IProductsFilter>(router.asPath);
   const screens = Grid.useBreakpoint();
   const [isExtended, setExtended] = useState<boolean>(false);
   const [categoryId, setCategoryId] = useState<TId>(null);
@@ -26,6 +28,11 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
       is_active: 'true',
     },
   });
+
+  useEffect(() => {
+    if (category_id) setCategoryId(category_id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className={cn('rounded-xl bg-white dark:bg-[var(--color-rich-black)]', className)} style={style}>

@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS orders (
     payment_reference VARCHAR,
     payment_status VARCHAR,
     status VARCHAR DEFAULT 'PROCESSING',
+    note TEXT,
 
     customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     payment_method_id UUID REFERENCES payment_methods(id) ON DELETE SET NULL,

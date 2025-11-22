@@ -291,6 +291,7 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
     <React.Fragment>
       {messageHolder}
       <Form
+        scrollToFirstError
         autoComplete="off"
         size="large"
         layout="vertical"
@@ -897,6 +898,18 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           <Col xs={24}>
             <Form.Item name="description" className="!mb-0">
               <RichTextEditor placeholder="Description" isDark={isDark} makePublicFile />
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <Form.Item name="is_recommend" className="!mb-0">
+              <Radio.Group buttonStyle="solid" className="w-full text-center">
+                <Radio.Button className="w-1/2" value="true">
+                  Recommend
+                </Radio.Button>
+                <Radio.Button className="w-1/2" value="false">
+                  Not Recommend
+                </Radio.Button>
+              </Radio.Group>
             </Form.Item>
           </Col>
           <Col xs={24}>

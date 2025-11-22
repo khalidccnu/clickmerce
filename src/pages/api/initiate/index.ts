@@ -81,7 +81,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       email,
       password: null,
       is_admin: true,
-      is_system_generated: 'true',
+      is_system_generated: 'false',
       is_verified: 'true',
       is_active: true,
     };

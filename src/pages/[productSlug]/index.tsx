@@ -68,12 +68,14 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ params })
     const { data: reviews, meta: reviewsMeta } = await ReviewsServices.findQuick({
       page: '1',
       limit: '12',
+      product_id: product.id,
       sort_order: ENUM_SORT_ORDER_TYPES.DESC,
     });
 
     return {
       props: {
         settingsIdentity: settings?.identity ?? null,
+        settingsTrackingCodes: settings?.tracking_codes ?? null,
         pages: pages ?? [],
         product: product ?? null,
         reviews: reviews ?? [],

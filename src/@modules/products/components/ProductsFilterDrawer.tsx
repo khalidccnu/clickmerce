@@ -120,6 +120,7 @@ const ProductsFilterDrawer: React.FC<IProps> = ({
       type: '',
       is_expired: '',
       is_low_stock: '',
+      is_recommend: '',
       is_active: '',
       sort_order: '',
       date_range: [],
@@ -261,6 +262,19 @@ const ProductsFilterDrawer: React.FC<IProps> = ({
             </Radio.Button>
             <Radio.Button className="w-1/3" value="false">
               Sufficient Stock
+            </Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+        <Form.Item name="is_recommend" className="!mb-0">
+          <Radio.Group buttonStyle="solid" className="w-full text-center">
+            <Radio.Button className="w-1/3" value="">
+              All
+            </Radio.Button>
+            <Radio.Button className="w-1/3" value="true">
+              Recommend
+            </Radio.Button>
+            <Radio.Button className="w-1/3" value="false">
+              Not Recommend
             </Radio.Button>
           </Radio.Group>
         </Form.Item>

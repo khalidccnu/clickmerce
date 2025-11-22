@@ -78,9 +78,14 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
         }
 
         setRegisterModalOpen(false);
-        Storage.setData(HASH_KEY, data.data?.hash);
-        Storage.setData(IDENTIFIER_KEY, data.data?.phone);
-        messageApi.loading(data.message, 1).then(() => setOtpVerifyModalOpen(true));
+
+        if (data.data?.need_verification) {
+          Storage.setData(HASH_KEY, data.data?.hash);
+          Storage.setData(IDENTIFIER_KEY, data.data?.phone);
+          messageApi.loading(data.message, 1).then(() => setOtpVerifyModalOpen(true));
+        } else {
+          messageApi.success(data.message);
+        }
       },
     },
   });

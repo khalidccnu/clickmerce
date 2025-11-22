@@ -27,7 +27,9 @@ export const AuthServices = {
     }
   },
 
-  register: async (payload: IUserCreate): Promise<IBaseResponse<{ phone: string; hash: string; otp: number }>> => {
+  register: async (
+    payload: IUserCreate,
+  ): Promise<IBaseResponse<{ phone: string; hash: string; otp: number; need_verification: boolean }>> => {
     try {
       const res = await AxiosInstance.post(`${END_POINT}/register`, payload);
       return Promise.resolve(res?.data);

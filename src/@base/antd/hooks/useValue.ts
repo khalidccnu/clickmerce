@@ -74,7 +74,11 @@ const useValue = ({ id, defaultValue, value, onFocus, onBlur, onMouseEnter, onMo
   }, [id, changeValue, form]);
 
   return {
-    hasValue: Array.isArray(inputValue) ? inputValue.length > 0 : typeof value === 'number' ? true : !!inputValue,
+    hasValue: Array.isArray(inputValue)
+      ? !!inputValue.length
+      : typeof value === 'number' || typeof value === 'boolean'
+        ? true
+        : !!inputValue,
     handleChangeFn: setInputValue,
     handleFocusFn,
     handleBlurFn,

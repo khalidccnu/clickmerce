@@ -59,8 +59,8 @@ const OtpVerificationForm: React.FC<IProps> = ({ otpCount = 6, staticTimer, onRe
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="text-center">
-        <h3 className="text-2xl font-bold">Confirm Your Email</h3>
-        <p className="text-gray-500">Enter the {otpCount} digit code which sent to your email</p>
+        <h3 className="text-2xl font-bold">Confirm Your Identity</h3>
+        <p className="text-gray-500">Enter the {otpCount} digit code which sent to your phone or email</p>
       </div>
       <div className="flex flex-wrap justify-center items-center gap-2">
         {Array.from({ length: otpCount }).map((_, idx) => (

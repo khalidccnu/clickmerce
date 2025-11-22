@@ -18,6 +18,7 @@ export const orderReturnCreateSchema = yup.object({
       }),
     )
     .required(),
+  note: yup.string().optional().nullable(),
   order_id: yup.string().uuid().required(),
 });
 

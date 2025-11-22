@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS products (
     dosage_form_id UUID REFERENCES dosage_forms(id) ON DELETE SET NULL,
     generic_id UUID REFERENCES generics(id) ON DELETE SET NULL,
     supplier_id UUID REFERENCES suppliers(id) ON DELETE NO ACTION,
+    is_recommend BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
@@ -30,6 +31,7 @@ CREATE INDEX IF NOT EXISTS idx_products_images ON products USING GIN (images);
 CREATE INDEX IF NOT EXISTS idx_products_dosage_form_id ON products(dosage_form_id);
 CREATE INDEX IF NOT EXISTS idx_products_generic_id ON products(generic_id);
 CREATE INDEX IF NOT EXISTS idx_products_supplier_id ON products(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_products_is_recommend ON products(is_recommend);
 CREATE INDEX IF NOT EXISTS idx_products_is_active ON products(is_active);
 
 -- Add constraint to ensure images is always an array

@@ -10,6 +10,7 @@ export interface IOrderReturn extends IBaseEntity {
   code: TId;
   products: IOrder['products'];
   order: IOrder;
+  note: string;
 }
 
 export interface IOrderReturnsResponse extends IBaseResponse {
@@ -19,5 +20,6 @@ export interface IOrderReturnsResponse extends IBaseResponse {
 export interface IOrderReturnCreate {
   code: TId;
   products: IOrderCreate['products'];
+  note: string;
   order_id: TId;
 }

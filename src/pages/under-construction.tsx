@@ -59,6 +59,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
     return {
       props: {
         settingsIdentity: settings?.identity ?? null,
+        settingsTrackingCodes: settings?.tracking_codes ?? null,
         pages: pages ?? [],
       },
     };

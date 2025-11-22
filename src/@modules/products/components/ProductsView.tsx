@@ -38,6 +38,8 @@ const ProductsView: React.FC<IProps> = ({ data }) => {
         <Tag color="blue">{Toolbox.toPrettyText(data?.type)}</Tag>
         {data?.medicine_type && <Tag color="green">{Toolbox.toPrettyText(data?.medicine_type)}</Tag>}
         <Tag color="purple">{Toolbox.toPrettyText(data?.durability)}</Tag>
+        {data?.is_recommend ? <Tag color="gold">Recommend</Tag> : <Tag>Not Recommend</Tag>}
+        {data?.is_active ? <Tag color="green">Active</Tag> : <Tag color="red">Inactive</Tag>}
       </Descriptions.Item>
     </Descriptions>
   );
