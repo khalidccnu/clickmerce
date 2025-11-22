@@ -166,7 +166,7 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
                 <CustomLink href={Paths.root}>
                   <BrandLogo width={220} />
                 </CustomLink>
-                <h3 className="text-xl font-medium md:text-2xl dark:text-white">Sign in to your account</h3>
+                <h3 className="text-xl font-medium md:text-2xl dark:text-white">Log in to your account</h3>
               </div>
               <Form autoComplete="off" size="large" layout="vertical" onFinish={loginFn.mutate}>
                 <Form.Item
@@ -197,7 +197,7 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
                 </Form.Item>
                 <Form.Item className="!mb-0">
                   <Button type="primary" htmlType="submit" loading={loginFn.isPending} className="w-full">
-                    Sign In
+                    Log In
                   </Button>
                 </Form.Item>
               </Form>

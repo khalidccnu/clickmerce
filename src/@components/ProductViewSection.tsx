@@ -193,7 +193,7 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
         <Row gutter={[16, 16]} className="mt-4">
           <Col xs={24} lg={12}>
             <div className="space-y-4">
-              <div className="slider_wrapper border rounded-2xl">
+              <div className="slider_wrapper border dark:border-gray-700 rounded-2xl">
                 <div className="slider_controller">
                   <div className="slider_prev_btn">
                     <IoIosArrowBack size={screens.md ? 32 : 24} />
@@ -241,7 +241,7 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
                       height={500}
                       src={image.url}
                       alt={product.name}
-                      className="w-full h-auto object-cover border rounded-2xl cursor-pointer"
+                      className="w-full h-auto object-cover border dark:border-gray-700 rounded-2xl cursor-pointer"
                     />
                   </SwiperSlide>
                 ))}

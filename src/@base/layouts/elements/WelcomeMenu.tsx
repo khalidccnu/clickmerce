@@ -32,7 +32,7 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
     {
       key: 'Logout',
       icon: <AiOutlineLogout />,
-      label: 'Sign out',
+      label: 'Log Out',
       onClick: logoutFn,
     },
   ];
@@ -43,12 +43,12 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
         className={className}
         popupRender={() => {
           return (
-            <div className="bg-[var(--color-white)] dark:bg-[var(--color-rich-black)] p-4 border border-[var(--color-gray-100)] rounded-lg shadow-sm">
+            <div className="bg-[var(--color-white)] dark:bg-[var(--color-rich-black)] p-4 border border-[var(--color-gray-100)] dark:border-[var(--color-dark-gray)] rounded-lg shadow-sm min-w-52">
               <p className="font-medium text-xs text-[var(--color-gray-500)]">
                 Welcome to {settingsQuery.data?.data?.identity?.name || Env.webTitle}
               </p>
               <p className="font-semibold">{user?.name}</p>
-              <ul className="flex flex-col gap-2 border-t border-t-[var(--color-gray-100)] pt-4 mt-4">
+              <ul className="flex flex-col gap-2 border-t border-t-[var(--color-gray-100)] dark:border-t-[var(--color-dark-gray)] pt-4 mt-4">
                 {items.map((item) => (
                   <li
                     key={item.key}
@@ -60,14 +60,14 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
                   </li>
                 ))}
               </ul>
-              <div className="flex justify-center border-t border-t-[var(--color-gray-100)] pt-4 mt-4">
+              <div className="flex justify-center border-t border-t-[var(--color-gray-100)] dark:border-t-[var(--color-dark-gray)] pt-4 mt-4">
                 <ThemeToggler />
               </div>
             </div>
           );
         }}
       >
-        <Button className="rounded-full">
+        <Button shape="round">
           <FaUser />
         </Button>
       </Dropdown>

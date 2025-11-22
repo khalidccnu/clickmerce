@@ -20,7 +20,10 @@ const ThemeToggler: React.FC<IProps> = ({ className }) => {
   return (
     <div
       role="radiogroup"
-      className={cn('flex items-center border border-gray-300 rounded-full p-1 w-fit gap-1', className)}
+      className={cn(
+        'flex items-center border border-gray-500 dark:border-gray-700 rounded-full p-1 w-fit gap-1',
+        className,
+      )}
     >
       {themeTypes.map((themeType) => {
         const isActive = theme === themeType;
@@ -40,7 +43,7 @@ const ThemeToggler: React.FC<IProps> = ({ className }) => {
             className={`w-6 h-6 flex items-center justify-center rounded-full transition-colors ${
               isActive
                 ? 'bg-gray-700 text-white'
-                : 'hover:bg-gray-200 text-gray-800 dark:hover:bg-gray-700 dark:text-white'
+                : 'hover:bg-gray-200 text-gray-700 dark:hover:bg-gray-700 dark:text-white'
             }`}
           >
             {themeIcons[themeType]}

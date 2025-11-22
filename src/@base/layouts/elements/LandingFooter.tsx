@@ -1,15 +1,18 @@
 import { Env } from '.environments';
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
+import ThemeToggler from '@base/components/ThemeToggler';
 import { Paths } from '@lib/constant/paths';
 import { useSettingsIdentity } from '@lib/context/SettingsIdentityContext';
 import { ENUM_PAGE_TYPES } from '@modules/pages/lib/enums';
+import { Grid } from 'antd';
 import Link from 'next/link';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FaInstagram, FaYoutube } from 'react-icons/fa';
 import { FaEnvelope, FaFacebook, FaLocationDot, FaPhone } from 'react-icons/fa6';
 
 const LandingFooter = () => {
+  const screens = Grid.useBreakpoint();
   const { settingsIdentity, pages } = useSettingsIdentity();
   const footerRef = useRef(null);
   const [footerHeight, setFooterHeight] = useState(0);
@@ -156,6 +159,7 @@ const LandingFooter = () => {
                 FOCKET
               </CustomLink>
             </p>
+            {screens.md || <ThemeToggler className="place-self-center mt-4" />}
           </div>
         </div>
       </footer>

@@ -40,7 +40,7 @@ const ProductViewReviews: React.FC<IProps> = ({ className, productId, reviews, r
     const list = initialCSR ? reviewsQuery.data?.data : reviews;
 
     if (isLoading) {
-      return [...Array(3)].map((_, idx) => <Skeleton key={idx} paragraph={{ rows: 3 }} />);
+      return [...Array(3)].map((_, idx) => <Skeleton key={idx} active paragraph={{ rows: 3 }} />);
     }
 
     if (Toolbox.isEmpty(list)) {

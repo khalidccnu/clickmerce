@@ -9,7 +9,7 @@ interface IProps extends IBasePageProps {}
 const AuthPage: NextPage<IProps> = ({ settingsIdentity }) => {
   return (
     <PageWrapper
-      title="Sign In"
+      title="Log In"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}

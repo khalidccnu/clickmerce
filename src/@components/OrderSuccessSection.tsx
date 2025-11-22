@@ -6,6 +6,7 @@ import { IOrder } from '@modules/orders/lib/interfaces';
 import { OrderPaymentStatusColorFn, OrderStatusColorFn } from '@modules/orders/lib/utils';
 import { Button, Card, Space, Table, TableColumnsType, Tag } from 'antd';
 import dayjs from 'dayjs';
+import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { FaHome, FaShoppingCart } from 'react-icons/fa';
 
@@ -15,6 +16,8 @@ interface IProps {
 }
 
 const OrderSuccessSection: React.FC<IProps> = ({ className, order }) => {
+  const router = useRouter();
+
   const dataSource = useMemo(() => {
     if (!order?.products) return [];
 
@@ -194,10 +197,15 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, order }) => {
           </div>
         </Card>
         <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-          <Button size="large" type="primary" href={Paths.root} icon={<FaHome />} ghost>
+          <Button size="large" type="primary" onClick={() => router.push(Paths.root)} icon={<FaHome />} ghost>
             Go to Home
           </Button>
-          <Button size="large" type="primary" href={Paths.products.root} icon={<FaShoppingCart />}>
+          <Button
+            size="large"
+            type="primary"
+            onClick={() => router.push(Paths.products.root)}
+            icon={<FaShoppingCart />}
+          >
             Buy More
           </Button>
         </Space>

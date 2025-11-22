@@ -80,7 +80,7 @@ const RegisterForm: React.FC<IProps> = ({ isLoading, form, initialValues, onFini
         <Col xs={24}>
           <Form.Item className="text-right !mb-0">
             <Button loading={isLoading} type="primary" htmlType="submit">
-              Sign Up
+              Submit
             </Button>
           </Form.Item>
         </Col>

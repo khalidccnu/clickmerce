@@ -28,14 +28,14 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
   });
 
   return (
-    <div className={cn('rounded-xl bg-white', className)} style={style}>
+    <div className={cn('rounded-xl bg-white dark:bg-[var(--color-rich-black)]', className)} style={style}>
       <aside>
         <div
-          className={cn('flex items-center justify-between gap-2 p-4 bg-gray-300/70 rounded-t-xl', {
+          className={cn('flex items-center justify-between gap-2 p-4 bg-gray-300/70 dark:bg-gray-800 rounded-t-xl', {
             'rounded-b-xl': !isExtended && !screens.lg,
           })}
         >
-          <p className="text-[var(--color-primary)] font-bold text-lg">Filters</p>
+          <p className="text-[var(--color-primary)] dark:text-white font-bold text-lg">Filters</p>
           {screens.lg || (
             <button
               onClick={() => setExtended((prev) => !prev)}
@@ -54,7 +54,7 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
           <div className="p-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <p className="font-semibold text-base">Categories</p>
+                <p className="font-semibold text-base dark:text-white">Categories</p>
                 <Tag color="blue" style={{ marginRight: 0 }}>
                   {categoriesQuery.data?.pages?.[0]?.meta?.total || 0}
                 </Tag>
@@ -97,21 +97,21 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
             {/* <Divider style={{ marginBlock: 16 }} />
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
-                <p className="font-semibold text-base">Price Range</p>
+                <p className="font-semibold text-base dark:text-white">Price Range</p>
               </div>
               <Slider range defaultValue={[0, 100]} />
-            </div> */}
-            {/* <Divider style={{ marginBlock: 16 }} />
-          <div className="space-y-2">
-            <div className="flex items-center justify-between gap-2">
-              <p className="font-semibold text-base">Sort</p>
             </div>
-            <Radio.Group style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
-              <Radio value="">Default</Radio>
-              <Radio value={ENUM_SORT_ORDER_TYPES.ASC}>Price (Low {'>'} High)</Radio>
-              <Radio value={ENUM_SORT_ORDER_TYPES.DESC}>Price (High {'>'} Low)</Radio>
-            </Radio.Group>
-          </div> */}
+            <Divider style={{ marginBlock: 16 }} />
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <p className="font-semibold text-base dark:text-white">Sort</p>
+              </div>
+              <Radio.Group style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
+                <Radio value="">Default</Radio>
+                <Radio value={ENUM_SORT_ORDER_TYPES.ASC}>Price (Low {'>'} High)</Radio>
+                <Radio value={ENUM_SORT_ORDER_TYPES.DESC}>Price (High {'>'} Low)</Radio>
+              </Radio.Group>
+            </div> */}
           </div>
         </div>
       </aside>

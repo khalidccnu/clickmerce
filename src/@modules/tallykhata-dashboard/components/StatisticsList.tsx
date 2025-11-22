@@ -11,7 +11,7 @@ import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
-import { Card, Col, Row, Spin } from 'antd';
+import { Card, Col, Row, Skeleton } from 'antd';
 import React from 'react';
 import { TallykhataDashboardHooks } from '../lib/hooks';
 
@@ -81,47 +81,54 @@ const StatisticsList: React.FC<IProps> = ({ className, startDate, endDate, userI
 
   return (
     <div className={className}>
-      {isLoading ? (
-        <div className="flex justify-center py-8">
-          <Spin />
-        </div>
-      ) : (
-        <Row gutter={[16, 16]}>
-          {statistics.map((statistic, idx) => (
-            <Col
-              xs={24}
-              md={sidebar.isCollapsed ? 12 : 24}
-              lg={sidebar.isCollapsed ? 8 : 12}
-              xl={sidebar.isCollapsed ? 6 : 8}
-              xxl={6}
-              key={idx}
-            >
-              <Card
-                styles={{
-                  body: {
-                    padding: 20,
-                  },
-                }}
+      <Row gutter={[16, 16]}>
+        {isLoading
+          ? [...Array(8)].map((_, idx) => (
+              <Col
+                key={idx}
+                xs={24}
+                md={sidebar.isCollapsed ? 12 : 24}
+                lg={sidebar.isCollapsed ? 8 : 12}
+                xl={sidebar.isCollapsed ? 6 : 8}
+                xxl={6}
               >
-                <div className="flex justify-between items-start gap-4">
-                  <div className="flex-1">
-                    <p className="text-gray-500 dark:text-gray-300 text-sm block mb-1">{statistic.title}</p>
-                    <p className="text-gray-900 dark:text-white text-2xl font-bold">{statistic.value}</p>
+                <Skeleton active paragraph={{ rows: 2 }} />
+              </Col>
+            ))
+          : statistics.map((statistic, idx) => (
+              <Col
+                xs={24}
+                md={sidebar.isCollapsed ? 12 : 24}
+                lg={sidebar.isCollapsed ? 8 : 12}
+                xl={sidebar.isCollapsed ? 6 : 8}
+                xxl={6}
+                key={idx}
+              >
+                <Card
+                  styles={{
+                    body: {
+                      padding: 20,
+                    },
+                  }}
+                >
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex-1">
+                      <p className="text-gray-500 dark:text-gray-300 text-sm block mb-1">{statistic.title}</p>
+                      <p className="text-gray-900 dark:text-white text-2xl font-bold">{statistic.value}</p>
+                    </div>
+                    <div
+                      className={cn(
+                        'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
+                        statistic.iconBgColorClassName,
+                      )}
+                    >
+                      {statistic.icon}
+                    </div>
                   </div>
-                  <div
-                    className={cn(
-                      'w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0',
-                      statistic.iconBgColorClassName,
-                    )}
-                  >
-                    {statistic.icon}
-                  </div>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      )}
+                </Card>
+              </Col>
+            ))}
+      </Row>
     </div>
   );
 };

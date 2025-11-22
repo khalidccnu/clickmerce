@@ -116,13 +116,14 @@ const OrderPaymentSection: React.FC<IProps> = ({ className, order }) => {
           )}
         </Card>
         <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-          <Button size="large" type="primary" href={Paths.root} icon={<FaHome />} ghost>
+          <Button size="large" type="primary" onClick={() => router.push(Paths.root)} icon={<FaHome />} ghost>
             Go to Home
           </Button>
           <Button
             size="large"
             type="primary"
             disabled={!reference}
+            loading={orderPaymentRequestQuickCreateFn.isPending}
             onClick={() =>
               orderPaymentRequestQuickCreateFn.mutate({
                 order_id,

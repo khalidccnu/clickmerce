@@ -1,10 +1,11 @@
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
+import ThemeToggler from '@base/components/ThemeToggler';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
-import { Badge, Button } from 'antd';
+import { Badge, Button, Grid } from 'antd';
 import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
 import { BsCart3, BsHeart } from 'react-icons/bs';
@@ -18,6 +19,7 @@ interface IProps {
 }
 
 const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref) => {
+  const screens = Grid.useBreakpoint();
   const [order] = useLocalState(States.order);
   const [isMenuOpen, setMenuOpen] = useState(false);
 
@@ -43,6 +45,7 @@ const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref)
             <Button type="primary" onClick={() => setMenuOpen(true)}>
               <FaBars />
             </Button>
+            {screens.md && <ThemeToggler />}
           </div>
         </div>
       </header>

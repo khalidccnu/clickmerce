@@ -59,7 +59,7 @@ export const ProductsServices = {
 
     if (category_id) {
       if (!newFilters.textFilters) newFilters.textFilters = {};
-      newFilters.textFilters = { conditions: { categories: { category_id: { eq: category_id } } } };
+      newFilters.textFilters = { conditions: { product_categories: { category_id: { eq: category_id } } } };
     }
 
     if (start_date) {
@@ -78,6 +78,10 @@ export const ProductsServices = {
             generic: { table: Database.generics },
             supplier: { table: Database.suppliers },
             variations: { table: Database.productVariations },
+            product_categories: {
+              table: Database.productCategories,
+              columns: [],
+            },
             categories: { table: Database.productCategories, nested: { category: { table: Database.categories } } },
           },
           filters: newFilters,
