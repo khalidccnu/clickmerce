@@ -12,7 +12,8 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
   const router = useRouter();
   const { elemRef: headerRef, height: headerHeight } = useResize();
   const [prevScrollY, setPrevScrollY] = useState(0);
-  const [_, setHeaderHeight] = useSessionState(States.landingHeaderHeight);
+  const [, setHeaderHeight] = useSessionState(States.landingHeaderHeight);
+  const [, setLandingHeaderScrollingDown] = useSessionState(States.landingHeaderScrollingDown);
 
   const handleScrollFn = () => {
     const currentScrollY = window.scrollY;
@@ -21,8 +22,10 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
       if (prevScrollY > currentScrollY) {
         headerRef.current.style.transform = 'translateY(0)';
         headerRef.current.classList.add('shadow-lg');
+        setLandingHeaderScrollingDown(false);
       } else {
         headerRef.current.style.transform = `translateY(-${headerRef.current.offsetHeight}px)`;
+        setLandingHeaderScrollingDown(true);
       }
 
       setPrevScrollY(currentScrollY);

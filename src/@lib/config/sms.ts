@@ -9,7 +9,7 @@ import path from 'path';
 import twilio, { Twilio } from 'twilio';
 
 const compileSmsTemplateFn = (templateName: string, data: Record<string, any>): string => {
-  const templatePath = path.join(process.cwd(), 'sms-templates', `${templateName}.hbs`);
+  const templatePath = path.join(process.cwd(), 'views', 'sms-templates', `${templateName}.hbs`);
   const source = fs.readFileSync(templatePath, 'utf8');
   const template = handlebars.compile(source);
 

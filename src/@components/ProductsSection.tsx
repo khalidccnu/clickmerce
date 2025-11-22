@@ -13,7 +13,7 @@ import {
   wishlistItemIdxFn,
 } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
-import { Col, message, Pagination, Row } from 'antd';
+import { Col, Empty, message, Pagination, Row } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import ProductCard from './ProductCard';
@@ -21,12 +21,19 @@ import ProductViewVariations from './ProductViewVariations';
 
 interface IProps {
   className?: string;
+  isContainerClass?: boolean;
   showForProductsPage?: boolean;
   products: IProduct[];
   meta?: IMetaResponse;
 }
 
-const ProductsSection: React.FC<IProps> = ({ className, showForProductsPage = false, products, meta }) => {
+const ProductsSection: React.FC<IProps> = ({
+  className,
+  isContainerClass = true,
+  showForProductsPage = false,
+  products,
+  meta,
+}) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
   const [order, setOrder] = useLocalState(States.order);
@@ -149,7 +156,7 @@ const ProductsSection: React.FC<IProps> = ({ className, showForProductsPage = fa
   return (
     <section className={cn('products_section', className)}>
       {messageHolder}
-      <div className="container">
+      <div className={cn(isContainerClass && 'container')}>
         {showForProductsPage || (
           <SectionIntro
             title={
@@ -162,11 +169,17 @@ const ProductsSection: React.FC<IProps> = ({ className, showForProductsPage = fa
           />
         )}
         <Row gutter={[16, 16]} justify={showForProductsPage ? 'start' : 'center'}>
-          {products.map((product) => (
-            <Col key={product.id} xs={24} md={12} lg={8} xl={6}>
-              <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
+          {Toolbox.isEmpty(products) ? (
+            <Col xs={24}>
+              <Empty description="No products found" />
             </Col>
-          ))}
+          ) : (
+            products.map((product) => (
+              <Col key={product.id} xs={24} md={12} lg={8} xl={isContainerClass ? 6 : 8}>
+                <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
+              </Col>
+            ))
+          )}
         </Row>
         {showForProductsPage && meta && meta?.total > meta?.limit && (
           <Pagination

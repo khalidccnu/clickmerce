@@ -1,13 +1,17 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps, IMetaResponse } from '@base/interfaces';
+import ProductsFilter from '@components/ProductsFilter';
 import ProductsSection from '@components/ProductsSection';
 import { Paths } from '@lib/constant/paths';
+import { States } from '@lib/constant/states';
+import useSessionState from '@lib/hooks/useSessionState';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
-import { IProduct } from '@modules/products/lib/interfaces';
+import { IProduct, IProductsFilter } from '@modules/products/lib/interfaces';
 import { ProductsWebServices } from '@modules/products/lib/webServices';
 import { SettingsServices } from '@modules/settings/lib/services';
+import { Col, Row } from 'antd';
 import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {
@@ -16,6 +20,9 @@ interface IProps extends IBasePageProps {
 }
 
 const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMeta }) => {
+  const [headerHeight] = useSessionState(States.landingHeaderHeight);
+  const [isLandingHeaderScrollingDown] = useSessionState(States.landingHeaderScrollingDown);
+
   return (
     <PageWrapper
       title="Products"
@@ -25,7 +32,19 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMe
       image={settingsIdentity?.social_image_url}
     >
       <BaseHeroWrapper title="Products" breadcrumb={[{ name: 'products', slug: Paths.products.root }]} />
-      <ProductsSection showForProductsPage products={products} meta={productsMeta} className="py-8 md:py-16" />
+      <div className="container py-8 md:py-16">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={8} xl={6}>
+            <ProductsFilter
+              className="lg:sticky"
+              style={{ top: (isLandingHeaderScrollingDown ? 0 : headerHeight) + 16 + 'px' }}
+            />
+          </Col>
+          <Col xs={24} lg={16} xl={18}>
+            <ProductsSection showForProductsPage isContainerClass={false} products={products} meta={productsMeta} />
+          </Col>
+        </Row>
+      </div>
     </PageWrapper>
   );
 };
@@ -33,6 +52,8 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMe
 export default ProductsPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) => {
+  const { page = '1', limit = '12', category_id }: IProductsFilter = query;
+
   try {
     const { success: settingsSuccess, data: settings } = await SettingsServices.find();
 
@@ -48,8 +69,9 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
     }
 
     const { data: products, meta: productsMeta } = await ProductsWebServices.find({
-      page: query?.page ? query?.page?.toString() : '1',
-      limit: query?.limit ? query?.limit?.toString() : '12',
+      page: page?.toString(),
+      limit: limit?.toString(),
+      category_id: category_id?.toString(),
       is_active: 'true',
     });
 

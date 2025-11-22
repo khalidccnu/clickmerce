@@ -7,7 +7,7 @@ import nodemailer, { Transporter } from 'nodemailer';
 import path from 'path';
 
 const compileTemplateFn = (templateName: string, data: Record<string, any>): string => {
-  const templatePath = path.join(process.cwd(), 'email-templates', `${templateName}.hbs`);
+  const templatePath = path.join(process.cwd(), 'views', 'email-templates', `${templateName}.hbs`);
   const source = fs.readFileSync(templatePath, 'utf8');
   const template = handlebars.compile(source);
 
@@ -67,6 +67,7 @@ const buildTransporterFn = ({
         host,
         port,
         secure: secure ?? false,
+        ignoreTLS: !secure,
         auth: { user: username, pass },
       });
   }

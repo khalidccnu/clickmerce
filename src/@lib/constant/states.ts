@@ -12,6 +12,10 @@ export const States: IStates = {
     key: 'theme',
     initialValue: ENUM_THEME_TYPES.LIGHT,
   },
+  landingHeaderScrollingDown: {
+    key: 'landingHeaderScrollingDown',
+    initialValue: false,
+  },
   landingHeaderHeight: {
     key: 'landingHeaderHeight',
     initialValue: 0,
