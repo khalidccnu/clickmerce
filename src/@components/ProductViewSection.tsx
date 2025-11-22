@@ -3,6 +3,7 @@ import Breadcrumb from '@base/components/Breadcrumb';
 import { IMetaResponse } from '@base/interfaces';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
+import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
@@ -37,6 +38,7 @@ interface IProps {
 
 const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, reviewsMeta }) => {
   const [messageApi, messageHolder] = message.useMessage();
+  const { sendEventFn } = useAnalyticEvent();
   const screens = Grid.useBreakpoint();
   const [order, setOrder] = useLocalState(States.order);
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
@@ -84,6 +86,10 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
         wishlist: newWishlist,
       });
 
+      sendEventFn({
+        name: 'wishlist_item',
+        data: { product_id: product.id, product_name: product.name },
+      });
       message.info('Successfully added to the wishlist!');
       return;
     }
@@ -113,6 +119,10 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
         cart: newCart,
       });
 
+      sendEventFn({
+        name: 'add_to_cart',
+        data: { product_id: item?.productId, product_variation_id: item?.productVariationId, name: product?.name },
+      });
       message.info('Successfully added to the cart!');
       return;
     }

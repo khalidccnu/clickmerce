@@ -2,6 +2,7 @@ import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import SectionIntro from '@base/components/SectionIntro';
 import { IMetaResponse } from '@base/interfaces';
 import { States } from '@lib/constant/states';
+import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
@@ -36,6 +37,7 @@ const ProductsSection: React.FC<IProps> = ({
 }) => {
   const router = useRouter();
   const [messageApi, messageHolder] = message.useMessage();
+  const { sendEventFn } = useAnalyticEvent();
   const [order, setOrder] = useLocalState(States.order);
   const [product, setProduct] = useState<IProduct>(null);
 
@@ -55,6 +57,10 @@ const ProductsSection: React.FC<IProps> = ({
         wishlist: newWishlist,
       });
 
+      sendEventFn({
+        name: 'wishlist_item',
+        data: { product_id: product.id, product_name: product.name },
+      });
       message.info('Successfully added to the wishlist!');
       return;
     }
@@ -84,6 +90,10 @@ const ProductsSection: React.FC<IProps> = ({
         cart: newCart,
       });
 
+      sendEventFn({
+        name: 'add_to_cart',
+        data: { product_id: item?.productId, product_variation_id: item?.productVariationId, name: product?.name },
+      });
       message.info('Successfully added to the cart!');
       return;
     }

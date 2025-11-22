@@ -5,6 +5,7 @@ import {
   settingsS3CreateSchema,
   settingsSmsCreateSchema,
   settingsTaxCreateSchema,
+  settingsTrackingCodesCreateSchema,
   settingsVatCreateSchema,
 } from '@modules/settings/lib/dtos';
 import { userCreateSchema } from '@modules/users/lib/dtos';
@@ -22,6 +23,7 @@ export const initiateCreateSchema = yup.object({
       tax: settingsTaxCreateSchema.required(),
       email: settingsEmailCreateSchema.required(),
       sms: settingsSmsCreateSchema.required(),
+      tracking_codes: settingsTrackingCodesCreateSchema.optional(),
     })
     .required(),
 });

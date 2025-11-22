@@ -70,6 +70,12 @@ export interface ISettingsSms {
   sender_id: string;
 }
 
+export interface ISettingsTrackingCodes {
+  gtag_id: string;
+  gtm_id: string;
+  fb_pixel_id: string;
+}
+
 export interface ISettings extends IBaseEntity {
   identity: ISettingsIdentity;
   s3: ISettingsS3;
@@ -77,6 +83,7 @@ export interface ISettings extends IBaseEntity {
   tax: ISettingsTax;
   email: ISettingsEmail;
   sms: ISettingsSms;
+  tracking_codes: ISettingsTrackingCodes;
   is_s3_configured: boolean;
   is_email_configured: boolean;
   is_sms_configured: boolean;
@@ -93,4 +100,5 @@ export interface ISettingsCreate {
   tax: Partial<ISettingsTax>;
   email: Partial<ISettingsEmail>;
   sms: Partial<ISettingsSms>;
+  tracking_codes: Partial<ISettingsTrackingCodes>;
 }

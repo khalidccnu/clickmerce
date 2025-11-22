@@ -7,6 +7,7 @@ import type { ThemeConfig } from 'antd';
 import { ConfigProvider, notification, theme as themeConfig } from 'antd';
 import { NextFontWithVariable } from 'next/dist/compiled/@next/font';
 import { useEffect, type PropsWithChildren } from 'react';
+import AnalyticsProvider from './AnalyticsProvider';
 
 type TProps = {
   nextFont: (NextFontWithVariable & { originalVariableName: string })[];
@@ -51,9 +52,11 @@ export const Providers = ({ nextFont, children }: TProps) => {
   return (
     <ConfigProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
-        <main role="main" id="__main" className={[...nextFont.map((font) => font.variable), 'font-roboto'].join(' ')}>
-          {notificationHolder} {children}
-        </main>
+        <AnalyticsProvider>
+          <main role="main" id="__main" className={[...nextFont.map((font) => font.variable), 'font-roboto'].join(' ')}>
+            {notificationHolder} {children}
+          </main>
+        </AnalyticsProvider>
       </QueryClientProvider>
     </ConfigProvider>
   );

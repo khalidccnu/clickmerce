@@ -3,6 +3,7 @@ import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { IBasePageProps, IMetaResponse, TId } from '@base/interfaces';
 import ProductViewSection from '@components/ProductViewSection';
 import RelatedProductsSection from '@components/RelatedProductsSection';
+import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { IProduct } from '@modules/products/lib/interfaces';
@@ -11,6 +12,7 @@ import { IReview } from '@modules/reviews/lib/interfaces';
 import { ReviewsServices } from '@modules/reviews/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
+import { useEffect } from 'react';
 
 interface IProps extends IBasePageProps {
   product: IProduct;
@@ -19,6 +21,15 @@ interface IProps extends IBasePageProps {
 }
 
 const ProductPage: NextPage<IProps> = ({ settingsIdentity, product, reviews, reviewsMeta }) => {
+  const { sendEventFn } = useAnalyticEvent();
+
+  useEffect(() => {
+    sendEventFn({
+      name: 'view_item',
+      data: { product_id: product.id, product_name: product.name },
+    });
+  }, [sendEventFn, product]);
+
   return (
     <PageWrapper
       title={product?.name}

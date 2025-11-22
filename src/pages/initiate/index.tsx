@@ -8,6 +8,7 @@ import InitiateSettingsIdentityForm from '@modules/initiate/components/InitiateS
 import InitiateSettingsS3Form from '@modules/initiate/components/InitiateSettingsS3Form';
 import InitiateSettingsSmsForm from '@modules/initiate/components/InitiateSettingsSmsForm';
 import InitiateSettingsTaxForm from '@modules/initiate/components/InitiateSettingsTaxForm';
+import InitiateSettingsTrackingCodesForm from '@modules/initiate/components/InitiateSettingsTrackingCodesForm';
 import InitiateSettingsVatForm from '@modules/initiate/components/InitiateSettingsVatForm';
 import InitiateUsersForm from '@modules/initiate/components/InitiateUsersForm';
 import { ENUM_INITIATE_TYPE } from '@modules/initiate/lib/enums';
@@ -113,6 +114,14 @@ const InitiatePage = () => {
                           <InitiateSettingsSmsForm form={form} />
                         </div>
                       </Col>
+                      <Col xs={24}>
+                        <div className="relative border border-dotted p-4 pt-8 rounded-lg dark:border-gray-700">
+                          <p className="font-semibold absolute top-0 left-0 -translate-y-1/2 translate-x-4 bg-white py-1 px-2 text-sm rounded-lg dark:bg-[var(--color-rich-black)]">
+                            Tracking Codes
+                          </p>
+                          <InitiateSettingsTrackingCodesForm />
+                        </div>
+                      </Col>
                     </Row>
                   ),
                 },
@@ -127,12 +136,12 @@ const InitiatePage = () => {
               }}
               onSubmit={(values) => {
                 {
-                  const { user, identity, s3, vat, tax, email, sms } = values;
+                  const { user, identity, s3, vat, tax, email, sms, tracking_codes } = values;
 
                   initiateFn.mutate({
                     type: ENUM_INITIATE_TYPE.MANUAL,
                     user,
-                    settings: { identity, s3, vat, tax, email, sms },
+                    settings: { identity, s3, vat, tax, email, sms, tracking_codes },
                   });
                 }
               }}

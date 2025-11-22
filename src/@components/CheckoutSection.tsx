@@ -4,6 +4,7 @@ import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
 import InputPhone from '@base/components/InputPhone';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
+import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useLocalState from '@lib/hooks/useLocalState';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -35,6 +36,7 @@ interface IProps {
 const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
   const router = useRouter();
   const { user } = useAuthSession();
+  const { sendEventFn } = useAnalyticEvent();
   const [form] = Form.useForm();
   const formValues = Form.useWatch([], form);
   const [messageApi, messageHolder] = message.useMessage();
@@ -80,6 +82,35 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
         }
 
         setOrderPlacing(true);
+
+        sendEventFn({
+          name: 'purchase',
+          data: {
+            order_id: res.data?.id,
+            code: res.data?.code,
+            customer_id: res.data?.customer_id,
+            customer: {
+              name: res.data?.customer?.name,
+              email: res.data?.customer?.email,
+              phone: res.data?.customer?.phone,
+            },
+            products: res.data?.products?.map((product) => ({
+              id: product?.id,
+              name: product?.current_info?.name,
+              variations: product?.variations?.map((variation) => ({
+                id: variation.id,
+                sale_price: variation.sale_price,
+                sale_discount_price: variation.sale_discount_price,
+                quantity: variation.quantity,
+              })),
+            })),
+            payment_method: res.data?.payment_method?.name,
+            delivery_zone: res.data?.delivery_zone?.name,
+            sub_total_amount: res.data?.sub_total_amount,
+            grand_total_amount: res.data?.grand_total_amount,
+          },
+        });
+
         messageApi.success(res.message).then(() => {
           const redirectUrl =
             paymentMethodQuery.data?.data?.reference_type === ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO

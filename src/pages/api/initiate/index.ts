@@ -176,7 +176,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       return res.status(500).json(response);
     }
 
-    const { identity, s3, vat, tax, email: settingsEmail, sms } = settings;
+    const { identity, s3, vat, tax, email: settingsEmail, sms, tracking_codes = {} } = settings;
 
     const purifiedSettingsIdentity = {
       ...identity,
@@ -226,6 +226,13 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       sender_id: sms?.sender_id || null,
     };
 
+    const purifiedSettingsTrackingCodes = {
+      ...tracking_codes,
+      gtag_id: tracking_codes?.gtag_id || null,
+      gtm_id: tracking_codes?.gtm_id || null,
+      fb_pixel_id: tracking_codes?.fb_pixel_id || null,
+    };
+
     const settingsResult = await SupabaseAdapter.create(supabaseServiceClient, Database.settings, {
       identity: purifiedSettingsIdentity,
       s3: purifiedSettingsS3,
@@ -233,6 +240,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       tax,
       email: purifiedSettingsEmail,
       sms: purifiedSettingsSms,
+      tracking_codes: purifiedSettingsTrackingCodes,
     });
 
     if (!settingsResult.success) {

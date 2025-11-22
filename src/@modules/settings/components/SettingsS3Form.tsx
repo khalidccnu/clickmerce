@@ -5,13 +5,13 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
 import React, { useEffect } from 'react';
 import { settingsS3ProviderTypes } from '../lib/enums';
-import { ISettings, ISettingsS3 } from '../lib/interfaces';
+import { ISettingsS3 } from '../lib/interfaces';
 
 interface IProps {
   isLoading: boolean;
   form: FormInstance;
   formType?: 'create' | 'update';
-  initialValues?: Partial<ISettings>;
+  initialValues?: Partial<ISettingsS3>;
   onFinish: (values: ISettingsS3) => void;
 }
 
@@ -26,8 +26,8 @@ const SettingsS3Form: React.FC<IProps> = ({ isLoading, form, formType = 'create'
       size="large"
       layout="vertical"
       form={form}
+      initialValues={initialValues}
       onFinish={onFinish}
-      disabled={initialValues?.is_s3_configured}
     >
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12} xl={8}>
@@ -143,19 +143,7 @@ const SettingsS3Form: React.FC<IProps> = ({ isLoading, form, formType = 'create'
             <FloatInput placeholder="Custom URL" />
           </Form.Item>
         </Col>
-        <Col xs={12}>
-          <Form.Item className="!mb-0">
-            <Button
-              type="primary"
-              htmlType="button"
-              onClick={() => onFinish(form.getFieldsValue())}
-              disabled={formType === 'create' || !initialValues?.is_s3_configured}
-            >
-              Reset
-            </Button>
-          </Form.Item>
-        </Col>
-        <Col xs={12}>
+        <Col xs={24}>
           <Form.Item className="text-right !mb-0">
             <Button loading={isLoading} type="primary" htmlType="submit">
               {formType === 'create' ? 'Create' : 'Update'}

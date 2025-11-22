@@ -71,6 +71,12 @@ export const settingsSmsCreateSchema = yup.object({
   sender_id: yup.string().min(3).optional().nullable(),
 });
 
+export const settingsTrackingCodesCreateSchema = yup.object({
+  gtag_id: yup.string().optional().nullable(),
+  gtm_id: yup.string().optional().nullable(),
+  fb_pixel_id: yup.string().optional().nullable(),
+});
+
 export const settingsCreateSchema = yup.object({
   identity: settingsIdentityCreateSchema.required(),
   s3: settingsS3CreateSchema.required(),
@@ -78,6 +84,7 @@ export const settingsCreateSchema = yup.object({
   vat: settingsVatCreateSchema.required(),
   email: settingsEmailCreateSchema.required(),
   sms: settingsSmsCreateSchema.required(),
+  tracking_codes: settingsTrackingCodesCreateSchema.required(),
   is_active: yup.string().optional(),
 });
 

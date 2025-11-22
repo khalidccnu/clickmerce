@@ -5,6 +5,7 @@ import SettingsIdentityForm from '@modules/settings/components/SettingsIdentityF
 import SettingsS3Form from '@modules/settings/components/SettingsS3Form';
 import SettingsSmsForm from '@modules/settings/components/SettingsSmsForm';
 import SettingsTaxForm from '@modules/settings/components/SettingsTaxForm';
+import SettingsTrackingCodesForm from '@modules/settings/components/SettingsTrackingCodesForm';
 import SettingsVatForm from '@modules/settings/components/SettingsVatForm';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
@@ -24,6 +25,7 @@ const SettingsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const [taxFormInstance] = Form.useForm();
   const [emailFormInstance] = Form.useForm();
   const [smsFormInstance] = Form.useForm();
+  const [trackingCodesFormInstance] = Form.useForm();
 
   const settingsQuery = SettingsHooks.useFind();
 
@@ -69,7 +71,7 @@ const SettingsPage: NextPage<IProps> = ({ settingsIdentity }) => {
           formType="update"
           form={s3FormInstance}
           isLoading={settingsQuery.isLoading}
-          initialValues={settingsQuery.data?.data}
+          initialValues={settingsQuery.data?.data?.s3}
           onFinish={(values) =>
             settingsUpdateFn.mutate({
               id: settingsQuery.data?.data?.id,
@@ -155,6 +157,26 @@ const SettingsPage: NextPage<IProps> = ({ settingsIdentity }) => {
               id: settingsQuery.data?.data?.id,
               data: {
                 sms: values,
+              },
+            })
+          }
+        />
+      ),
+    },
+    {
+      key: 'tracking-codes',
+      label: 'Tracking Codes',
+      children: (
+        <SettingsTrackingCodesForm
+          formType="update"
+          form={trackingCodesFormInstance}
+          isLoading={settingsQuery.isLoading}
+          initialValues={settingsQuery.data?.data?.tracking_codes}
+          onFinish={(values) =>
+            settingsUpdateFn.mutate({
+              id: settingsQuery.data?.data?.id,
+              data: {
+                tracking_codes: values,
               },
             })
           }

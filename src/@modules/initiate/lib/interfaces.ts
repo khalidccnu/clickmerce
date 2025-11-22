@@ -10,6 +10,7 @@ export interface IInitiate {
   tax: ISettingsCreate['tax'];
   email: ISettingsCreate['email'];
   sms: ISettingsCreate['sms'];
+  tracking_codes: ISettingsCreate['tracking_codes'];
 }
 
 export interface IInitiateCreate {

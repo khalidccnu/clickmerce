@@ -3,11 +3,13 @@ import PageWrapper from '@base/container/PageWrapper';
 import { IBasePageProps } from '@base/interfaces';
 import CheckoutSection from '@components/CheckoutSection';
 import { Paths } from '@lib/constant/paths';
+import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { ISettings } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
+import { useEffect } from 'react';
 
 interface IProps extends IBasePageProps {
   settingsVat?: ISettings['vat'];
@@ -15,6 +17,14 @@ interface IProps extends IBasePageProps {
 }
 
 const CheckoutPage: NextPage<IProps> = ({ settingsIdentity, settingsVat, settingsTax }) => {
+  const { sendEventFn } = useAnalyticEvent();
+
+  useEffect(() => {
+    sendEventFn({
+      name: 'initiate_checkout',
+    });
+  }, [sendEventFn]);
+
   return (
     <PageWrapper
       title="Checkout"
