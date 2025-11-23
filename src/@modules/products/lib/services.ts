@@ -93,6 +93,23 @@ export const ProductsServices = {
     }
   },
 
+  findByFuzzy: async (filters: { name: string }): Promise<IBaseResponse<{ product: IProduct; score: number }[]>> => {
+    const { name } = filters;
+
+    try {
+      const res = await SupabaseAdapter.rpc<{ product: IProduct; score: number }[]>(
+        supabaseBrowserClient,
+        'search_products',
+        {
+          q: name,
+        },
+      );
+      return Promise.resolve(res);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
   create: async (payload: IProductCreate): Promise<IBaseResponse<IProduct>> => {
     const { variations, categories, ...rest } = payload;
 

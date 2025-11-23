@@ -21,8 +21,12 @@ CREATE TABLE IF NOT EXISTS products (
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
+-- Enable pg_trgm extension for trigram indexing
+create extension if not exists pg_trgm;
+
 -- Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_products_name ON products(name);
+create index if not exists idx_trgm_products_name on products using gin (name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
 CREATE INDEX IF NOT EXISTS idx_products_type ON products(type);
 CREATE INDEX IF NOT EXISTS idx_products_medicine_type ON products(medicine_type);

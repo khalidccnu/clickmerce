@@ -58,6 +58,16 @@ export const ProductsHooks = {
     });
   },
 
+  useFindByFuzzy: ({ name, config }: { name: string; config?: QueryConfig<typeof ProductsServices.findByFuzzy> }) => {
+    const { queryKey, ...rest } = config ?? {};
+
+    return useQuery({
+      queryKey: [...(queryKey || []), ProductsServices.NAME, name],
+      queryFn: () => ProductsServices.findByFuzzy({ name }),
+      ...rest,
+    });
+  },
+
   useCreate: ({ config }: { config?: MutationConfig<typeof ProductsServices.create> } = {}) => {
     return useMutation({
       mutationFn: ProductsServices.create,

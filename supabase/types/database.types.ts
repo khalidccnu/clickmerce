@@ -1330,6 +1330,13 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      search_products: {
+        Args: { q: string };
+        Returns: {
+          product: Database['public']['Tables']['products']['Row'];
+          score: number;
+        }[];
+      };
       setup_table_security: {
         Args: {
           dependent_permissions?: string[];
@@ -1341,6 +1348,8 @@ export type Database = {
         };
         Returns: undefined;
       };
+      show_limit: { Args: never; Returns: number };
+      show_trgm: { Args: { '': string }; Returns: string[] };
       user_has_permission: {
         Args: { permission_name: string; user_uuid: string };
         Returns: boolean;

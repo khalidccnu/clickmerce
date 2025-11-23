@@ -804,6 +804,53 @@ export const SupabaseAdapter = {
       };
     }
   },
+
+  async rpc<T = any>(
+    supabase: SupabaseClient,
+    functionName: string,
+    params: Record<string, any> = {},
+    options: {
+      head?: boolean;
+      count?: 'exact' | 'planned' | 'estimated';
+      get?: boolean;
+    } = {},
+  ): Promise<IBaseResponse<T>> {
+    try {
+      const { head = false, count = null, get = false } = options;
+
+      const query = supabase.rpc(functionName, params, {
+        head,
+        ...(count && { count }),
+        ...(get && { get }),
+      });
+
+      const result = await query;
+
+      if (result?.error) {
+        throw new Error(`RPC call failed: ${result.error.message}`);
+      }
+
+      const data = result.data as T;
+
+      return {
+        success: true,
+        statusCode: 200,
+        message: `RPC function '${functionName}' executed successfully`,
+        data,
+        meta: null,
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+      return {
+        success: false,
+        statusCode: 500,
+        message: `RPC operation failed: ${errorMessage}`,
+        data: null,
+        meta: null,
+      };
+    }
+  },
 };
 
 const recursivelyTraverseFilterFn = (query, filters, type) => {

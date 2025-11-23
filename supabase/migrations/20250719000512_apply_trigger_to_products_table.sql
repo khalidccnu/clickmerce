@@ -34,3 +34,30 @@ BEGIN
   WHERE pv.exp IS NULL OR pv.exp >= NOW();
 END;
 $$ LANGUAGE plpgsql;
+
+-- Function to search products with similarity scoring
+create or replace function search_products(q text)
+returns table (
+  product products,
+  score real
+)
+language sql
+as $$
+  select
+    p,
+    greatest(
+      similarity(p.name, q),
+      similarity(p.name, regexp_replace(q, '\s+', '', 'g')),
+      (p.name ilike '%' || q || '%')::int * 0.2,
+      (p.name ilike q || '%')::int * 0.3
+    ) as score
+  from products p
+  where
+    p.is_active = true
+    and (
+      p.name ilike '%' || q || '%'
+      or similarity(p.name, q) > 0.2
+    )
+  order by score desc, p.name asc
+  limit 50;
+$$;
