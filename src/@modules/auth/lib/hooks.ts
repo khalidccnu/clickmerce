@@ -78,6 +78,16 @@ export const AuthHooks = {
     });
   },
 
+  useProfileUpdate: ({ config }: { config?: MutationConfig<typeof AuthServices.profileUpdate> } = {}) => {
+    return useMutation({
+      ...config,
+      mutationFn: AuthServices.profileUpdate,
+      onSettled: (data) => {
+        if (!data?.success) return;
+      },
+    });
+  },
+
   useLogout: () => {
     clearAuthSession();
     window.location.reload();

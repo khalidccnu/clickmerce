@@ -20,6 +20,16 @@ export const DashboardHooks = {
     });
   },
 
+  useFindQuickStatistic: ({ config }: { config?: QueryConfig<typeof DashboardServices.findQuickStatistics> } = {}) => {
+    const { queryKey, ...rest } = config ?? {};
+
+    return useQuery({
+      queryKey: [...(queryKey || []), DashboardServices.NAME],
+      queryFn: DashboardServices.findQuickStatistics,
+      ...rest,
+    });
+  },
+
   useFindAnalyses: ({ config }: { config?: QueryConfig<typeof DashboardServices.findAnalyses> } = {}) => {
     const { queryKey, ...rest } = config ?? {};
 

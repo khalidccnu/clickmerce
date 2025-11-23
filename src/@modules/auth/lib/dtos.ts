@@ -1,4 +1,4 @@
-import { PickType } from '@lib/utils/yup';
+import { PartialType, PickType } from '@lib/utils/yup';
 import { userCreateSchema } from '@modules/users/lib/dtos';
 import * as yup from 'yup';
 
@@ -45,3 +45,10 @@ export const profileVerifySchema = yup.object({
 });
 
 export type TProfileVerifyDto = yup.InferType<typeof profileVerifySchema>;
+
+export const profileUpdateSchema = PartialType(
+  PickType(userCreateSchema, ['name', 'email', 'birthday', 'blood_group']),
+  true,
+);
+
+export type TProfileUpdateDto = yup.InferType<typeof profileUpdateSchema>;

@@ -17,6 +17,17 @@ export interface IDashboardStatisticsResponse extends IBaseResponse {
   data: IDashboardStatistics;
 }
 
+export interface IDashboardQuickStatistics {
+  pending_orders: number;
+  processing_orders: number;
+  delivered_orders: number;
+  cancelled_orders: number;
+}
+
+export interface IDashboardQuickStatisticsResponse extends IBaseResponse {
+  data: IDashboardQuickStatistics;
+}
+
 export interface IDashboardAnalysis {
   month: string;
   orders: number;

@@ -1,5 +1,5 @@
 import { Env } from '.environments';
-import { AuthPaths } from '@lib/constant/authPaths';
+import { AdminPaths, AuthPaths } from '@lib/constant/authPaths';
 import { Paths } from '@lib/constant/paths';
 import { UnAuthPaths } from '@lib/constant/unAuthPaths';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -64,7 +64,7 @@ export default async function middleware(req: NextRequest) {
   // Handle unauthenticated paths
   if (UnAuthPaths.includes(pathname)) {
     if (sessionCache?.isAuthenticate) {
-      return redirectFn(`${origin}${Paths.admin.root}`);
+      return redirectFn(`${origin}${Paths.admin.aRoot}`);
     }
 
     return response;
@@ -75,6 +75,10 @@ export default async function middleware(req: NextRequest) {
     if (!sessionCache?.isAuthenticate) {
       const encodedUrl = encodeURIComponent(`${origin}${pathname}${search}`);
       return redirectFn(`${origin}${Paths.auth.signIn}?${REDIRECT_PREFIX}=${encodedUrl}`);
+    }
+
+    if (Toolbox.isDynamicPath(AdminPaths, pathname) && !sessionCache?.user?.is_admin) {
+      return redirectFn(`${origin}${Paths.user.uRoot}`);
     }
 
     return response;

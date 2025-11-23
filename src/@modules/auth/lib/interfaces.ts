@@ -10,6 +10,7 @@ export interface IToken {
     email: string;
     roles: TRole[];
     permissions: TPermission[];
+    is_admin: boolean;
     is_verified: boolean;
   };
   iat: number;

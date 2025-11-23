@@ -40,6 +40,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
       height: '100%',
       paddingBlock: 16,
       overflowY: 'auto',
+      overscrollBehavior: 'contain',
     },
     layout: {
       paddingRight: !screens.xl || isCollapsed ? 0 : siderWidth,
@@ -76,7 +77,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
           if (broken) setCollapsed(true);
         }}
       >
-        <div style={styles.siderWrapper} className="designed_scrollbar overscroll-contain">
+        <div style={styles.siderWrapper} className="designed_scrollbar">
           <OrderSummary className="p-4 pt-0" />
         </div>
       </Layout.Sider>
@@ -86,7 +87,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
             <BrandLogo width={screens.md ? 220 : 160} className="max-h-full" />
           </CustomLink>
           {screens.lg && <RealTimeClock color="purple" />}
-          <CustomLink href={Paths.admin.root} className="ml-auto">
+          <CustomLink href={Paths.admin.aRoot} className="ml-auto">
             <Button type="primary" icon={<MdDashboard />}>
               {screens.md && 'Dashboard'}
             </Button>

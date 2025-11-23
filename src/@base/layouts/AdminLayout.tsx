@@ -60,6 +60,7 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       height: '100%',
       paddingBlock: 16,
       overflowY: 'auto',
+      overscrollBehavior: 'contain',
     },
     layout: {
       paddingLeft: !screens.md || sidebar.isCollapsed ? 0 : siderWidth,
@@ -106,7 +107,7 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
       >
         <div
           style={styles.menuWrapper}
-          className="[&_.ant-menu]:!bg-transparent [&_.ant-menu]:!border-none designed_scrollbar overscroll-contain"
+          className="[&_.ant-menu]:!bg-transparent [&_.ant-menu]:!border-none designed_scrollbar"
         >
           <div style={{ height: `calc(${headerHeight}px - 32px)` }} className="place-self-center place-content-center">
             <CustomLink href={Paths.root} className="h-full">

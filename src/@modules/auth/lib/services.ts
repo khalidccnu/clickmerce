@@ -1,6 +1,7 @@
 import { IBaseResponse } from '@base/interfaces';
 import { AxiosInstance, AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
+import { Toolbox } from '@lib/utils/toolbox';
 import { IUser, IUserCreate } from '@modules/users/lib/interfaces';
 import { ILogin, ILoginResponse } from './interfaces';
 
@@ -90,6 +91,15 @@ export const AuthServices = {
   profileVerify: async (payload: { phone: string; hash: string; otp: number }): Promise<IBaseResponse> => {
     try {
       const res = await AxiosSecureInstance.patch(`${END_POINT}/verify-profile`, payload);
+      return Promise.resolve(res?.data);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
+  profileUpdate: async (payload: Partial<IUser>): Promise<IBaseResponse<IUser>> => {
+    try {
+      const res = await AxiosSecureInstance.patch(`${END_POINT}/profile`, Toolbox.toNullifyTraverse(payload));
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);

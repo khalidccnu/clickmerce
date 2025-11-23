@@ -1,14 +1,17 @@
 import { Env } from '.environments';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import ThemeToggler from '@base/components/ThemeToggler';
+import { Paths } from '@lib/constant/paths';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
 import ProfileCard from '@modules/ProfileCard';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { Button, Dropdown } from 'antd';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { AiOutlineLogout, AiOutlineUser } from 'react-icons/ai';
 import { FaUser } from 'react-icons/fa';
+import { RxDashboard } from 'react-icons/rx';
 
 const logoutFn = AuthHooks.useLogout;
 
@@ -17,6 +20,7 @@ interface IProps {
 }
 
 const WelcomeMenu: React.FC<IProps> = ({ className }) => {
+  const router = useRouter();
   const { user } = useAuthSession();
   const [isProfileModalOpen, setProfileModalOpen] = useState(false);
 
@@ -28,6 +32,12 @@ const WelcomeMenu: React.FC<IProps> = ({ className }) => {
       icon: <AiOutlineUser />,
       label: 'Profile',
       onClick: () => setProfileModalOpen(true),
+    },
+    {
+      key: 'Panel',
+      icon: <RxDashboard />,
+      label: 'User Panel',
+      onClick: () => router.push(Paths.user.uRoot),
     },
     {
       key: 'Logout',

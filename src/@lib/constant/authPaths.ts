@@ -17,4 +17,6 @@ const toRecursivelyTraverse = (obj: any, pathsToRemove: string[] = []): any[] =>
   return holdArr;
 };
 
-export const AuthPaths = toRecursivelyTraverse(Paths.admin);
+export const UserPaths = toRecursivelyTraverse(Paths.user);
+export const AdminPaths = toRecursivelyTraverse(Paths.admin);
+export const AuthPaths = toRecursivelyTraverse({ ...Paths.user, ...Paths.admin });

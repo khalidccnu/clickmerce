@@ -71,18 +71,6 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json(response);
   }
 
-  if (!user.data.is_admin) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 403,
-      message: 'User is not permitted to login',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(403).json(response);
-  }
-
   const userRoles = await SupabaseAdapter.find(
     supabaseServiceClient,
     Database.userRoles,
@@ -117,6 +105,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
       email: user.data.email,
       roles,
       permissions,
+      is_admin: user.data.is_admin,
       is_verified: user.data.is_verified,
     },
   });

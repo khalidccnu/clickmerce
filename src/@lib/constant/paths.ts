@@ -24,11 +24,13 @@ export const Paths = {
   auth: {
     signIn: '/auth',
   },
-  users: {
-    root: '/users',
+  user: {
+    uRoot: '/user',
+    editProfile: '/user/edit-profile',
+    changePassword: '/user/change-password',
   },
   admin: {
-    root: '/admin',
+    aRoot: '/admin',
     pos: '/admin/pos',
     galleries: '/admin/galleries',
     users: {

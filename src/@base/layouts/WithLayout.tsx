@@ -1,5 +1,5 @@
 import { IBasePageProps } from '@base/interfaces';
-import { AuthPaths } from '@lib/constant/authPaths';
+import { AuthPaths, UserPaths } from '@lib/constant/authPaths';
 import { Paths } from '@lib/constant/paths';
 import SettingsIdentityContext from '@lib/context/SettingsIdentityContext';
 import AnalyticsProvider from '@lib/providers/AnalyticsProvider';
@@ -11,6 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import AdminLayout from './AdminLayout';
 import LandingLayout from './LandingLayout';
 import PosLayout from './PosLayout';
+import UserLayout from './UserLayout';
 
 interface IProps extends PropsWithChildren<IBasePageProps> {
   pathname: string;
@@ -30,6 +31,10 @@ const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, settingsTrac
   }
 
   if (Toolbox.isDynamicPath(AuthPaths, pathname)) {
+    if (Toolbox.isDynamicPath(UserPaths, pathname)) {
+      return <UserLayout>{children}</UserLayout>;
+    }
+
     return (
       <Provider store={store}>
         <PersistGate persistor={persistor}>

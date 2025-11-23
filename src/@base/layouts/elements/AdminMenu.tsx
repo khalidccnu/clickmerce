@@ -48,9 +48,9 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
       onOpenChange={onOpenChange}
       items={getMenuItemsAccess([
         {
-          key: Paths.admin.root,
+          key: Paths.admin.aRoot,
           icon: <MdDashboard />,
-          label: <CustomLink href={Paths.admin.root}>Dashboard</CustomLink>,
+          label: <CustomLink href={Paths.admin.aRoot}>Dashboard</CustomLink>,
         },
         {
           key: Paths.admin.galleries,

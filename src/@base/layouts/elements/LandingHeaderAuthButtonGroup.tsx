@@ -25,7 +25,7 @@ const LandingHeaderAuthButtonGroup: React.FC<IProps> = ({ className }) => {
       {isLoading ||
         (isAuthenticate ? (
           <>
-            <CustomLink href={Paths.users.root}>
+            <CustomLink href={Paths.user.uRoot}>
               <Avatar>{user?.name?.charAt(0)?.toUpperCase()}</Avatar>
             </CustomLink>
             <Button type="primary" ghost onClick={logoutFn}>

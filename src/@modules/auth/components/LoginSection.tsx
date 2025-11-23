@@ -63,7 +63,9 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
           Storage.setData(PC_KEY, settingsIdentity?.phone_code || Env.webPhoneCode);
           Storage.setData(CURRENCY_KEY, settingsIdentity?.currency?.split('_')?.[1] || Env.webCurrency);
 
-          window.location.replace(redirectUrl || Paths.admin.root);
+          const token = extractToken(data.data.token);
+
+          window.location.replace(redirectUrl || token?.user?.is_admin ? Paths.admin.aRoot : Paths.user.uRoot);
         });
       },
     },
