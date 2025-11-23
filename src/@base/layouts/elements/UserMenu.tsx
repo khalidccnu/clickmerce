@@ -4,6 +4,7 @@ import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
 import { GrShieldSecurity } from 'react-icons/gr';
+import { LiaCartArrowDownSolid } from 'react-icons/lia';
 import { MdDashboard, MdEdit, MdExitToApp, MdHome, MdLock } from 'react-icons/md';
 
 interface IProps {
@@ -55,6 +56,11 @@ const UserMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpenC
           key: Paths.user.changePassword,
           icon: <MdLock />,
           label: <CustomLink href={Paths.user.changePassword}>Change Password</CustomLink>,
+        },
+        {
+          key: Paths.user.orders.root,
+          icon: <LiaCartArrowDownSolid />,
+          label: <CustomLink href={Paths.user.orders.root}>Orders</CustomLink>,
         },
         {
           key: 'log-out',

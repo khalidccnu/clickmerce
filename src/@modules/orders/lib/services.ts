@@ -44,6 +44,15 @@ export const OrdersServices = {
     }
   },
 
+  quickFind: async (filters: IOrdersFilter): Promise<IOrdersResponse> => {
+    try {
+      const res = await AxiosSecureInstance.get(`${END_POINT}/quick?${Toolbox.queryNormalizer(filters)}`);
+      return Promise.resolve(res?.data);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
+
   create: async (payload: IOrderCreate): Promise<IBaseResponse<IOrder>> => {
     try {
       const res = await AxiosSecureInstance.post(END_POINT, payload);

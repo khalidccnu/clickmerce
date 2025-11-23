@@ -7,10 +7,16 @@ import { Database } from '@lib/constant/database';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { validate } from '@lib/utils/yup';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
 import { IDeliveryZone } from '@modules/delivery-zones/lib/interfaces';
-import { orderQuickCreateSchema, TOrderQuickCreateDto } from '@modules/orders/lib/dtos';
+import {
+  orderFilterSchema,
+  orderQuickCreateSchema,
+  TOrderFilterDto,
+  TOrderQuickCreateDto,
+} from '@modules/orders/lib/dtos';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES, ENUM_ORDER_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
@@ -22,6 +28,7 @@ import { ENUM_TRANSACTION_TYPES } from '@modules/transactions/lib/enums';
 import { IUser } from '@modules/users/lib/interfaces';
 import dayjs from 'dayjs';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { jwtVerify } from '../../lib/jwt';
 import { handleGetSettings } from '../../settings';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -30,6 +37,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   switch (method) {
     case 'OPTIONS':
       return res.status(200).end();
+    case 'GET':
+      return handleGet(req, res);
     case 'POST':
       return handleCreate(req, res);
     default:
@@ -42,6 +51,178 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
 
       return res.status(405).json(response);
+  }
+}
+
+async function handleGet(req: NextApiRequest, res: NextApiResponse) {
+  const { token, user } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Unauthorized',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
+  const payload = jwtVerify(token);
+
+  if (!payload) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 401,
+      message: 'Invalid token',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(401).json(response);
+  }
+
+  const { success, data, ...restProps } = await validate<TOrderFilterDto>(orderFilterSchema, req.query);
+
+  if (!success) return res.status(400).json({ success, data, ...restProps });
+
+  data.customer_id = user.id as string;
+
+  try {
+    const result = await SupabaseAdapter.find<IOrder>(supabaseServiceClient, Database.orders, data, {
+      selection: buildSelectionFn({
+        relations: {
+          customer: {
+            table: Database.users,
+            foreignKey: 'customer_id',
+            columns: ['id', 'name', 'phone', 'email'],
+          },
+          payment_method: { table: Database.paymentMethods, foreignKey: 'payment_method_id' },
+          delivery_zone: {
+            table: Database.deliveryZones,
+            foreignKey: 'delivery_zone_id',
+            nested: { delivery_service_type: { table: Database.deliveryServiceTypes } },
+          },
+        },
+        filters: data,
+      }),
+    });
+
+    if (!result.success) {
+      const response: IBaseResponse<[]> = {
+        success: false,
+        statusCode: result.statusCode || 400,
+        message: 'Failed to fetch orders',
+        data: [],
+        meta: null,
+      };
+
+      return res.status(result.statusCode || 400).json(response);
+    }
+
+    const enrichedOrders = await Promise.all(
+      result.data.map(async (order) => {
+        if (order.products && Array.isArray(order.products)) {
+          const enrichedProducts = await Promise.all(
+            order.products.map(async (orderProduct) => {
+              if (orderProduct?.variations?.length) {
+                orderProduct.variations = orderProduct.variations.map((variation) => {
+                  delete variation.cost_price;
+                  return variation;
+                });
+              }
+
+              try {
+                const currentProductResponse = await SupabaseAdapter.findOne(
+                  supabaseServiceClient,
+                  Database.products,
+                  { textFilters: { conditions: { id: { eq: orderProduct.id as string } } } },
+                  {
+                    selection: buildSelectionFn({
+                      relations: {
+                        dosage_form: { table: Database.dosageForms },
+                        generic: { table: Database.generics },
+                        supplier: { table: Database.suppliers, columns: ['id', 'name'] },
+                        variations: { table: Database.productVariations },
+                        categories: {
+                          table: Database.productCategories,
+                          nested: { category: { table: Database.categories } },
+                        },
+                      },
+                    }),
+                  },
+                );
+
+                const currentInfo = currentProductResponse.success ? currentProductResponse.data : null;
+
+                if (currentInfo?.variations?.length) {
+                  let productWithSpecialPrice = 0;
+
+                  currentInfo.variations = currentInfo.variations.map((variation) => {
+                    const specialPrice = productSalePriceWithDiscountFn(
+                      variation.cost_price,
+                      variation.sale_price,
+                      variation.discount,
+                    );
+
+                    if (specialPrice && specialPrice !== variation.sale_price) {
+                      productWithSpecialPrice++;
+                    }
+
+                    delete variation.cost_price;
+
+                    return {
+                      ...variation,
+                      sale_discount_price: specialPrice,
+                    };
+                  });
+
+                  currentInfo['has_sale_discount_price'] = !!productWithSpecialPrice;
+                }
+
+                return {
+                  ...orderProduct,
+                  current_info: currentInfo,
+                };
+              } catch (error) {
+                return {
+                  ...orderProduct,
+                  current_info: null,
+                };
+              }
+            }),
+          );
+
+          return {
+            ...order,
+            products: enrichedProducts,
+          };
+        }
+
+        return order;
+      }),
+    );
+
+    const response: IBaseResponse<typeof enrichedOrders> = {
+      success: true,
+      statusCode: 200,
+      message: 'Orders fetched successfully',
+      data: enrichedOrders,
+      meta: result.meta,
+    };
+
+    return res.status(200).json(response);
+  } catch (error) {
+    const response: IBaseResponse<[]> = {
+      success: false,
+      statusCode: 500,
+      message: 'Failed to fetch orders',
+      data: [],
+      meta: null,
+    };
+
+    return res.status(500).json(response);
   }
 }
 

@@ -28,6 +28,10 @@ export const Paths = {
     uRoot: '/user',
     editProfile: '/user/edit-profile',
     changePassword: '/user/change-password',
+    orders: {
+      root: '/user/orders',
+      toId: (id: TId) => `/user/orders/${id}`,
+    },
   },
   admin: {
     aRoot: '/admin',

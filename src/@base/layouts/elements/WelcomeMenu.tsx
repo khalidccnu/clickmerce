@@ -1,10 +1,10 @@
 import { Env } from '.environments';
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import ThemeToggler from '@base/components/ThemeToggler';
+import ProfileCard from '@components/ProfileCard';
 import { Paths } from '@lib/constant/paths';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
-import ProfileCard from '@modules/ProfileCard';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { Button, Dropdown } from 'antd';
 import { useRouter } from 'next/router';

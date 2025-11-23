@@ -12,10 +12,11 @@ import { FaHome, FaShoppingCart } from 'react-icons/fa';
 
 interface IProps {
   className?: string;
+  showActionButtons?: boolean;
   order: IOrder;
 }
 
-const OrderSuccessSection: React.FC<IProps> = ({ className, order }) => {
+const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = true, order }) => {
   const router = useRouter();
 
   const dataSource = useMemo(() => {
@@ -196,19 +197,21 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, order }) => {
             </div>
           </div>
         </Card>
-        <Space style={{ width: '100%', justifyContent: 'flex-end' }}>
-          <Button size="large" type="primary" onClick={() => router.push(Paths.root)} icon={<FaHome />} ghost>
-            Go to Home
-          </Button>
-          <Button
-            size="large"
-            type="primary"
-            onClick={() => router.push(Paths.products.root)}
-            icon={<FaShoppingCart />}
-          >
-            Buy More
-          </Button>
-        </Space>
+        {showActionButtons && (
+          <Space style={{ width: '100%', justifyContent: 'flex-end' }} wrap>
+            <Button size="large" type="primary" onClick={() => router.push(Paths.root)} icon={<FaHome />} ghost>
+              Go to Home
+            </Button>
+            <Button
+              size="large"
+              type="primary"
+              onClick={() => router.push(Paths.products.root)}
+              icon={<FaShoppingCart />}
+            >
+              Buy More
+            </Button>
+          </Space>
+        )}
       </div>
     </section>
   );

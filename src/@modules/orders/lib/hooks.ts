@@ -36,6 +36,22 @@ export const OrdersHooks = {
     });
   },
 
+  useQuickFind: ({
+    options,
+    config,
+  }: {
+    options: IOrdersFilter;
+    config?: QueryConfig<typeof OrdersServices.quickFind>;
+  }) => {
+    const { queryKey, ...rest } = config ?? {};
+
+    return useQuery({
+      queryKey: [...(queryKey || []), OrdersServices.NAME, options],
+      queryFn: () => OrdersServices.quickFind(options),
+      ...rest,
+    });
+  },
+
   useFindInfinite: ({
     options,
     config,

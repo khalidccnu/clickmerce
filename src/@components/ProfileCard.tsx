@@ -1,10 +1,10 @@
 import { Toolbox } from '@lib/utils/toolbox';
 import { AuthHooks } from '@modules/auth/lib/hooks';
+import { IToken } from '@modules/auth/lib/interfaces';
 import { Button, Form, Input, message } from 'antd';
 import React, { useState } from 'react';
 import { MdLock } from 'react-icons/md';
 import { RiArrowGoBackFill } from 'react-icons/ri';
-import { IToken } from './auth/lib/interfaces';
 
 interface IProps {
   user: IToken['user'];
