@@ -27,7 +27,6 @@ const CategoriesSection: React.FC<IProps> = ({ className, categories }) => {
           <div className="slider_content">
             <Swiper
               loop
-              centeredSlides
               spaceBetween={25}
               slidesPerView={1}
               breakpoints={{

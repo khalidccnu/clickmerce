@@ -315,11 +315,13 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
               <Col xs={24}>
                 <Typography.Text strong>Categories: </Typography.Text>
                 <Space wrap>
-                  {product?.categories?.map((c) => (
-                    <Tag key={c.id} color="geekblue">
-                      {c.category?.name}
-                    </Tag>
-                  ))}
+                  {Toolbox.isEmpty(product?.categories)
+                    ? 'N/A'
+                    : product?.categories?.map((c) => (
+                        <Tag key={c.id} color="geekblue">
+                          {c.category?.name}
+                        </Tag>
+                      ))}
                 </Space>
               </Col>
             </Row>

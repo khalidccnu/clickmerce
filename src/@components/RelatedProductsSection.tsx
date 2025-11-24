@@ -6,6 +6,7 @@ import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
+import { Toolbox } from '@lib/utils/toolbox';
 import {
   cartItemIdxFn,
   hasProductInCartFn,
@@ -14,7 +15,7 @@ import {
 } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ProductsWebHooks } from '@modules/products/lib/webHooks';
-import { Col, message, Row, Skeleton } from 'antd';
+import { Col, Empty, message, Row, Skeleton } from 'antd';
 import React, { useState } from 'react';
 import ProductCard from './ProductCard';
 import ProductViewVariations from './ProductViewVariations';
@@ -174,17 +175,23 @@ const RelatedProductsSection: React.FC<IProps> = ({ className, categoryId }) => 
           className="mb-8 lg:mb-16"
         />
         <Row gutter={[16, 16]}>
-          {productsQuery.isLoading
-            ? [...Array(4)].map((_, idx) => (
-                <Col key={idx} xs={24} md={12} lg={8} xl={6}>
-                  <Skeleton active paragraph={{ rows: 4 }} />
-                </Col>
-              ))
-            : productsQuery.data?.data?.map((product) => (
-                <Col key={product.id} xs={24} md={12} lg={8} xl={6}>
-                  <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
-                </Col>
-              ))}
+          {productsQuery.isLoading ? (
+            [...Array(4)].map((_, idx) => (
+              <Col key={idx} xs={24} md={12} lg={8} xl={6}>
+                <Skeleton active paragraph={{ rows: 4 }} />
+              </Col>
+            ))
+          ) : Toolbox.isEmpty(productsQuery.data?.data) ? (
+            <Col xs={24}>
+              <Empty description="No products found" />
+            </Col>
+          ) : (
+            productsQuery.data?.data?.map((product) => (
+              <Col key={product.id} xs={24} md={12} lg={8} xl={6}>
+                <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
+              </Col>
+            ))
+          )}
         </Row>
       </div>
       <BaseModalWithoutClicker

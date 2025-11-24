@@ -3,6 +3,7 @@ import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { IBasePageProps } from '@base/interfaces';
 import BannerSection from '@components/BannerSection';
 import CategoriesSection from '@components/CategoriesSection';
+import ProductsSearchForm from '@components/ProductsSearchForm';
 import ProductsSection from '@components/ProductsSection';
 import RecommendedProductsSection from '@components/RecommendedProductsSection';
 import ReviewsSection from '@components/ReviewsSection';
@@ -49,6 +50,9 @@ const HomePage: NextPage<IProps> = ({
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
+      <div className="container my-4">
+        <ProductsSearchForm className="lg:hidden" />
+      </div>
       {Toolbox.isEmpty(banners) || <BannerSection banners={banners} />}
       {Toolbox.isEmpty(products) || <ProductsSection products={products} className="py-8 md:py-16" />}
       {Toolbox.isEmpty(recommendProducts) || (

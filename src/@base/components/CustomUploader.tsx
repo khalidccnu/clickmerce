@@ -159,12 +159,14 @@ const CustomUploader: React.FC<TProps> = ({
   };
 
   useEffect(() => {
-    if (Toolbox.isEmpty(initialValues?.filter(Boolean))) {
+    const validUrls = (initialValues || []).filter((item) => typeof item === 'string' && item.trim() !== '');
+
+    if (Toolbox.isEmpty(validUrls)) {
       setFileList([]);
       return;
     }
 
-    const purifiedFileList = initialValues.map((url, idx) => ({
+    const purifiedFileList = validUrls.map((url, idx) => ({
       uid: `-${idx}`,
       name: `file-${idx}`,
       status: 'done',
@@ -172,7 +174,7 @@ const CustomUploader: React.FC<TProps> = ({
     }));
 
     setFileList(purifiedFileList as UploadFile[]);
-    lastUrlsRef.current = initialValues;
+    lastUrlsRef.current = validUrls;
   }, [initialValues]);
 
   const uploadCommonProps = {

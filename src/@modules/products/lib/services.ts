@@ -128,7 +128,11 @@ export const ProductsServices = {
         await SupabaseAdapter.batchCreate(
           supabaseBrowserClient,
           Database.productCategories,
-          categories.map((category) => ({ ...category, category_id: category.id, product_id: data?.id })),
+          categories.map((category) => {
+            const { id, ...rest } = category;
+
+            return { ...rest, category_id: id, product_id: data?.id };
+          }),
         );
       }
 
@@ -199,7 +203,11 @@ export const ProductsServices = {
           await SupabaseAdapter.batchCreate(
             supabaseBrowserClient,
             Database.productCategories,
-            updatedCategories.map((category) => ({ ...category, category_id: category.id, product_id: payload.id })),
+            updatedCategories.map((category) => {
+              const { id, ...rest } = category;
+
+              return { ...rest, category_id: id, product_id: payload.id };
+            }),
           );
         }
       }
