@@ -35,7 +35,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { category_id, is_low_stock, ...restFilters } = data;
+  const { category_ids, is_low_stock, except_ids, ...restFilters } = data;
   const newFilters: any = { ...restFilters };
 
   if (is_low_stock) {
@@ -56,9 +56,20 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
     }
   }
 
-  if (category_id) {
-    if (!newFilters.textFilters) newFilters.textFilters = {};
-    newFilters.textFilters = { conditions: { product_categories: { category_id: { eq: category_id } } } };
+  if (Toolbox.isNotEmpty(category_ids)) {
+    if (!newFilters.textFilters) newFilters.textFilters = { conditions: {} };
+
+    newFilters.textFilters.conditions.product_categories = {
+      category_id: { in: JSON.parse(category_ids as string) },
+    };
+  }
+
+  if (Toolbox.isNotEmpty(except_ids)) {
+    if (!newFilters.textFilters) newFilters.textFilters = { conditions: {} };
+
+    newFilters.textFilters.conditions.id = {
+      notin: JSON.parse(except_ids as string),
+    };
   }
 
   // if (is_special) {

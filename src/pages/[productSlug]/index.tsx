@@ -39,7 +39,11 @@ const ProductPage: NextPage<IProps> = ({ settingsIdentity, product, reviews, rev
       image={settingsIdentity?.social_image_url}
     >
       <ProductViewSection product={product} reviews={reviews} reviewsMeta={reviewsMeta} className="py-8 md:py-16" />
-      <RelatedProductsSection categoryId={product.categories?.[0]?.id} className="pb-8 md:pb-16" />
+      <RelatedProductsSection
+        productId={product?.id}
+        categoryIds={product?.categories?.map((c) => c?.category?.id)}
+        className="pb-8 md:pb-16"
+      />
     </PageWrapper>
   );
 };

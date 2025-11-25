@@ -1,6 +1,7 @@
 import BaseSearch from '@base/components/BaseSearch';
 import PageHeader from '@base/components/PageHeader';
 import PageWrapper from '@base/container/PageWrapper';
+import { TId } from '@base/interfaces';
 import { Toolbox } from '@lib/utils/toolbox';
 import Authorization from '@modules/auth/components/Authorization';
 import WithAuthorization from '@modules/auth/components/WithAuthorization';
@@ -26,13 +27,19 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const [formInstance] = Form.useForm();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const { page = '1', limit = '10', ...rest } = Toolbox.parseQueryParams<IProductsFilter>(router.asPath);
+  const {
+    page = '1',
+    limit = '10',
+    category_id,
+    ...rest
+  } = Toolbox.parseQueryParams<IProductsFilter & { category_id?: TId }>(router.asPath);
 
   const productsQuery = ProductsHooks.useFind({
     options: {
       ...rest,
       page,
       limit,
+      category_ids: category_id ? [category_id] : undefined,
       search_field: 'name',
     },
   });

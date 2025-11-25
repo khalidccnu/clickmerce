@@ -17,7 +17,7 @@ interface IProps {
 
 const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
   const router = useRouter();
-  const { category_id } = Toolbox.parseQueryParams<IProductsFilter>(router.asPath);
+  const { category_id } = Toolbox.parseQueryParams<IProductsFilter & { category_id?: TId }>(router.asPath);
   const screens = Grid.useBreakpoint();
   const [isExtended, setExtended] = useState<boolean>(false);
   const [categoryId, setCategoryId] = useState<TId>(null);

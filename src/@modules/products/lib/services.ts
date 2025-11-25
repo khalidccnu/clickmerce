@@ -36,7 +36,7 @@ export const ProductsServices = {
   },
 
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
-    const { category_id, is_low_stock, start_date, end_date, ...restFilters } = filters;
+    const { category_ids, is_low_stock, start_date, end_date, except_ids, ...restFilters } = filters;
     const newFilters: any = { ...restFilters };
 
     if (is_low_stock) {
@@ -57,9 +57,20 @@ export const ProductsServices = {
       }
     }
 
-    if (category_id) {
-      if (!newFilters.textFilters) newFilters.textFilters = {};
-      newFilters.textFilters = { conditions: { product_categories: { category_id: { eq: category_id } } } };
+    if (Toolbox.isNotEmpty(category_ids)) {
+      if (!newFilters.textFilters) newFilters.textFilters = { conditions: {} };
+
+      newFilters.textFilters.conditions.product_categories = {
+        category_id: { in: category_ids },
+      };
+    }
+
+    if (Toolbox.isNotEmpty(except_ids)) {
+      if (!newFilters.textFilters) newFilters.textFilters = { conditions: {} };
+
+      newFilters.textFilters.conditions.id = {
+        notin: except_ids,
+      };
     }
 
     if (start_date) {

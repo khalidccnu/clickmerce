@@ -46,18 +46,30 @@ as $$
   select
     p,
     greatest(
-      similarity(p.name, q),
-      similarity(p.name, regexp_replace(q, '\s+', '', 'g')),
-      (p.name ilike '%' || q || '%')::int * 0.2,
-      (p.name ilike q || '%')::int * 0.3
+      -- fuzzy only for 3+ chars
+      case when length(q) >= 3 then similarity(p.name, q) else 0 end,
+      -- substring match boost
+      case when p.name ilike '%' || q || '%' then
+        case 
+          when length(q) = 1 then 0.4
+          when length(q) = 2 then 0.6
+          else 0.8
+        end
+      else 0 end,
+      -- prefix match boost
+      case when p.name ilike q || '%' then
+        case
+          when length(q) = 1 then 0.5
+          when length(q) = 2 then 0.7
+          else 0.9
+        end
+      else 0 end,
+      -- small base score for force match
+      0.1
     ) as score
   from products p
   where
     p.is_active = true
-    and (
-      p.name ilike '%' || q || '%'
-      or similarity(p.name, q) > 0.2
-    )
   order by score desc, p.name asc
   limit 50;
 $$;

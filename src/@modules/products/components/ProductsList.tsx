@@ -225,7 +225,7 @@ const ProductsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
 
               return rest;
             }),
-            categories: updateItem?.categories?.map((category) => ({ id: category?.id })),
+            categories: updateItem?.categories?.map((category) => ({ id: category?.category_id })),
             is_recommend: updateItem?.is_recommend?.toString(),
             is_active: updateItem?.is_active?.toString(),
           }}

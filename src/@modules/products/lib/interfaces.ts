@@ -13,13 +13,14 @@ import {
 
 export interface IProductsFilter extends IBaseFilter {
   type?: TProductType;
-  category_id?: TId;
+  category_ids?: TId[];
   dosage_form_id?: TId;
   generic_id?: TId;
   supplier_id?: TId;
   is_expired?: string;
   is_low_stock?: string;
   is_recommend?: string;
+  except_ids?: TId[];
 }
 
 export interface IProductImage {

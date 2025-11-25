@@ -30,7 +30,9 @@ export const ProductsWebServices = {
 
   find: async (filters: IProductsFilter): Promise<IProductsResponse> => {
     try {
-      const res = await AxiosInstance.get(`${END_POINT}?${Toolbox.queryNormalizer(filters)}`);
+      const res = await AxiosInstance.get(
+        `${END_POINT}?${Toolbox.queryNormalizer(filters, ['category_ids', 'except_ids'])}`,
+      );
       return Promise.resolve(res?.data);
     } catch (error) {
       throw responseHandlerFn(error);

@@ -1,5 +1,6 @@
 import BaseStateSearch from '@base/components/BaseStateSearch';
 import { Paths } from '@lib/constant/paths';
+import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useTheme from '@lib/hooks/useTheme';
 import { Toolbox } from '@lib/utils/toolbox';
 import { ProductsHooks } from '@modules/products/lib/hooks';
@@ -15,7 +16,18 @@ interface IProps {
 const ProductsSearchForm: React.FC<IProps> = ({ className }) => {
   const router = useRouter();
   const { isDark } = useTheme();
+  const { sendEventFn } = useAnalyticEvent();
   const [searchTerm, setSearchTerm] = useState<string>(null);
+
+  const handleSearchFn = (value: string) => {
+    setSearchTerm(value);
+    sendEventFn({
+      name: 'search',
+      data: {
+        search_term: value,
+      },
+    });
+  };
 
   const productsQuery = ProductsHooks.useFindByFuzzy({
     name: searchTerm,
@@ -92,7 +104,7 @@ const ProductsSearchForm: React.FC<IProps> = ({ className }) => {
           </div>
         )}
       >
-        <BaseStateSearch prefix={<FaSearch />} placeholder="Search products" allowClear onSearch={setSearchTerm} />
+        <BaseStateSearch prefix={<FaSearch />} placeholder="Search products" allowClear onSearch={handleSearchFn} />
       </Dropdown>
     </div>
   );

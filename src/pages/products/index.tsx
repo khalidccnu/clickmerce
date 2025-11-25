@@ -1,6 +1,6 @@
 import BaseHeroWrapper from '@base/components/BaseHeroWrapper';
 import PageWrapper from '@base/container/PageWrapper';
-import { IBasePageProps, IMetaResponse } from '@base/interfaces';
+import { IBasePageProps, IMetaResponse, TId } from '@base/interfaces';
 import ProductsFilter from '@components/ProductsFilter';
 import ProductsSection from '@components/ProductsSection';
 import { Paths } from '@lib/constant/paths';
@@ -52,7 +52,7 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMe
 export default ProductsPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) => {
-  const { page = '1', limit = '12', category_id }: IProductsFilter = query;
+  const { page = '1', limit = '12', category_id }: IProductsFilter & { category_id?: TId } = query;
 
   try {
     const { success: settingsSuccess, data: settings } = await SettingsServices.find();
@@ -71,7 +71,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
     const { data: products, meta: productsMeta } = await ProductsWebServices.find({
       page: page?.toString(),
       limit: limit?.toString(),
-      category_id: category_id?.toString(),
+      category_ids: category_id ? [category_id] : undefined,
       is_active: 'true',
     });
 

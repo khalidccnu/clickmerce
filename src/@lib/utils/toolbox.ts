@@ -215,7 +215,7 @@ export const Toolbox = {
     return query as T;
   },
 
-  queryNormalizer: function (options: any): any {
+  queryNormalizer: function (options: any, exceptKeysFromArray: string[] = []): any {
     const pureOption = this.toCleanObject(options);
 
     if (pureOption?.query) return options.query;
@@ -224,9 +224,9 @@ export const Toolbox = {
     Object.entries(pureOption).forEach(([key, value]: any) => {
       const valueType = Array.isArray(value) ? 'array' : typeof value;
 
-      if (valueType === 'array') {
+      if (valueType === 'array' && !exceptKeysFromArray.includes(key)) {
         return value.map((option: any) => queries.push(`${key}=${option}`));
-      } else if (valueType === 'object') {
+      } else if (valueType === 'object' || exceptKeysFromArray.includes(key)) {
         return queries.push(`${key}=${JSON.stringify(value)}`);
       } else {
         return queries.push(`${key}=${value}`);

@@ -22,10 +22,11 @@ import ProductViewVariations from './ProductViewVariations';
 
 interface IProps {
   className?: string;
-  categoryId: TId;
+  productId: TId;
+  categoryIds: TId[];
 }
 
-const RelatedProductsSection: React.FC<IProps> = ({ className, categoryId }) => {
+const RelatedProductsSection: React.FC<IProps> = ({ className, productId, categoryIds }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const { sendEventFn } = useAnalyticEvent();
   const [order, setOrder] = useLocalState(States.order);
@@ -154,10 +155,15 @@ const RelatedProductsSection: React.FC<IProps> = ({ className, categoryId }) => 
   };
 
   const productsQuery = ProductsWebHooks.useFind({
+    config: {
+      queryKey: [],
+      enabled: Toolbox.isNotEmpty(categoryIds),
+    },
     options: {
       page: '1',
       limit: '12',
-      category_id: categoryId,
+      category_ids: categoryIds,
+      except_ids: [productId],
     },
   });
 

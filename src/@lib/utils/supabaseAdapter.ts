@@ -749,7 +749,7 @@ export const SupabaseAdapter = {
         if (filter.type && filter.column) {
           if (Array.isArray(filter.value) && (filter.type === 'in' || filter.type === 'notin')) {
             if (filter.type === 'in') query = query.in(filter.column, filter.value);
-            if (filter.type === 'notin') query = query.not(filter.column, 'in', filter.value);
+            if (filter.type === 'notin') query = query.not(filter.column, 'in', `(${filter.value.join(',')})`);
           } else if (typeof query[filter.type] === 'function') {
             query = query[filter.type](filter.column, filter.value);
           }
@@ -897,7 +897,17 @@ const recursivelyTraverseFilterFn = (query, filters, type) => {
 
   if (filterType === 'or') {
     const orConditions = flattenConditions
-      .map(({ field, condition, value }) => `${field}.${condition}.${value}`)
+      .map(({ field, condition, value }) => {
+        if (condition === 'notin' && Array.isArray(value)) {
+          return `not.${field}.in.(${value.join(',')})`;
+        }
+
+        if (condition === 'in' && Array.isArray(value)) {
+          return `${field}.${condition}.(${value.join(',')})`;
+        }
+
+        return `${field}.${condition}.${value}`;
+      })
       .join(',');
 
     if (orConditions) query = query.or(orConditions);
@@ -917,7 +927,7 @@ const applyConditionsToQueryFn = (query, fieldName, conditions, filterType) => {
     }
 
     if ('notin' in conditions && Array.isArray(conditions.notin)) {
-      query = query.not(fieldName, 'in', conditions.notin);
+      query = query.not(fieldName, 'in', `(${conditions.notin.join(',')})`);
     }
 
     if ('like' in conditions && conditions.like !== undefined) {
@@ -935,7 +945,7 @@ const applyConditionsToQueryFn = (query, fieldName, conditions, filterType) => {
     }
 
     if ('notin' in conditions && Array.isArray(conditions.notin)) {
-      query = query.not(fieldName, 'in', conditions.notin);
+      query = query.not(fieldName, 'in', `(${conditions.notin.join(',')})`);
     }
 
     if ('gt' in conditions && conditions.gt !== undefined) {
@@ -961,7 +971,7 @@ const applyConditionsToQueryFn = (query, fieldName, conditions, filterType) => {
     }
 
     if ('notin' in conditions && Array.isArray(conditions.notin)) {
-      query = query.not(fieldName, 'in', conditions.notin);
+      query = query.not(fieldName, 'in', `(${conditions.notin.join(',')})`);
     }
 
     if ('gt' in conditions && conditions.gt !== undefined) {
