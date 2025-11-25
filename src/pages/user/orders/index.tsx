@@ -2,12 +2,14 @@ import { HomeOutlined } from '@ant-design/icons';
 import PageWrapper from '@base/container/PageWrapper';
 import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { Paths } from '@lib/constant/paths';
+import { Toolbox } from '@lib/utils/toolbox';
 import { OrdersHooks } from '@modules/orders/lib/hooks';
 import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
 import { SettingsServices } from '@modules/settings/lib/services';
-import { Breadcrumb, Pagination } from 'antd';
+import { Breadcrumb, Button, Empty, Pagination, Skeleton } from 'antd';
 import { GetServerSideProps, NextPage } from 'next';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 const OrderCard = dynamic(() => import('@components/OrderCard'), { ssr: false });
@@ -17,6 +19,8 @@ interface IProps {
 }
 
 const OrdersPage: NextPage<IProps> = ({ settingsIdentity }) => {
+  const router = useRouter();
+
   const [ordersOptions, setOrdersOptions] = useState({
     page: '1',
     limit: '10',
@@ -51,9 +55,17 @@ const OrdersPage: NextPage<IProps> = ({ settingsIdentity }) => {
         ]}
       />
       <div className="mt-8 grid grid-cols-1 gap-4">
-        {ordersQuery.data?.data.map((order) => (
-          <OrderCard key={order.id} order={order} />
-        ))}
+        {ordersQuery.isLoading ? (
+          [...Array(2)].map((_, idx) => <Skeleton key={idx} active paragraph={{ rows: 5 }} />)
+        ) : Toolbox.isEmpty(ordersQuery.data?.data) ? (
+          <Empty description="No orders found">
+            <Button type="primary" onClick={() => router.push(Paths.products.root)}>
+              Shop Now
+            </Button>
+          </Empty>
+        ) : (
+          ordersQuery.data?.data.map((order) => <OrderCard key={order.id} order={order} />)
+        )}
       </div>
       {ordersQuery.data?.meta?.total > +ordersOptions.limit && (
         <Pagination

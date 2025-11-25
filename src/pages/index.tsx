@@ -1,6 +1,6 @@
 import PageWrapper from '@base/container/PageWrapper';
 import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
-import { IBasePageProps } from '@base/interfaces';
+import { IBasePageProps, IMetaResponse } from '@base/interfaces';
 import BannerSection from '@components/BannerSection';
 import CategoriesSliderSection from '@components/CategoriesSliderSection';
 import ProductsSearchForm from '@components/ProductsSearchForm';
@@ -27,6 +27,7 @@ import { GetServerSideProps, NextPage } from 'next';
 interface IProps extends IBasePageProps {
   banners: IBanner[];
   categories: ICategory[];
+  categoriesMeta: IMetaResponse;
   products: IProduct[];
   recommendProducts: IProduct[];
   features: IFeature[];
@@ -37,6 +38,7 @@ const HomePage: NextPage<IProps> = ({
   settingsIdentity,
   banners,
   categories,
+  categoriesMeta,
   products,
   recommendProducts,
   features,
@@ -65,7 +67,9 @@ const HomePage: NextPage<IProps> = ({
       {Toolbox.isEmpty(reviews) || (
         <ReviewsSection reviews={reviews} className="py-8 md:py-16 bg-white dark:bg-[var(--color-rich-black)]" />
       )}
-      {Toolbox.isEmpty(categories) || <CategoriesSliderSection categories={categories} className="py-8 md:py-16" />}
+      {Toolbox.isEmpty(categories) || (
+        <CategoriesSliderSection categories={categories} categoriesMeta={categoriesMeta} className="py-8 md:py-16" />
+      )}
     </PageWrapper>
   );
 };
@@ -94,7 +98,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       sort_order: ENUM_SORT_ORDER_TYPES.DESC,
     });
 
-    const { data: categories } = await CategoriesServices.find({
+    const { data: categories, meta: categoriesMeta } = await CategoriesServices.find({
       page: '1',
       limit: '12',
       is_active: 'true',
@@ -132,6 +136,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
         pages: pages ?? [],
         banners: banners ?? [],
         categories: categories ?? [],
+        categoriesMeta: categoriesMeta ?? null,
         products: products ?? [],
         recommendProducts: recommendProducts ?? [],
         features: features ?? [],

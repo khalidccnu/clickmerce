@@ -35,14 +35,15 @@ export async function handleGetSettings(
   res: NextApiResponse,
   supabase?: SupabaseClient,
 ): Promise<IBaseResponse<ISettings> | void> {
-  const { token } = getServerAuthSession(req);
+  const { token, user } = getServerAuthSession(req);
+  const settingsCallable = token && user?.is_admin;
 
   const supabaseClient = supabase || createSupabaseServerClient(req, res);
 
   try {
     const result = await SupabaseAdapter.find<ISettings>(
       supabaseClient,
-      token || supabase ? Database.settings : Database.settings_view,
+      settingsCallable || supabase ? Database.settings : Database.settings_view,
     );
 
     if (!result.success) {
@@ -57,7 +58,7 @@ export async function handleGetSettings(
       return res.status(result.statusCode || 400).json(response);
     }
 
-    if (!token && !supabase) {
+    if (!settingsCallable && !supabase) {
       const response: IBaseResponse = {
         success: true,
         statusCode: 200,

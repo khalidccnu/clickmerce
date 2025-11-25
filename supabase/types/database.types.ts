@@ -298,6 +298,36 @@ export type Database = {
         };
         Relationships: [];
       };
+      notices: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          name: string;
+          updated_at: string;
+          url: string | null;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          name: string;
+          updated_at?: string;
+          url?: string | null;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          is_active?: boolean;
+          name?: string;
+          updated_at?: string;
+          url?: string | null;
+        };
+        Relationships: [];
+      };
       order_payment_requests: {
         Row: {
           code: string | null;
@@ -1333,7 +1363,7 @@ export type Database = {
       search_products: {
         Args: { q: string };
         Returns: {
-          product: Database['public']['Tables']['products']['Row'];
+          product: Json;
           score: number;
         }[];
       };

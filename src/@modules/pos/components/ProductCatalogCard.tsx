@@ -63,9 +63,10 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
             <Image
               src={featuredImage?.url}
               alt={product.name}
-              className="rounded-xl  object-cover"
-              wrapperClassName="[&_.ant-image-mask]:rounded-xl w-full"
+              wrapperStyle={{ display: 'block' }}
+              wrapperClassName="[&_.ant-image-mask]:rounded-xl"
               style={{ height: 288, width: '100%' }}
+              className="rounded-xl object-cover"
             />
           </Badge.Ribbon>
         </div>

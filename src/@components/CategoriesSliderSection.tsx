@@ -1,4 +1,5 @@
 import SectionIntro from '@base/components/SectionIntro';
+import { IMetaResponse } from '@base/interfaces';
 import { cn } from '@lib/utils/cn';
 import { ICategory } from '@modules/categories/lib/interfaces';
 import React from 'react';
@@ -8,9 +9,10 @@ import CategoryCard from './CategoryCard';
 interface IProps {
   className?: string;
   categories: ICategory[];
+  categoriesMeta: IMetaResponse;
 }
 
-const CategoriesSliderSection: React.FC<IProps> = ({ className, categories }) => {
+const CategoriesSliderSection: React.FC<IProps> = ({ className, categories, categoriesMeta }) => {
   return (
     <section className={cn('categories_slider_section', className)}>
       <div className="container">
@@ -51,9 +53,11 @@ const CategoriesSliderSection: React.FC<IProps> = ({ className, categories }) =>
                   </SwiperSlide>
                 );
               })}
-              <SwiperSlide key="placeholder">
-                <CategoryCard isPlaceholder category={null} />
-              </SwiperSlide>
+              {categoriesMeta.total > categoriesMeta.limit && (
+                <SwiperSlide key="placeholder">
+                  <CategoryCard isPlaceholder category={null} />
+                </SwiperSlide>
+              )}
             </Swiper>
           </div>
         </div>

@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React from 'react';
+import { BiCategory } from 'react-icons/bi';
 import { FaHome, FaShoppingBag, FaTimes } from 'react-icons/fa';
 
 const menuItems = [
@@ -11,6 +12,11 @@ const menuItems = [
     name: 'Home',
     path: Paths.root,
     icon: <FaHome size={16} />,
+  },
+  {
+    name: 'Categories',
+    path: Paths.categories,
+    icon: <BiCategory size={16} />,
   },
   {
     name: 'Products',
@@ -50,7 +56,7 @@ const LandingMenu: React.FC<IProps> = ({ isOpen, onChangeOpen }) => {
           </Button>
         </div>
         <div className="pt-16 px-8">
-          <ul className="space-y-1 text-lg font-medium">
+          <ul className="space-y-1 text-md font-medium">
             {menuItems.map(({ name, path, icon }, idx) => {
               const isActive = pathname === path;
 
