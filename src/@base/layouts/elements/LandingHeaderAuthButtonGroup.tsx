@@ -21,11 +21,11 @@ const LandingHeaderAuthButtonGroup: React.FC<IProps> = ({ className }) => {
   const { isLoading, isAuthenticate, user } = useAuthSession();
 
   return (
-    <div className={cn('btn_wrapper flex items-center gap-2 md:gap-4', className)}>
+    <div className={cn('landing_header_auth_button_group flex items-center gap-2 md:gap-4', className)}>
       {isLoading ||
         (isAuthenticate ? (
           <>
-            <CustomLink href={Paths.user.uRoot}>
+            <CustomLink href={user?.is_admin ? Paths.admin.aRoot : Paths.user.uRoot}>
               <Avatar>{user?.name?.charAt(0)?.toUpperCase()}</Avatar>
             </CustomLink>
             <Button type="primary" ghost onClick={logoutFn}>

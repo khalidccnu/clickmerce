@@ -218,8 +218,7 @@ const ProductsSection: React.FC<IProps> = ({
       <style jsx global>{`
         .products_section_pagination {
           width: fit-content;
-          margin-inline: auto;
-          margin-top: 3rem;
+          margin: 3rem auto 0 !important;
           a {
             color: var(--color-gray-700);
           }

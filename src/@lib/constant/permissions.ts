@@ -117,6 +117,11 @@ export const Permissions = {
   REVIEWS_UPDATE: 'reviews:update',
   REVIEWS_DELETE: 'reviews:delete',
 
+  NOTICES_READ: 'notices:read',
+  NOTICES_WRITE: 'notices:write',
+  NOTICES_UPDATE: 'notices:update',
+  NOTICES_DELETE: 'notices:delete',
+
   PAGES_READ: 'pages:read',
   PAGES_WRITE: 'pages:write',
   PAGES_UPDATE: 'pages:update',

@@ -103,8 +103,8 @@ const UserLayout: React.FC<IProps> = ({ children }) => {
                 className="[&_.ant-menu]:!bg-transparent [&_.ant-menu]:!border-none designed_scrollbar"
               >
                 {isReady && (
-                  <div className="place-self-center place-content-center text-center space-y-2">
-                    <div className="bg-gray-300 rounded-full">
+                  <div className="text-center space-y-2">
+                    <div className="bg-gray-300 rounded-full w-28 h-28 mx-auto flex items-center justify-center">
                       <Image
                         src={Toolbox.generateCharacterSvg({ character: user?.name, type: 'url' })}
                         alt={user?.name}

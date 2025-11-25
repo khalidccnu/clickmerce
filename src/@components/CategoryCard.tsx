@@ -8,31 +8,60 @@ import React from 'react';
 
 interface IProps {
   className?: string;
+  isPlaceholder?: boolean;
   category: ICategory;
 }
 
-const CategoryCard: React.FC<IProps> = ({ className, category }) => {
+const CategoryCard: React.FC<IProps> = ({ className, isPlaceholder = false, category }) => {
+  const name = category?.name ?? '';
+  const imageSrc = category?.image || Toolbox.generateCharacterSvg({ character: name, type: 'url' });
+
   return (
     <div className={cn('category_card relative pl-2', className)}>
-      <CustomLink
-        type="hoverable"
-        title={category?.name}
-        href={{ pathname: Paths.products.root, query: { category_id: category?.id } }}
-      />
-      <div className="image_wrapper relative">
-        <div className="absolute w-full h-full bg-[var(--color-primary)] rounded-full top-2 -left-2" />
-        <div className="bg-gray-200 dark:bg-gray-200/70 rounded-full relative">
-          <Image
-            width={300}
-            height={300}
-            quality={100}
-            src={category?.image || Toolbox.generateCharacterSvg({ character: category?.name, type: 'url' })}
-            alt={category?.name}
-            className="w-full h-auto aspect-square rounded-full"
+      {isPlaceholder ? (
+        <React.Fragment>
+          <CustomLink type="hoverable" title="More Categories" href={Paths.categories} />
+          <div className="image_wrapper relative">
+            <div className="absolute w-full h-full bg-[var(--color-primary)] rounded-full top-2 -left-2" />
+            <div className="bg-gray-200 dark:bg-gray-200/70 rounded-full relative">
+              <Image
+                width={300}
+                height={300}
+                quality={100}
+                src="/images/dots_horizontal.svg"
+                alt="More Categories"
+                className="w-full h-auto aspect-square rounded-full"
+              />
+            </div>
+          </div>
+          <p className="text-lg font-semibold capitalize text-center mt-4 dark:text-white">More</p>
+        </React.Fragment>
+      ) : (
+        <React.Fragment>
+          <CustomLink
+            type="hoverable"
+            title={name}
+            href={{
+              pathname: Paths.products.root,
+              query: { category_id: category?.id },
+            }}
           />
-        </div>
-      </div>
-      <p className="text-lg font-semibold capitalize text-center mt-4 dark:text-white">{category?.name}</p>
+          <div className="image_wrapper relative">
+            <div className="absolute w-full h-full bg-[var(--color-primary)] rounded-full top-2 -left-2" />
+            <div className="bg-gray-200 dark:bg-gray-200/70 rounded-full relative">
+              <Image
+                width={300}
+                height={300}
+                quality={100}
+                src={imageSrc}
+                alt={name}
+                className="w-full h-auto aspect-square rounded-full"
+              />
+            </div>
+          </div>
+          <p className="text-lg font-semibold capitalize text-center mt-4 dark:text-white">{name}</p>
+        </React.Fragment>
+      )}
     </div>
   );
 };

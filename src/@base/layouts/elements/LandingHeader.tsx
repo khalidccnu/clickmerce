@@ -11,6 +11,7 @@ import dynamic from 'next/dynamic';
 import React, { useState } from 'react';
 import { BsCart3, BsHeart } from 'react-icons/bs';
 import { FaBars } from 'react-icons/fa';
+import LandingHeaderNotices from './LandingHeaderNotices';
 import LandingMenu from './LandingMenu';
 
 const LandingHeaderAuthButtonGroup = dynamic(() => import('./LandingHeaderAuthButtonGroup'), { ssr: false });
@@ -28,6 +29,7 @@ const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref)
     <React.Fragment>
       <header className={cn('header', className)} ref={ref}>
         <div className="container">
+          <LandingHeaderNotices className="mb-4" />
           <div className="wrapper flex items-center justify-between gap-2 md:gap-4">
             <CustomLink href={Paths.root}>
               <BrandLogo />

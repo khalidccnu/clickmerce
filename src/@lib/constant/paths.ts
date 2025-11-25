@@ -16,6 +16,7 @@ export const Paths = {
     root: '/products',
     toSlug: (slug: TId) => `/${slug}`,
   },
+  categories: '/categories',
   about: '/about',
   contact: '/contact',
   privacyPolicy: '/privacy-policy',
@@ -137,6 +138,10 @@ export const Paths = {
       reviews: {
         root: '/admin/cms/reviews',
         list: '/admin/cms/reviews/list',
+      },
+      notices: {
+        root: '/admin/cms/notices',
+        list: '/admin/cms/notices/list',
       },
       pages: {
         root: '/admin/cms/pages',

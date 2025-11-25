@@ -14,7 +14,7 @@ export const DashboardHooks = {
     const { queryKey, ...rest } = config ?? {};
 
     return useQuery({
-      queryKey: [...(queryKey || []), DashboardServices.NAME, options],
+      queryKey: [...(queryKey || []), 'statistics', DashboardServices.NAME, options],
       queryFn: () => DashboardServices.findStatistics(options),
       ...rest,
     });
@@ -24,7 +24,7 @@ export const DashboardHooks = {
     const { queryKey, ...rest } = config ?? {};
 
     return useQuery({
-      queryKey: [...(queryKey || []), DashboardServices.NAME],
+      queryKey: [...(queryKey || []), 'quick-statistics', DashboardServices.NAME],
       queryFn: DashboardServices.findQuickStatistics,
       ...rest,
     });
@@ -34,7 +34,7 @@ export const DashboardHooks = {
     const { queryKey, ...rest } = config ?? {};
 
     return useQuery({
-      queryKey: [...(queryKey || []), DashboardServices.NAME],
+      queryKey: [...(queryKey || []), 'analyses', DashboardServices.NAME],
       queryFn: DashboardServices.findAnalyses,
       ...rest,
     });

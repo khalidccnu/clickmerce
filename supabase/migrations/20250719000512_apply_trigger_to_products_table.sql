@@ -38,38 +38,38 @@ $$ LANGUAGE plpgsql;
 -- Function to search products with similarity scoring
 create or replace function search_products(q text)
 returns table (
-  product products,
+  product jsonb,
   score real
 )
-language sql
+language plpgsql
+security definer
+set search_path = public
 as $$
+begin
+  return query
   select
-    p,
+    to_jsonb(p.*) as product,
     greatest(
-      -- fuzzy only for 3+ chars
       case when length(q) >= 3 then similarity(p.name, q) else 0 end,
-      -- substring match boost
       case when p.name ilike '%' || q || '%' then
-        case 
-          when length(q) = 1 then 0.4
-          when length(q) = 2 then 0.6
-          else 0.8
-        end
+        case when length(q)=1 then 0.4
+             when length(q)=2 then 0.6
+             else 0.8 end
       else 0 end,
-      -- prefix match boost
       case when p.name ilike q || '%' then
-        case
-          when length(q) = 1 then 0.5
-          when length(q) = 2 then 0.7
-          else 0.9
-        end
+        case when length(q)=1 then 0.5
+             when length(q)=2 then 0.7
+             else 0.9 end
       else 0 end,
-      -- small base score for force match
       0.1
     ) as score
   from products p
-  where
-    p.is_active = true
+  where p.is_active = true
   order by score desc, p.name asc
   limit 50;
+end;
 $$;
+
+-- Grant execute permissions
+grant execute on function search_products(text) to anon;
+grant execute on function search_products(text) to authenticated;

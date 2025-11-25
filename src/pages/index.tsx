@@ -2,7 +2,7 @@ import PageWrapper from '@base/container/PageWrapper';
 import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import { IBasePageProps } from '@base/interfaces';
 import BannerSection from '@components/BannerSection';
-import CategoriesSection from '@components/CategoriesSection';
+import CategoriesSliderSection from '@components/CategoriesSliderSection';
 import ProductsSearchForm from '@components/ProductsSearchForm';
 import ProductsSection from '@components/ProductsSection';
 import RecommendedProductsSection from '@components/RecommendedProductsSection';
@@ -65,7 +65,7 @@ const HomePage: NextPage<IProps> = ({
       {Toolbox.isEmpty(reviews) || (
         <ReviewsSection reviews={reviews} className="py-8 md:py-16 bg-white dark:bg-[var(--color-rich-black)]" />
       )}
-      {Toolbox.isEmpty(categories) || <CategoriesSection categories={categories} className="py-8 md:py-16" />}
+      {Toolbox.isEmpty(categories) || <CategoriesSliderSection categories={categories} className="py-8 md:py-16" />}
     </PageWrapper>
   );
 };

@@ -57,11 +57,7 @@ const ProductViewReviews: React.FC<IProps> = ({ className, productId, reviews, r
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">{renderReviews}</div>
       {reviewsMeta?.total > +reviewsOptions.limit && (
         <Pagination
-          style={{
-            width: 'fit-content',
-            marginInline: 'auto',
-            marginTop: 16,
-          }}
+          className="product_view_reviews_pagination"
           defaultCurrent={+reviewsOptions?.page}
           total={reviewsMeta?.total}
           pageSize={+reviewsOptions?.limit}
@@ -71,6 +67,29 @@ const ProductViewReviews: React.FC<IProps> = ({ className, productId, reviews, r
           }}
         />
       )}
+      <style jsx global>{`
+        .product_view_reviews_pagination {
+          width: fit-content;
+          margin: 3rem auto 0 !important;
+          a {
+            color: var(--color-gray-700);
+          }
+          .ant-pagination-disabled {
+            a {
+              color: var(--color-gray-300);
+            }
+          }
+          .ant-pagination-item {
+            &.ant-pagination-item-active {
+              color: var(--color-primary);
+              border-color: var(--color-primary);
+              a {
+                color: inherit;
+              }
+            }
+          }
+        }
+      `}</style>
     </div>
   );
 };

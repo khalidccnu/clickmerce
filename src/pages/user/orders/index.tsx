@@ -57,11 +57,7 @@ const OrdersPage: NextPage<IProps> = ({ settingsIdentity }) => {
       </div>
       {ordersQuery.data?.meta?.total > +ordersOptions.limit && (
         <Pagination
-          style={{
-            width: 'fit-content',
-            marginInlineStart: 'auto',
-            marginTop: 32,
-          }}
+          className="orders_page_pagination"
           defaultCurrent={+ordersOptions?.page}
           total={ordersQuery.data?.meta?.total}
           pageSize={+ordersOptions?.limit}
@@ -70,6 +66,29 @@ const OrdersPage: NextPage<IProps> = ({ settingsIdentity }) => {
           }}
         />
       )}
+      <style jsx global>{`
+        .orders_page_pagination {
+          width: fit-content;
+          margin: 3rem auto 0 !important;
+          a {
+            color: var(--color-gray-700);
+          }
+          .ant-pagination-disabled {
+            a {
+              color: var(--color-gray-300);
+            }
+          }
+          .ant-pagination-item {
+            &.ant-pagination-item-active {
+              color: var(--color-primary);
+              border-color: var(--color-primary);
+              a {
+                color: inherit;
+              }
+            }
+          }
+        }
+      `}</style>
     </PageWrapper>
   );
 };
