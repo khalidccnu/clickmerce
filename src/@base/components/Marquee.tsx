@@ -24,7 +24,10 @@ const Marquee: React.FC<IProps> = ({ className, pauseOnHover = true, duplicateCo
       <div className={cn('marquee', pauseOnHover && 'pause_on_hover', className)}>
         <div className="content" ref={contentRef} style={{ animationDuration: `${duration}s` }}>
           {[...Array(duplicateCount)].map((_, idx) => (
-            <React.Fragment key={idx}>{children} •</React.Fragment>
+            <React.Fragment key={idx}>
+              {children}
+              <span className="separator">•</span>
+            </React.Fragment>
           ))}
         </div>
       </div>
@@ -50,6 +53,9 @@ const Marquee: React.FC<IProps> = ({ className, pauseOnHover = true, duplicateCo
             animation-name: marquee;
             animation-timing-function: linear;
             animation-iteration-count: infinite;
+            .separator {
+              color: var(--color-gray-500);
+            }
           }
         }
         @keyframes marquee {

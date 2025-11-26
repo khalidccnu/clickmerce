@@ -2,7 +2,7 @@ footer {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #111827;
+  background-color: #f1f1f3;
   padding-block: 3rem;
   @include lg {
     position: fixed;
@@ -32,8 +32,8 @@ footer {
           align-items: center;
           width: 2rem;
           height: 2rem;
-          background-color: #192947;
-          color: var(--color-gray-100);
+          background-color: #d3d3d3;
+          color: #71797e;
           transition: color 500ms;
           &:hover {
             color: var(--color-primary);
@@ -61,7 +61,7 @@ footer {
       gap: 5rem;
     }
     .item {
-      color: var(--color-gray-400);
+      color: #6c757d;
       &:nth-child(2) {
         @include md {
           order: 1;
@@ -72,7 +72,7 @@ footer {
         }
       }
       .title {
-        color: var(--color-white);
+        color: #343a40;
         margin-bottom: 1rem;
       }
       .description {
@@ -94,7 +94,7 @@ footer {
             width: 1.5rem;
             height: 1.5rem;
             border-radius: 100%;
-            background-color: #131e32;
+            background-color: #d3d3d3;
           }
           a {
             transition: color 500ms;
@@ -108,13 +108,51 @@ footer {
   }
   .bottom {
     padding-top: 1.5rem;
-    color: var(--color-gray-400);
+    color: #6c757d;
     text-align: center;
     a {
       transition: color 500ms;
       &:hover {
         color: var(--color-primary);
       }
+    }
+  }
+}
+
+.dark {
+  footer {
+    background-color: #202020;
+    .top {
+      .social_links_wrapper {
+        .social_link {
+          a {
+            background-color: #2a2a2a;
+            color: #d3d3d3;
+            &:hover {
+              color: var(--color-primary);
+            }
+          }
+        }
+      }
+    }
+    .middle {
+      border-color: rgba(112, 112, 112, 0.1);
+      .item {
+        color: #a9a9a9;
+        .title {
+          color: #fff;
+        }
+        .links_wrapper {
+          .link {
+            .icon_container {
+              background-color: #3a3a3a;
+            }
+          }
+        }
+      }
+    }
+    .bottom {
+      color: #a9a9a9;
     }
   }
 }

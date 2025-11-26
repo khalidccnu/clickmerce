@@ -152,7 +152,7 @@ const LandingFooter = () => {
               <br />
               Developed By -{' '}
               <CustomLink
-                href={{ pathname: 'https://focket.app', query: { ref: Env.webHostUrl } }}
+                href={{ pathname: 'https://focket.app', query: { refcm: Env.webHostUrl } }}
                 target="_blank"
                 className="font-semibold"
               >

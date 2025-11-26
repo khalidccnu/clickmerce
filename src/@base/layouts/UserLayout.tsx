@@ -1,3 +1,4 @@
+import ThemeToggler from '@base/components/ThemeToggler';
 import { States } from '@lib/constant/states';
 import { useClickOutside } from '@lib/hooks/useClickOutside';
 import useLocalState from '@lib/hooks/useLocalState';
@@ -102,21 +103,21 @@ const UserLayout: React.FC<IProps> = ({ children }) => {
                 style={styles.menuWrapper}
                 className="[&_.ant-menu]:!bg-transparent [&_.ant-menu]:!border-none designed_scrollbar"
               >
-                {isReady && (
-                  <div className="text-center space-y-2">
-                    <div className="bg-gray-300 rounded-full w-28 h-28 mx-auto flex items-center justify-center">
-                      <Image
-                        src={Toolbox.generateCharacterSvg({ character: user?.name, type: 'url' })}
-                        alt={user?.name}
-                        width={80}
-                        height={80}
-                      />
-                    </div>
-                    {(isCollapsed && screens.md) || (
+                {isReady &&
+                  ((isCollapsed && screens.md) || (
+                    <div className="text-center space-y-2">
+                      <div className="bg-gray-300 rounded-full w-28 h-28 mx-auto flex items-center justify-center">
+                        <Image
+                          src={Toolbox.generateCharacterSvg({ character: user?.name, type: 'url' })}
+                          alt={user?.name}
+                          width={80}
+                          height={80}
+                        />
+                      </div>
                       <p className="text-lg font-medium text-[var(--color-primary)]">{user?.name}</p>
-                    )}
-                  </div>
-                )}
+                    </div>
+                  ))}
+                {(isCollapsed && screens.md) || <ThemeToggler className="place-self-center" />}
                 <UserMenu
                   className="mt-4"
                   selectedKeys={[pathname]}

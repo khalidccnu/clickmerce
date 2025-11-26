@@ -109,10 +109,10 @@ const ProductsSearchForm: React.FC<IProps> = ({ className, formProps }) => {
       >
         <BaseStateSearch
           allowClear
+          variant="filled"
           prefix={<FaSearch />}
           placeholder="Search products"
           onSearch={handleSearchFn}
-          style={{ border: 'none' }}
           formProps={formProps}
         />
       </Dropdown>

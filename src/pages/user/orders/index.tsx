@@ -64,7 +64,13 @@ const OrdersPage: NextPage<IProps> = ({ settingsIdentity }) => {
             </Button>
           </Empty>
         ) : (
-          ordersQuery.data?.data.map((order) => <OrderCard key={order.id} order={order} />)
+          ordersQuery.data?.data.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              className="hover:bg-[var(--color-gray-50)] dark:hover:bg-[var(--color-rich-black)] transition-colors duration-500"
+            />
+          ))
         )}
       </div>
       {ordersQuery.data?.meta?.total > +ordersOptions.limit && (

@@ -153,6 +153,8 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
         dispatch(loadOrderCustomerId());
         dispatch(loadOrderVatTax());
         dispatch(loadOrderPaymentMethodId());
+        setStatus(ENUM_ORDER_STATUS_TYPES.DELIVERED);
+        setNote(null);
       },
     },
   });
@@ -352,29 +354,6 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                   dispatch(setDeliveryZoneId(value));
                   dispatch(setDeliveryCharge(options?.data?.delivery_service_type?.amount || 0));
                 }}
-                style={{ width: '100%' }}
-                size="large"
-              />
-            </Col>
-            <Col xs={24}>
-              <FloatSelect
-                showSearch
-                virtual={false}
-                placeholder="Status"
-                filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
-                options={orderStatusTypes
-                  .map((orderStatusType) => {
-                    if (orderStatusType === ENUM_ORDER_STATUS_TYPES.CANCELLED) return;
-
-                    return {
-                      key: orderStatusType,
-                      label: Toolbox.toPrettyText(orderStatusType),
-                      value: orderStatusType,
-                    };
-                  })
-                  .filter(Boolean)}
-                value={status}
-                onChange={setStatus}
                 style={{ width: '100%' }}
                 size="large"
               />

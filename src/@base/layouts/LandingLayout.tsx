@@ -70,7 +70,7 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
     <React.Fragment>
       <LandingHeader
         ref={headerRef}
-        className="sticky top-0 left-0 w-full z-50 py-3 bg-blue-50/90 dark:bg-gray-900/90 backdrop-blur-xl transition-transform duration-500"
+        className="sticky top-0 left-0 w-full z-50 py-3 bg-[#fafafa]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-xl transition-transform duration-500"
       />
       <div className="relative bg-[var(--color-gray-50)] dark:bg-[var(--color-dark-gray)] z-10">{children}</div>
       <LandingFooter />
