@@ -28,6 +28,7 @@ export const Database = {
   features: 'features',
   reviews: 'reviews',
   notices: 'notices',
+  popups: 'popups',
   pages: 'pages',
   settings: 'settings',
   settings_view: 'settings_view',

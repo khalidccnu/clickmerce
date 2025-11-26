@@ -3,9 +3,10 @@ import { Paths } from '@lib/constant/paths';
 import { AuthHooks } from '@modules/auth/lib/hooks';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
 import { Menu } from 'antd';
+import { AiOutlineLogout } from 'react-icons/ai';
 import { GrShieldSecurity } from 'react-icons/gr';
 import { LiaCartArrowDownSolid } from 'react-icons/lia';
-import { MdDashboard, MdEdit, MdExitToApp, MdHome, MdLock } from 'react-icons/md';
+import { MdDashboard, MdEdit, MdHome, MdLock } from 'react-icons/md';
 
 interface IProps {
   className?: string;
@@ -63,9 +64,10 @@ const UserMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpenC
           label: <CustomLink href={Paths.user.orders.root}>Orders</CustomLink>,
         },
         {
-          key: 'log-out',
-          icon: <MdExitToApp />,
-          label: <span onClick={logoutFn}>Log Out</span>,
+          key: 'Logout',
+          icon: <AiOutlineLogout />,
+          label: 'Log Out',
+          onClick: logoutFn,
         },
       ]}
     />

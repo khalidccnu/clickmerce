@@ -122,6 +122,11 @@ export const Permissions = {
   NOTICES_UPDATE: 'notices:update',
   NOTICES_DELETE: 'notices:delete',
 
+  POPUPS_READ: 'popups:read',
+  POPUPS_WRITE: 'popups:write',
+  POPUPS_UPDATE: 'popups:update',
+  POPUPS_DELETE: 'popups:delete',
+
   PAGES_READ: 'pages:read',
   PAGES_WRITE: 'pages:write',
   PAGES_UPDATE: 'pages:update',

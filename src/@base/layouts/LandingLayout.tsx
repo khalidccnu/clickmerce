@@ -1,6 +1,10 @@
+import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
+import Popup from '@components/Popup';
 import { States } from '@lib/constant/states';
 import useResize from '@lib/hooks/useResize';
 import useSessionState from '@lib/hooks/useSessionState';
+import { Toolbox } from '@lib/utils/toolbox';
+import { PopupsHooks } from '@modules/popups/lib/hooks';
 import { useRouter } from 'next/router';
 import React, { type PropsWithChildren, useEffect, useState } from 'react';
 import LandingFooter from './elements/LandingFooter';
@@ -36,6 +40,15 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
     }
   };
 
+  const popupsQuery = PopupsHooks.useFind({
+    options: {
+      page: '1',
+      limit: '1',
+      is_active: 'true',
+      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+    },
+  });
+
   useEffect(() => {
     if (headerHeight) setHeaderHeight(headerHeight);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,6 +74,7 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
       />
       <div className="relative bg-[var(--color-gray-50)] dark:bg-[var(--color-dark-gray)] z-10">{children}</div>
       <LandingFooter />
+      {Toolbox.isNotEmpty(popupsQuery.data?.data) && <Popup popup={popupsQuery.data?.data?.[0]} />}
     </React.Fragment>
   );
 };

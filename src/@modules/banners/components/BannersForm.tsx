@@ -71,7 +71,7 @@ const BannersForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', i
                 isCrop
                 type="DRAGGER"
                 listType="picture-card"
-                initialValues={Array.isArray(formValues?.image) ? formValues?.image : [formValues?.image]}
+                initialValues={[formValues?.image]}
                 onFinish={([_, file]) => handleImageUploadFn(file)}
               />
             </Form.Item>

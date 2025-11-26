@@ -23,6 +23,7 @@ import {
   MdOutlineInventory2,
   MdOutlineMap,
   MdOutlineViewCarousel,
+  MdOutlineWindow,
   MdRateReview,
   MdSpaceDashboard,
   MdSwapHoriz,
@@ -296,7 +297,14 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
           key: Paths.admin.cms.root,
           icon: <MdDashboardCustomize />,
           label: 'CMS',
-          allowedPermissions: ['banners:read', 'features:read', 'reviews:read', 'notices:read', 'pages:read'],
+          allowedPermissions: [
+            'banners:read',
+            'features:read',
+            'reviews:read',
+            'notices:read',
+            'popups:read',
+            'pages:read',
+          ],
           children: [
             {
               key: Paths.admin.cms.banners.list,
@@ -347,6 +355,25 @@ const AdminMenu: React.FC<IProps> = ({ className, selectedKeys, openKeys, onOpen
                 </CustomLink>
               ),
               allowedPermissions: ['notices:read'],
+            },
+            {
+              key: Paths.admin.cms.popups.list,
+              icon: <MdOutlineWindow />,
+              label: (
+                <CustomLink
+                  href={{
+                    pathname: Paths.admin.cms.popups.list,
+                    query: {
+                      page: 1,
+                      limit: 10,
+                      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+                    },
+                  }}
+                >
+                  Popups
+                </CustomLink>
+              ),
+              allowedPermissions: ['popups:read'],
             },
             {
               key: Paths.admin.cms.pages.list,

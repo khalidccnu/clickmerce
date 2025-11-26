@@ -143,6 +143,10 @@ export const Paths = {
         root: '/admin/cms/notices',
         list: '/admin/cms/notices/list',
       },
+      popups: {
+        root: '/admin/cms/popups',
+        list: '/admin/cms/popups/list',
+      },
       pages: {
         root: '/admin/cms/pages',
         list: '/admin/cms/pages/list',

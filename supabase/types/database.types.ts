@@ -662,6 +662,39 @@ export type Database = {
           },
         ];
       };
+      popups: {
+        Row: {
+          content: string;
+          created_at: string;
+          id: string;
+          image: string | null;
+          is_active: boolean;
+          name: string;
+          type: string;
+          updated_at: string;
+        };
+        Insert: {
+          content: string;
+          created_at?: string;
+          id?: string;
+          image?: string | null;
+          is_active?: boolean;
+          name: string;
+          type: string;
+          updated_at?: string;
+        };
+        Update: {
+          content?: string;
+          created_at?: string;
+          id?: string;
+          image?: string | null;
+          is_active?: boolean;
+          name?: string;
+          type?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       product_categories: {
         Row: {
           category_id: string;
