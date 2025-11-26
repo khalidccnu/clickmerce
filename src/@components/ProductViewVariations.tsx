@@ -23,7 +23,6 @@ const ProductViewVariations: React.FC<IProps> = ({ product, onAddToCart }) => {
         const hasInCart = hasProductVariationInCartFn(variation.id, order?.cart);
         const isOutOfStock = !variation.quantity;
         const expirationDate = variation.exp ? dayjs(variation.exp) : null;
-        const isExpiringSoon = expirationDate && expirationDate.diff(dayjs(), 'months') < 3;
         const isExpired = expirationDate && expirationDate.isBefore(dayjs(), 'day');
 
         return (
@@ -90,7 +89,7 @@ const ProductViewVariations: React.FC<IProps> = ({ product, onAddToCart }) => {
                 )}
               </div>
             )}
-            {(hasInCart || isOutOfStock || isExpired || isExpiringSoon) && (
+            {(hasInCart || isOutOfStock || isExpired) && (
               <div className="flex gap-2">
                 {hasInCart && (
                   <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-700 rounded-lg">
@@ -105,11 +104,6 @@ const ProductViewVariations: React.FC<IProps> = ({ product, onAddToCart }) => {
                 {!hasInCart && isExpired && (
                   <span className="inline-block px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded-lg">
                     Expired
-                  </span>
-                )}
-                {!hasInCart && !isExpired && isExpiringSoon && (
-                  <span className="inline-block px-2 py-1 text-xs font-medium bg-orange-100 text-orange-700 rounded-lg">
-                    Expiring Soon
                   </span>
                 )}
               </div>

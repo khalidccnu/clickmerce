@@ -3,6 +3,7 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { ICategory } from '@modules/categories/lib/interfaces';
 import { Col, Empty, Pagination, Row } from 'antd';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import React from 'react';
 import CategoryCard from './CategoryCard';
@@ -25,9 +26,20 @@ const CategoriesSection: React.FC<IProps> = ({ className, categories, meta }) =>
               <Empty description="No categories found" />
             </Col>
           ) : (
-            categories.map((category) => (
-              <Col key={category.id} xs={24} md={12} lg={8} xl={6}>
-                <CategoryCard category={category} />
+            categories.map((category, idx) => (
+              <Col key={category.id} xs={24} md={8} lg={6} xl={4}>
+                <motion.div
+                  style={{ height: '100%' }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: idx <= 3 ? idx / 30 : ((idx - 3) % 10) / 30,
+                  }}
+                  viewport={{ once: true }}
+                >
+                  <CategoryCard category={category} />
+                </motion.div>
               </Col>
             ))
           )}

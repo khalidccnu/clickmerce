@@ -52,7 +52,13 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMe
 export default ProductsPage;
 
 export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) => {
-  const { page = '1', limit = '12', category_id }: IProductsFilter & { category_id?: TId } = query;
+  const {
+    page = '1',
+    limit = '12',
+    category_id,
+    price_min,
+    price_max,
+  }: IProductsFilter & { category_id?: TId } = query;
 
   try {
     const { success: settingsSuccess, data: settings } = await SettingsServices.find();
@@ -69,9 +75,11 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ query }) 
     }
 
     const { data: products, meta: productsMeta } = await ProductsWebServices.find({
-      page: page?.toString(),
-      limit: limit?.toString(),
+      page,
+      limit,
       category_ids: category_id ? [category_id] : undefined,
+      price_min,
+      price_max,
       is_active: 'true',
     });
 

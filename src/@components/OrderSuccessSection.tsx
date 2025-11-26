@@ -161,7 +161,16 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
           </div>
         </Card>
         <Card title="Products">
-          <Table dataSource={dataSource} columns={columns} pagination={false} scroll={{ x: true }} />
+          <Table
+            dataSource={dataSource}
+            columns={columns}
+            pagination={false}
+            scroll={{ x: true }}
+            onRow={(record) => ({
+              onClick: () => router.push(Paths.products.toSlug(record?.product?.current_info?.slug)),
+              style: { cursor: 'pointer' },
+            })}
+          />
         </Card>
         <Card title="Summary">
           <div className="text-sm space-y-2">

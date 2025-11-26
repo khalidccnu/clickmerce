@@ -35,7 +35,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
 
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
-  const { category_ids, is_low_stock, except_ids, ...restFilters } = data;
+  const { category_ids, is_low_stock, except_ids, price_min, price_max, ...restFilters } = data;
   const newFilters: any = { ...restFilters };
 
   if (is_low_stock) {
@@ -98,6 +98,38 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   //   }
   // }
 
+  if (price_min) {
+    if (!newFilters.numericFilters) newFilters.numericFilters = {};
+    if (!newFilters.numericFilters.conditions) newFilters.numericFilters.conditions = {};
+
+    newFilters.numericFilters.conditions = {
+      ...newFilters.numericFilters.conditions,
+      product_variations: {
+        ...newFilters.numericFilters.conditions?.product_variations,
+        sale_price: {
+          ...newFilters.numericFilters.conditions?.product_variations?.sale_price,
+          gte: parseFloat(price_min),
+        },
+      },
+    };
+  }
+
+  if (price_max) {
+    if (!newFilters.numericFilters) newFilters.numericFilters = {};
+    if (!newFilters.numericFilters.conditions) newFilters.numericFilters.conditions = {};
+
+    newFilters.numericFilters.conditions = {
+      ...newFilters.numericFilters.conditions,
+      product_variations: {
+        ...newFilters.numericFilters.conditions?.product_variations,
+        sale_price: {
+          ...newFilters.numericFilters.conditions?.product_variations?.sale_price,
+          lte: parseFloat(price_max),
+        },
+      },
+    };
+  }
+
   try {
     const result = await SupabaseAdapter.find<IProduct>(supabaseServiceClient, Database.products, newFilters, {
       selection: buildSelectionFn({
@@ -105,6 +137,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
           dosage_form: { table: Database.dosageForms },
           generic: { table: Database.generics },
           supplier: { table: Database.suppliers, columns: ['id', 'name'] },
+          product_variations: { table: Database.productVariations, columns: [] },
           variations: { table: Database.productVariations },
           product_categories: {
             table: Database.productCategories,

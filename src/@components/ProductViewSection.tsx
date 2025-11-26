@@ -225,13 +225,22 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
                 >
                   {product?.images?.map((image, idx) => (
                     <SwiperSlide key={idx}>
-                      <AntImage
-                        src={image.url}
-                        alt={product.name}
-                        wrapperStyle={{ display: 'block' }}
-                        wrapperClassName="[&_.ant-image-mask]:rounded-2xl"
-                        className="w-full h-auto object-cover rounded-2xl"
-                      />
+                      <div className="image_wrapper relative rounded-2xl overflow-hidden">
+                        <Image
+                          src={image?.url}
+                          alt={product?.name}
+                          width={800}
+                          height={800}
+                          className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-md lg:block"
+                        />
+                        <AntImage
+                          src={image?.url}
+                          alt={product?.name}
+                          wrapperStyle={{ display: 'block' }}
+                          wrapperClassName="[&_.ant-image-mask]:rounded-2xl"
+                          className="h-auto w-full lg:max-w-96 lg:mx-auto rounded-2xl object-cover lg:rounded-none lg:object-contain"
+                        />
+                      </div>
                     </SwiperSlide>
                   ))}
                 </Swiper>

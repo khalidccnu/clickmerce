@@ -2,18 +2,20 @@ import BaseStateSearch from '@base/components/BaseStateSearch';
 import { Paths } from '@lib/constant/paths';
 import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useTheme from '@lib/hooks/useTheme';
+import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { ProductsHooks } from '@modules/products/lib/hooks';
-import { Avatar, Dropdown, List, Spin } from 'antd';
+import { Avatar, Dropdown, Form, List, Spin } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 
 interface IProps {
   className?: string;
+  formProps?: Partial<React.ComponentProps<typeof Form>>;
 }
 
-const ProductsSearchForm: React.FC<IProps> = ({ className }) => {
+const ProductsSearchForm: React.FC<IProps> = ({ className, formProps }) => {
   const router = useRouter();
   const { isDark } = useTheme();
   const { sendEventFn } = useAnalyticEvent();
@@ -38,13 +40,14 @@ const ProductsSearchForm: React.FC<IProps> = ({ className }) => {
   });
 
   return (
-    <div className={className}>
+    <div className={cn('products_search_form', className)}>
       <Dropdown
         open={!!searchTerm}
         trigger={['click']}
         placement="bottomLeft"
         popupRender={() => (
           <div
+            className="designed_scrollbar"
             style={{
               background: isDark ? '#141414' : '#fff',
               minWidth: 300,
@@ -104,7 +107,14 @@ const ProductsSearchForm: React.FC<IProps> = ({ className }) => {
           </div>
         )}
       >
-        <BaseStateSearch prefix={<FaSearch />} placeholder="Search products" allowClear onSearch={handleSearchFn} />
+        <BaseStateSearch
+          allowClear
+          prefix={<FaSearch />}
+          placeholder="Search products"
+          onSearch={handleSearchFn}
+          style={{ border: 'none' }}
+          formProps={formProps}
+        />
       </Dropdown>
     </div>
   );

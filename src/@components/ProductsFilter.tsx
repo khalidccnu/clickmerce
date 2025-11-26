@@ -6,7 +6,7 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { CategoriesHooks } from '@modules/categories/lib/hooks';
 import { ICategory } from '@modules/categories/lib/interfaces';
 import { IProductsFilter } from '@modules/products/lib/interfaces';
-import { Grid, Radio, Tag } from 'antd';
+import { Divider, Grid, Radio, Slider, Tag } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 
@@ -17,10 +17,13 @@ interface IProps {
 
 const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
   const router = useRouter();
-  const { category_id } = Toolbox.parseQueryParams<IProductsFilter & { category_id?: TId }>(router.asPath);
+  const { category_id, price_min, price_max } = Toolbox.parseQueryParams<IProductsFilter & { category_id?: TId }>(
+    router.asPath,
+  );
   const screens = Grid.useBreakpoint();
   const [isExtended, setExtended] = useState<boolean>(false);
   const [categoryId, setCategoryId] = useState<TId>(null);
+  const [priceRange, setPriceRange] = useState<number[]>(null);
 
   const categoriesQuery = CategoriesHooks.useFindInfinite({
     options: {
@@ -31,6 +34,9 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
 
   useEffect(() => {
     if (category_id) setCategoryId(category_id);
+    if (price_min || price_max) {
+      setPriceRange([+price_min || 0, +price_max || 100000]);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -101,14 +107,33 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
                 </InfiniteScroll>
               </Radio.Group>
             </div>
-            {/* <Divider style={{ marginBlock: 16 }} />
+            <Divider style={{ marginBlock: 16 }} />
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-semibold text-base dark:text-white">Price Range</p>
               </div>
-              <Slider range defaultValue={[0, 100]} />
+              <Slider
+                range
+                min={0}
+                max={100000}
+                step={500}
+                value={priceRange ?? [0, 100000]}
+                onChange={setPriceRange}
+                onChangeComplete={(values) => {
+                  const [start, end] = values;
+
+                  router.push({
+                    pathname: Paths.products.root,
+                    query: Toolbox.toCleanObject({
+                      ...router.query,
+                      price_min: start > 0 ? start : undefined,
+                      price_max: end < 100000 ? end : undefined,
+                    }),
+                  });
+                }}
+              />
             </div>
-            <Divider style={{ marginBlock: 16 }} />
+            {/* <Divider style={{ marginBlock: 16 }} />
             <div className="space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <p className="font-semibold text-base dark:text-white">Sort</p>

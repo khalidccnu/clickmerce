@@ -15,6 +15,7 @@ import {
 } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Col, Empty, message, Pagination, Row } from 'antd';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import ProductCard from './ProductCard';
@@ -184,9 +185,20 @@ const ProductsSection: React.FC<IProps> = ({
               <Empty description="No products found" />
             </Col>
           ) : (
-            products.map((product) => (
+            products.map((product, idx) => (
               <Col key={product.id} xs={24} md={12} lg={8} xl={isContainerClass ? 6 : 8}>
-                <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
+                <motion.div
+                  style={{ height: '100%' }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: idx <= 3 ? idx / 30 : ((idx - 3) % 10) / 30,
+                  }}
+                  viewport={{ once: true }}
+                >
+                  <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
+                </motion.div>
               </Col>
             ))
           )}

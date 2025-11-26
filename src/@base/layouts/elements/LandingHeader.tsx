@@ -28,13 +28,13 @@ const LandingHeader = React.forwardRef<HTMLElement, IProps>(({ className }, ref)
   return (
     <React.Fragment>
       <header className={cn('header', className)} ref={ref}>
+        <LandingHeaderNotices className="mb-4" />
         <div className="container">
-          <LandingHeaderNotices className="mb-4" />
           <div className="wrapper flex items-center justify-between gap-2 md:gap-4">
             <CustomLink href={Paths.root}>
               <BrandLogo />
             </CustomLink>
-            <ProductsSearchForm className="w-full max-w-sm hidden lg:block" />
+            {screens.lg && <ProductsSearchForm className="w-full max-w-sm" />}
             <div className="flex items-center gap-2 md:gap-4">
               <Badge count={order?.wishlist?.length || 0} size="small" offset={[0, 0]}>
                 <CustomLink href={Paths.wishlist}>

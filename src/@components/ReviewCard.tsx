@@ -15,7 +15,7 @@ const ReviewCard: React.FC<IProps> = ({ className, review }) => {
   return (
     <div
       className={cn(
-        'review_card p-4 rounded-xl border relative border-gray-100 dark:border-[var(--color-dark-gray)]',
+        'review_card p-4 rounded-xl border relative border-gray-100 hover:border-[var(--color-primary)] transition-[border-color] duration-500 dark:border-[var(--color-dark-gray)] dark:hover:border-[var(--color-primary)]',
         { 'pb-6': !!review?.image },
         className,
       )}

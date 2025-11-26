@@ -66,6 +66,8 @@ export const productFilterSchema = yup
             typeof item === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(item),
         );
       }),
+    price_min: yup.string().optional(),
+    price_max: yup.string().optional(),
   })
   .concat(baseFilterSchema);
 

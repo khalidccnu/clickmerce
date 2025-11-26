@@ -22,6 +22,7 @@ import { ProductsWebServices } from '@modules/products/lib/webServices';
 import { IReview } from '@modules/reviews/lib/interfaces';
 import { ReviewsServices } from '@modules/reviews/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
+import { Grid } from 'antd';
 import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {
@@ -44,6 +45,8 @@ const HomePage: NextPage<IProps> = ({
   features,
   reviews,
 }) => {
+  const screens = Grid.useBreakpoint();
+
   return (
     <PageWrapper
       title="Home"
@@ -52,9 +55,7 @@ const HomePage: NextPage<IProps> = ({
       icon={settingsIdentity?.icon_url}
       image={settingsIdentity?.social_image_url}
     >
-      <div className="container my-4">
-        <ProductsSearchForm className="lg:hidden" />
-      </div>
+      {screens.lg || <ProductsSearchForm className="container my-4" formProps={{ size: 'large' }} />}
       {Toolbox.isEmpty(banners) || <BannerSection banners={banners} />}
       {Toolbox.isEmpty(products) || <ProductsSection products={products} className="py-8 md:py-16" />}
       {Toolbox.isEmpty(recommendProducts) || (

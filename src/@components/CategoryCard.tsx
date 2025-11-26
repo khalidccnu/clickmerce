@@ -17,7 +17,7 @@ const CategoryCard: React.FC<IProps> = ({ className, isPlaceholder = false, cate
   const imageSrc = category?.image || Toolbox.generateCharacterSvg({ character: name, type: 'url' });
 
   return (
-    <div className={cn('category_card relative pl-2', className)}>
+    <div className={cn('category_card group relative pl-2', className)}>
       {isPlaceholder ? (
         <React.Fragment>
           <CustomLink type="hoverable" title="More Categories" href={Paths.categories} />
@@ -55,11 +55,13 @@ const CategoryCard: React.FC<IProps> = ({ className, isPlaceholder = false, cate
                 quality={100}
                 src={imageSrc}
                 alt={name}
-                className="w-full h-auto aspect-square rounded-full"
+                className="w-full h-auto aspect-square rounded-full group-hover:scale-105 transition-transform duration-500"
               />
             </div>
           </div>
-          <p className="text-lg font-semibold capitalize text-center mt-4 dark:text-white">{name}</p>
+          <p className="text-lg font-semibold capitalize text-center mt-4 dark:text-white group-hover:text-[var(--color-primary)] transition-[color] duration-500">
+            {name}
+          </p>
         </React.Fragment>
       )}
     </div>

@@ -21,6 +21,8 @@ export interface IProductsFilter extends IBaseFilter {
   is_low_stock?: string;
   is_recommend?: string;
   except_ids?: TId[];
+  price_min?: string;
+  price_max?: string;
 }
 
 export interface IProductImage {
