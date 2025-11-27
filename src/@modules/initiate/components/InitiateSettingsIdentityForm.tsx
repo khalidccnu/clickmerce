@@ -249,6 +249,30 @@ const InitiateSettingsIdentityForm: React.FC<IProps> = ({ form }) => {
           </FloatSelect>
         </Form.Item>
       </Col>
+      <Col xs={24} md={12}>
+        <Form.Item
+          name={['identity', 'need_web_view']}
+          rules={[
+            {
+              required: true,
+              message: 'Web view is required!',
+            },
+          ]}
+          className="!mb-0"
+        >
+          <FloatSelect
+            required
+            allowClear
+            showSearch
+            virtual={false}
+            placeholder="Web View"
+            filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+          >
+            <Select.Option value={true}>Need</Select.Option>
+            <Select.Option value={false}>No Need</Select.Option>
+          </FloatSelect>
+        </Form.Item>
+      </Col>
     </Row>
   );
 };

@@ -664,7 +664,7 @@ export type Database = {
       };
       popups: {
         Row: {
-          content: string;
+          content: string | null;
           created_at: string;
           id: string;
           image: string | null;
@@ -674,7 +674,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          content: string;
+          content?: string | null;
           created_at?: string;
           id?: string;
           image?: string | null;
@@ -684,7 +684,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          content?: string;
+          content?: string | null;
           created_at?: string;
           id?: string;
           image?: string | null;

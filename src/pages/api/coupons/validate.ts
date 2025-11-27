@@ -42,6 +42,7 @@ async function handleValidate(req: NextApiRequest, res: NextApiResponse) {
   try {
     const result = await SupabaseAdapter.findOne<ICoupon>(supabaseServiceClient, Database.coupons, {
       textFilters: { conditions: { code: { eq: code } } },
+      booleanFilters: { conditions: { is_active: { eq: true } } },
     });
 
     if (!result.success || !result.data) {

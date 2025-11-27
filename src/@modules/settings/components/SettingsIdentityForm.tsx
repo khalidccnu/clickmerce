@@ -248,6 +248,19 @@ const SettingsIdentityForm: React.FC<IProps> = ({ isLoading, form, formType = 'c
             </FloatSelect>
           </Form.Item>
         </Col>
+        <Col xs={24} md={12} xl={8}>
+          <Form.Item name="need_web_view" className="!mb-0">
+            <FloatSelect
+              showSearch
+              virtual={false}
+              placeholder="Web View"
+              filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+            >
+              <Select.Option value={true}>Need</Select.Option>
+              <Select.Option value={false}>No Need</Select.Option>
+            </FloatSelect>
+          </Form.Item>
+        </Col>
         <Col xs={24}>
           <Form.Item className="text-right !mb-0">
             <Button loading={isLoading} type="primary" htmlType="submit">

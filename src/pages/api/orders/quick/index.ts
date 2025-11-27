@@ -425,6 +425,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
     if (coupon) {
       const { success, data } = await SupabaseAdapter.findOne<ICoupon>(supabaseServiceClient, Database.coupons, {
         textFilters: { conditions: { code: { eq: coupon } } },
+        booleanFilters: { conditions: { is_active: { eq: true } } },
       });
 
       if (!success || !data) {

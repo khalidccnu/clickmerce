@@ -24,6 +24,7 @@ export interface ISettingsIdentity {
   yt_url: string;
   is_user_registration_acceptance: boolean;
   need_user_registration_verification: boolean;
+  need_web_view: boolean;
 }
 
 export interface ISettingsS3 {

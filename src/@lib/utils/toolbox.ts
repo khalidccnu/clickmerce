@@ -554,7 +554,11 @@ export const Toolbox = {
     }
   },
 
-  toRecursivelyTraverse: function (obj: any, pathsToRemove: string[] = []): any[] {
+  toRecursivelyTraverse: function (
+    obj: Record<string, any>,
+    pathsToRemove: string[] = [],
+    pathsToAdd: string[] = [],
+  ): any[] {
     const holdArr: any[] = [];
 
     function traverse(item: any) {
@@ -568,6 +572,11 @@ export const Toolbox = {
     }
 
     traverse(obj);
+
+    pathsToAdd.forEach((pathToAdd) => {
+      if (!holdArr.includes(pathToAdd)) holdArr.push(pathToAdd);
+    });
+
     return holdArr;
   },
 

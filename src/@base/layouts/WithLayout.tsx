@@ -44,7 +44,7 @@ const WithLayout: React.FC<IProps> = ({ pathname, settingsIdentity, settingsTrac
     );
   }
 
-  if ([Paths.initiate, Paths.auth.signIn].includes(pathname)) {
+  if ([Paths.initiate, Paths.underConstruction, Paths.auth.signIn].includes(pathname)) {
     return children;
   }
 

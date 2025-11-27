@@ -192,6 +192,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
       yt_url: identity.yt_url || null,
       is_user_registration_acceptance: identity.is_user_registration_acceptance || false,
       need_user_registration_verification: identity.need_user_registration_verification || false,
+      need_web_view: identity.need_web_view || false,
     };
 
     const purifiedSettingsS3 = {

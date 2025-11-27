@@ -1,4 +1,5 @@
 import { TId } from '@base/interfaces';
+import { Toolbox } from '@lib/utils/toolbox';
 
 export const Paths = {
   root: '/',
@@ -157,3 +158,9 @@ export const Paths = {
     },
   },
 };
+
+export const InternalViewPaths = Toolbox.toRecursivelyTraverse(
+  Paths.admin,
+  [],
+  [Paths.initiate, Paths.underConstruction, Paths.auth.signIn],
+);

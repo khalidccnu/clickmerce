@@ -25,6 +25,7 @@ export const settingsIdentityCreateSchema = yup.object({
   yt_url: yup.string().url().optional().nullable(),
   is_user_registration_acceptance: yup.boolean().default(false).optional(),
   need_user_registration_verification: yup.boolean().default(false).optional(),
+  need_web_view: yup.boolean().default(false).optional(),
 });
 
 export const settingsS3CreateSchema = yup.object({

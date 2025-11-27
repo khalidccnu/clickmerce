@@ -71,6 +71,34 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json(response);
   }
 
+  const settings = await handleGetSettings(req, res, supabaseServiceClient);
+
+  if (!settings || !settings.data) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 500,
+      message: 'Failed to fetch settings',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(500).json(response);
+  }
+
+  const needWebView = settings?.data?.identity?.need_web_view;
+
+  if (!needWebView && !user?.data?.is_admin) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 403,
+      message: 'User is not permitted to login',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(403).json(response);
+  }
+
   const userRoles = await SupabaseAdapter.find(
     supabaseServiceClient,
     Database.userRoles,
@@ -111,20 +139,6 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
   });
 
   delete user.data.password;
-
-  const settings = await handleGetSettings(req, res, supabaseServiceClient);
-
-  if (!settings || !settings.data) {
-    const response: IBaseResponse = {
-      success: false,
-      statusCode: 500,
-      message: 'Failed to fetch settings',
-      data: null,
-      meta: null,
-    };
-
-    return res.status(500).json(response);
-  }
 
   const response: IBaseResponse<{ user: IUser; token: string; need_verification: boolean }> = {
     success: true,

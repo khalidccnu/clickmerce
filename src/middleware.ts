@@ -1,11 +1,13 @@
 import { Env } from '.environments';
 import { AdminPaths, AuthPaths } from '@lib/constant/authPaths';
-import { Paths } from '@lib/constant/paths';
+import { Database } from '@lib/constant/database';
+import { InternalViewPaths, Paths } from '@lib/constant/paths';
 import { UnAuthPaths } from '@lib/constant/unAuthPaths';
 import { Toolbox } from '@lib/utils/toolbox';
 import { REDIRECT_PREFIX } from '@modules/auth/lib/constant';
 import { ISession } from '@modules/auth/lib/interfaces';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
+import { ISettingsResponse } from '@modules/settings/lib/interfaces';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
@@ -60,6 +62,25 @@ export default async function middleware(req: NextRequest) {
   try {
     sessionCache = getServerAuthSession(req);
   } catch {}
+
+  try {
+    const settingsUrl = `${origin}${Env.apiUrl}/${Database.settings}`;
+    const settingsResponse = await fetch(settingsUrl);
+    const settings: ISettingsResponse = await settingsResponse.json();
+
+    const identity = settings.data?.identity;
+    const needWebView = identity?.need_web_view;
+
+    if (!needWebView && !InternalViewPaths.includes(pathname)) {
+      if (pathname === Paths.root) {
+        return redirectFn(`${origin}${Paths.auth.signIn}`);
+      } else {
+        return redirectFn(`${origin}${Paths.underConstruction}`);
+      }
+    }
+  } catch {
+    return redirectFn(`${origin}${Paths.underConstruction}`);
+  }
 
   // Handle unauthenticated paths
   if (UnAuthPaths.includes(pathname)) {

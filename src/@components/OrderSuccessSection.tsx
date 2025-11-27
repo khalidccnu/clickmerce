@@ -44,12 +44,13 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
       title: 'Name',
       width: 384,
       render: (name, record) => {
+        const product = record.product.current_info;
         const v = record.variation;
 
         if (!v) return null;
 
-        const isOutOfStock = !v.quantity;
-        const isLowStock = v.quantity <= 10;
+        const isOutOfStock = !product.quantity;
+        const isLowStock = product.quantity <= 10;
 
         return (
           <div className="space-y-1 min-w-96">
@@ -200,10 +201,12 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
               <span>Grand Total</span>
               <span>{Toolbox.withCurrency(order.grand_total_amount)}</span>
             </div>
-            <div className="flex justify-between font-semibold">
-              <span>Due Amount</span>
-              <span className="text-red-500">{Toolbox.withCurrency(order.due_amount)}</span>
-            </div>
+            {!order.due_amount || (
+              <div className="flex justify-between font-semibold">
+                <span>Due Amount</span>
+                <span className="text-red-500">{Toolbox.withCurrency(order.due_amount)}</span>
+              </div>
+            )}
           </div>
         </Card>
         {showActionButtons && (

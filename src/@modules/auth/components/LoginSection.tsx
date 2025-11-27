@@ -208,11 +208,17 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
                   </Button>
                 </Form.Item>
               </Form>
-              <Flex justify={settingsIdentity?.is_user_registration_acceptance ? 'space-between' : 'center'}>
+              <Flex
+                justify={
+                  settingsIdentity?.need_web_view && settingsIdentity?.is_user_registration_acceptance
+                    ? 'space-between'
+                    : 'center'
+                }
+              >
                 <Button type="text" onClick={() => setPRRModalOpen(true)}>
                   Forgot password?
                 </Button>
-                {settingsIdentity?.is_user_registration_acceptance && (
+                {settingsIdentity?.need_web_view && settingsIdentity?.is_user_registration_acceptance && (
                   <Button type="text" onClick={() => setRegisterModalOpen(true)}>
                     New Account?
                   </Button>
