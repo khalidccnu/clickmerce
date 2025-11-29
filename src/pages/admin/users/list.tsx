@@ -97,9 +97,9 @@ const UsersPage: NextPage<IProps> = ({ settingsIdentity }) => {
         <UsersForm
           form={formInstance}
           initialValues={{
+            is_system_generated: 'false',
             is_admin: 'false',
             is_default_customer: 'false',
-            is_system_generated: 'false',
             is_verified: 'false',
             is_active: 'true',
           }}

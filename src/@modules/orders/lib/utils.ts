@@ -76,12 +76,12 @@ export const cartItemIdxFn = (productId: TId, variationId: TId, cart: IOrderStat
 export const productSalePriceWithDiscountFn = (
   costPrice: number,
   salePrice: number,
-  discount: IProductVariation['discount'],
+  discount?: IProductVariation['discount'],
 ) => {
-  if (!discount?.amount) return salePrice;
+  if (!discount || !discount.amount) return 0;
 
   const profit = salePrice - costPrice;
-  let discountSalePrice = 0;
+  let discountSalePrice = salePrice;
   const { type, amount } = discount;
 
   if (type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
@@ -90,7 +90,11 @@ export const productSalePriceWithDiscountFn = (
     discountSalePrice = costPrice + profit * (1 - amount / 100);
   }
 
-  return Math.max(costPrice, discountSalePrice || salePrice);
+  if (discountSalePrice === salePrice) {
+    return 0;
+  }
+
+  return Math.max(costPrice, discountSalePrice);
 };
 
 export const hasProductInWishlistFn = (productId: TId, wishlist: IOrderState['cart']) => {

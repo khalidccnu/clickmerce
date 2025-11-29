@@ -33,6 +33,7 @@ export interface IProductImage {
 export interface IProductVariation {
   cost_price: number;
   sale_price: number;
+  sale_discount_price: number;
   mfg: string;
   exp: string;
   color: string;

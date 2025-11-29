@@ -39,7 +39,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
     }
 
     const regularPrices = product.variations.map((v) => v?.sale_price);
-    const specialPrices = product.variations.map((v) => v?.['sale_discount_price']);
+    const specialPrices = product.variations.map((v) => v?.sale_discount_price);
 
     const minRegularPrice = Math.min(...regularPrices);
     const maxRegularPrice = Math.max(...regularPrices);
@@ -89,7 +89,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
         <p className="price">
           <span
             className={cn('regular', {
-              'line-through mr-1': product?.['has_sale_discount_price'],
+              'line-through mr-1 text-sm text-gray-400 dark:text-gray-300': product?.['has_sale_discount_price'],
             })}
           >
             {priceInfo.regular}

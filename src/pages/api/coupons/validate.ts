@@ -6,7 +6,7 @@ import { validate } from '@lib/utils/yup';
 import { couponValidateSchema, TCouponValidateDto } from '@modules/coupons/lib/dtos';
 import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
-import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
+import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import dayjs from 'dayjs';
 import { NextApiRequest, NextApiResponse } from 'next';
@@ -115,17 +115,11 @@ async function handleValidate(req: NextApiRequest, res: NextApiResponse) {
         return res.status(404).json(response);
       }
 
-      let discountPrice = 0;
-      const discount = variation?.discount;
-
-      if (discount && discount.amount) {
-        if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
-          discountPrice = Math.max(variation.cost_price, variation.sale_price - discount.amount);
-        } else if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
-          const profit = variation.sale_price - variation.cost_price;
-          discountPrice = variation.cost_price + profit * (1 - discount.amount / 100);
-        }
-      }
+      const discountPrice = productSalePriceWithDiscountFn(
+        variation.cost_price,
+        variation.sale_price,
+        variation.discount,
+      );
 
       const variationCostPrice = variation.cost_price * selected_quantity;
       const variationSalePrice = variation.sale_price * selected_quantity;

@@ -20,7 +20,6 @@ import {
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES, ENUM_ORDER_STATUS_TYPES } from '@modules/orders/lib/enums';
 import { IOrder } from '@modules/orders/lib/interfaces';
 import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
-import { ENUM_PRODUCT_DISCOUNT_TYPES } from '@modules/products/lib/enums';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { ENUM_SETTINGS_TAX_TYPES } from '@modules/settings/lib/enums';
 import { ISettings } from '@modules/settings/lib/interfaces';
@@ -166,10 +165,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
                       variation.discount,
                     );
 
-                    if (specialPrice && specialPrice !== variation.sale_price) {
-                      productWithSpecialPrice++;
-                    }
-
+                    if (specialPrice) productWithSpecialPrice++;
                     delete variation.cost_price;
 
                     return {
@@ -346,17 +342,11 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         return res.status(404).json(response);
       }
 
-      let discountPrice = 0;
-      const discount = variation?.discount;
-
-      if (discount && discount.amount) {
-        if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.FIXED) {
-          discountPrice = Math.max(variation.cost_price, variation.sale_price - discount.amount);
-        } else if (discount.type === ENUM_PRODUCT_DISCOUNT_TYPES.PERCENTAGE) {
-          const profit = variation.sale_price - variation.cost_price;
-          discountPrice = variation.cost_price + profit * (1 - discount.amount / 100);
-        }
-      }
+      const discountPrice = productSalePriceWithDiscountFn(
+        variation.cost_price,
+        variation.sale_price,
+        variation.discount,
+      );
 
       const variationCostPrice = variation.cost_price * selected_quantity;
       const variationSalePrice = variation.sale_price * selected_quantity;
@@ -379,7 +369,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
         ...restVariation,
         quantity: selected_quantity,
         sale_discount_price: discountPrice,
-        discount,
+        discount: variation?.discount,
         product_id,
       });
 
@@ -675,10 +665,7 @@ async function handleCreate(req: NextApiRequest, res: NextApiResponse) {
                   variation.discount,
                 );
 
-                if (specialPrice && specialPrice !== variation.sale_price) {
-                  productWithSpecialPrice++;
-                }
-
+                if (specialPrice) productWithSpecialPrice++;
                 delete variation.cost_price;
 
                 return {

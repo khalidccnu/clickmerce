@@ -19,9 +19,10 @@ const ReviewCard: React.FC<IProps> = ({ className, review }) => {
         { 'pb-6': !!review?.image },
         className,
       )}
+      title={review?.comment}
     >
       <Rate disabled allowHalf value={review?.rate} style={{ marginBottom: 8, color: 'var(--color-primary' }} />
-      <p className="text-gray-500 dark:text-gray-300 text-sm md:text-base line-clamp-6">{review?.comment}</p>
+      <p className="text-gray-500 dark:text-gray-300 text-sm md:text-base line-clamp-5">{review?.comment}</p>
       <div className="flex items-center gap-2 mt-2">
         <Avatar size={24}>{review?.user?.name?.charAt(0)?.toUpperCase()}</Avatar>
         <p className="text-base font-semibold text-[--color-primary]">{review?.user?.name}</p>

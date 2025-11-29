@@ -2,7 +2,7 @@ import { Dayjs } from '@lib/constant/dayjs';
 import { useAppSelector } from '@lib/redux/hooks';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
-import { hasProductVariationInCartFn } from '@modules/orders/lib/utils';
+import { hasProductVariationInCartFn, productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Alert, Button } from 'antd';
 import dayjs from 'dayjs';
@@ -50,6 +50,12 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
           const isExpiringSoon = expirationDate && expirationDate.diff(dayjs(), 'months') < 3;
           const isExpired = expirationDate && expirationDate.isBefore(dayjs(), 'day');
 
+          variation.sale_discount_price = productSalePriceWithDiscountFn(
+            variation?.cost_price,
+            variation?.sale_price,
+            variation?.discount,
+          );
+
           return (
             <div
               key={variation.id}
@@ -64,7 +70,19 @@ const ProductCatalogVariations: React.FC<IProps> = ({ product, onAddToCart }) =>
               <div className="flex items-center justify-between gap-4">
                 <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-4 text-sm">
                   <div className="font-bold text-lg text-blue-700 dark:text-blue-500">
-                    {Toolbox.withCurrency(variation.sale_price)}
+                    <p className="price">
+                      <span
+                        className={cn('regular', {
+                          'line-through mr-1 font-normal text-sm text-gray-400 dark:text-gray-300':
+                            !!variation.sale_discount_price,
+                        })}
+                      >
+                        {Toolbox.withCurrency(variation.sale_price)}
+                      </span>
+                      {!variation.sale_discount_price || (
+                        <span className="special">{Toolbox.withCurrency(variation.sale_discount_price)}</span>
+                      )}
+                    </p>
                   </div>
                   <div className="hidden md:block w-px h-6 bg-gray-300 dark:bg-gray-500" />
                   <div className="flex items-center gap-1">

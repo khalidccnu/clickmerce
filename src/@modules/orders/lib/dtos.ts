@@ -36,10 +36,12 @@ export const orderCreateSchema = yup.object({
         id: yup.string().uuid().required(),
         variation_id: yup.string().uuid().required(),
         selected_quantity: yup.number().min(1).required(),
-        discount: yup.object({
-          type: yup.string().oneOf(productDiscountTypes).required(),
-          amount: yup.number().min(0).required(),
-        }),
+        discount: yup
+          .object({
+            type: yup.string().oneOf(productDiscountTypes).required(),
+            amount: yup.number().min(0).required(),
+          })
+          .required(),
       }),
     )
     .required(),

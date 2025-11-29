@@ -17,7 +17,8 @@
         height: 24px;
         border-radius: 100%;
         cursor: pointer;
-        &.rp_slider_disabled_btn {
+        &.rp_slider_disabled_btn,
+        &.swiper-button-lock {
           cursor: not-allowed;
           opacity: 0.5;
         }

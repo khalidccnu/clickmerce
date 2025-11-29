@@ -129,10 +129,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
                   variation.discount,
                 );
 
-                if (specialPrice && specialPrice !== variation.sale_price) {
-                  productWithSpecialPrice++;
-                }
-
+                if (specialPrice) productWithSpecialPrice++;
                 delete variation.cost_price;
 
                 return {

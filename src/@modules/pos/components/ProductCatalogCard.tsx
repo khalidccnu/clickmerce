@@ -1,5 +1,6 @@
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
+import { productSalePriceWithDiscountFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Badge, Button, Image } from 'antd';
 import React, { useMemo } from 'react';
@@ -28,21 +29,40 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
       };
     }, [product]);
 
-    const handlePriceShowFn = () => {
-      if (!product?.variations || !product?.variations?.length) {
-        return 'Price not available';
+    const hasSaleDiscount = useMemo(() => {
+      return !!product?.variations?.some((v) => {
+        const saleDiscountPrice = productSalePriceWithDiscountFn(v?.cost_price, v?.sale_price, v?.discount);
+        return saleDiscountPrice;
+      });
+    }, [product?.variations]);
+
+    const priceInfo = useMemo(() => {
+      if (!product?.variations?.length) {
+        return { regular: 'Price not available', special: null };
       }
 
-      const prices = product?.variations?.map((variation) => variation?.sale_price);
-      const minPrice = Math.min(...prices);
-      const maxPrice = Math.max(...prices);
+      const regularPrices = product.variations.map((v) => v?.sale_price);
+      const specialPrices = product.variations.map((v) =>
+        productSalePriceWithDiscountFn(v?.cost_price, v?.sale_price, v?.discount),
+      );
+
+      const minRegularPrice = Math.min(...regularPrices);
+      const maxRegularPrice = Math.max(...regularPrices);
+      const minSpecialPrice = Math.min(...specialPrices);
+      const maxSpecialPrice = Math.max(...specialPrices);
 
       if (product.variations.length === 1) {
-        return Toolbox.withCurrency(minPrice);
-      } else {
-        return Toolbox.withCurrency(minPrice) + ' - ' + Toolbox.withCurrency(maxPrice);
+        return {
+          regular: Toolbox.withCurrency(minRegularPrice),
+          special: Toolbox.withCurrency(minSpecialPrice),
+        };
       }
-    };
+
+      return {
+        regular: `${Toolbox.withCurrency(minRegularPrice)} - ${Toolbox.withCurrency(maxRegularPrice)}`,
+        special: `${Toolbox.withCurrency(minSpecialPrice)} - ${Toolbox.withCurrency(maxSpecialPrice)}`,
+      };
+    }, [product?.variations]);
 
     return (
       <div
@@ -80,7 +100,18 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
             </p>
           </div>
           <div className="border-t border-dotted border-gray-300 pt-4 flex items-center justify-between gap-4">
-            <p className="font-semibold text-sm dark:text-white">{handlePriceShowFn()}</p>
+            <p className="font-semibold text-sm dark:text-white">
+              <span
+                className={cn({
+                  'line-through mr-1 text-sm text-gray-400 dark:text-gray-300': hasSaleDiscount,
+                })}
+              >
+                {priceInfo.regular}
+              </span>
+              {hasSaleDiscount && (
+                <span className="text-[var(--color-primary)] font-semibold text-sm">{priceInfo.special}</span>
+              )}
+            </p>
             <Button
               type="primary"
               shape="circle"

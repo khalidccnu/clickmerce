@@ -1,4 +1,6 @@
 import InfiniteScrollSelect from '@base/components/InfiniteScrollSelect';
+import { Toolbox } from '@lib/utils/toolbox';
+import { ENUM_COUPON_TYPES } from '@modules/coupons/lib/enums';
 import { CouponsHooks } from '@modules/coupons/lib/hooks';
 import { ICoupon } from '@modules/coupons/lib/interfaces';
 import { Button, Col, Form, FormInstance, Row } from 'antd';
@@ -73,7 +75,7 @@ const OrderSummaryCouponForm: React.FC<IProps> = ({
               initialOptions={couponQuery.data?.data?.id ? [couponQuery.data?.data] : []}
               option={({ item: coupon }) => ({
                 key: coupon?.id,
-                label: coupon?.code,
+                label: `${coupon?.code} - ${coupon?.type === ENUM_COUPON_TYPES.PERCENTAGE ? `${coupon?.amount}%` : Toolbox.withCurrency(coupon?.amount)}`,
                 value: coupon?.id,
                 data: coupon,
               })}

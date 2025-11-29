@@ -39,7 +39,19 @@ const ProductViewVariations: React.FC<IProps> = ({ product, onAddToCart }) => {
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4 text-sm">
                 <div className="font-bold text-lg text-blue-700 dark:text-blue-400">
-                  {Toolbox.withCurrency(variation.sale_price)}
+                  <p className="price">
+                    <span
+                      className={cn('regular', {
+                        'line-through mr-1 font-normal text-sm text-gray-400 dark:text-gray-300':
+                          !!variation.sale_discount_price,
+                      })}
+                    >
+                      {Toolbox.withCurrency(variation.sale_price)}
+                    </span>
+                    {!variation.sale_discount_price || (
+                      <span className="special">{Toolbox.withCurrency(variation.sale_discount_price)}</span>
+                    )}
+                  </p>
                 </div>
                 <div className="hidden md:block w-px h-6 bg-gray-300 dark:bg-gray-500" />
                 <div className="flex items-center gap-1">

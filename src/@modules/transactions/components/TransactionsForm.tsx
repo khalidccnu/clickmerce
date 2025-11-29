@@ -174,7 +174,13 @@ const TransactionsForm: React.FC<IProps> = ({ isLoading, form, formType = 'creat
       >
         <UsersForm
           form={userFormInstance}
-          initialValues={{ is_admin: 'false', is_default_customer: 'false', is_active: 'true' }}
+          initialValues={{
+            is_system_generated: 'false',
+            is_admin: 'false',
+            is_default_customer: 'false',
+            is_verified: 'false',
+            is_active: 'true',
+          }}
           isLoading={userCreateFn.isPending}
           onFinish={(values) => userCreateFn.mutate(values)}
         />

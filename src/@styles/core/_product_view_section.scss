@@ -11,7 +11,8 @@
         color: var(--color-primary);
         border-radius: 100%;
         cursor: pointer;
-        &.slider_disabled_btn {
+        &.slider_disabled_btn,
+        &.swiper-button-lock {
           cursor: not-allowed;
           opacity: 0.5;
         }

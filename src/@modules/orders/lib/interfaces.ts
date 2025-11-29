@@ -19,7 +19,7 @@ export interface IOrder extends IBaseEntity {
   customer: IUser;
   products: {
     id: TId;
-    variations: (IProductVariation & { id: TId; sale_discount_price: number })[];
+    variations: (IProductVariation & { id: TId })[];
     current_info: IProduct;
   }[];
   redeem_amount: number;
