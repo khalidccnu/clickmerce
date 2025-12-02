@@ -36,7 +36,7 @@ export async function handleGetSettings(
   supabase?: SupabaseClient,
 ): Promise<IBaseResponse<ISettings> | void> {
   const { token, user } = getServerAuthSession(req);
-  const settingsCallable = token && user?.is_admin;
+  const settingsCallable = token && user?.is_admin && user?.permissions?.includes('settings:read');
 
   const supabaseClient = supabase || createSupabaseServerClient(req, res);
 
