@@ -39,7 +39,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
     }
 
     const regularPrices = product.variations.map((v) => v?.sale_price);
-    const specialPrices = product.variations.map((v) => v?.sale_discount_price);
+    const specialPrices = product.variations.map((v) => v?.sale_discount_price || v?.sale_price);
 
     const minRegularPrice = Math.min(...regularPrices);
     const maxRegularPrice = Math.max(...regularPrices);

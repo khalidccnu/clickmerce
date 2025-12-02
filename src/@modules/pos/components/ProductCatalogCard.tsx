@@ -42,8 +42,8 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
       }
 
       const regularPrices = product.variations.map((v) => v?.sale_price);
-      const specialPrices = product.variations.map((v) =>
-        productSalePriceWithDiscountFn(v?.cost_price, v?.sale_price, v?.discount),
+      const specialPrices = product.variations.map(
+        (v) => productSalePriceWithDiscountFn(v?.cost_price, v?.sale_price, v?.discount) || v?.sale_price,
       );
 
       const minRegularPrice = Math.min(...regularPrices);

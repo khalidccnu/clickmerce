@@ -1,3 +1,4 @@
+import Preloader from '@base/components/Preloader';
 import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import Popup from '@components/Popup';
 import { States } from '@lib/constant/states';
@@ -14,6 +15,7 @@ interface IProps extends PropsWithChildren {}
 
 const LandingLayout: React.FC<IProps> = ({ children }) => {
   const router = useRouter();
+  const [isPreloader] = useState(true);
   const { elemRef: headerRef, height: headerHeight } = useResize();
   const [prevScrollY, setPrevScrollY] = useState(0);
   const [, setHeaderHeight] = useSessionState(States.landingHeaderHeight);
@@ -68,6 +70,7 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
 
   return (
     <React.Fragment>
+      {isPreloader && <Preloader />}
       <LandingHeader
         ref={headerRef}
         className="sticky top-0 left-0 w-full z-50 py-3 bg-[#fafafa]/90 dark:bg-[#0d0d0d]/90 backdrop-blur-xl transition-transform duration-500"

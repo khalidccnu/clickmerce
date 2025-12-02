@@ -35,7 +35,9 @@ const LandingHeaderAuthButtonGroup: React.FC<IProps> = ({ className }) => {
         ) : (
           router.pathname === Paths.auth.signIn || (
             <CustomLink href={Paths.auth.signIn}>
-              <Button type="primary">{screens.md ? 'Log In' : <FaUser />}</Button>
+              <Button type="primary" ghost>
+                {screens.md ? 'Log In' : <FaUser />}
+              </Button>
             </CustomLink>
           )
         ))}

@@ -159,7 +159,7 @@ const LandingFooter = () => {
                 FOCKET
               </CustomLink>
             </p>
-            {screens.md || <ThemeToggler className="place-self-center mt-4" />}
+            {screens.md || <ThemeToggler className="mx-auto mt-4" />}
           </div>
         </div>
       </footer>
