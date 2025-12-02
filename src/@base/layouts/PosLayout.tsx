@@ -1,5 +1,7 @@
+import { Env } from '.environments';
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
+import DevTools from '@base/components/DevTools';
 import RealTimeClock from '@base/components/RealTimeClock';
 import { Paths } from '@lib/constant/paths';
 import useFullScreen from '@lib/hooks/useFullScreen';
@@ -64,6 +66,7 @@ const PosLayout: React.FC<IProps> = ({ children }) => {
 
   return (
     <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
+      {Env.isProduction && <DevTools />}
       <Layout.Sider
         ref={siderRef}
         collapsible

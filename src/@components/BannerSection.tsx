@@ -3,7 +3,6 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IBanner } from '@modules/banners/lib/interfaces';
 import { Grid } from 'antd';
-import Image from 'next/image';
 import React from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { Autoplay, Navigation } from 'swiper/modules';
@@ -61,15 +60,7 @@ const BannerSection: React.FC<IProps> = ({ className, banners }) => {
                       title={banner?.name}
                     />
                   )}
-                  <Image
-                    src={banner?.image}
-                    alt={banner?.name}
-                    width={0}
-                    height={0}
-                    quality={100}
-                    sizes="50vw"
-                    className="w-full h-auto aspect-[932_/_357]"
-                  />
+                  <img src={banner?.image} alt={banner?.name} className="w-full h-auto aspect-[932_/_357]" />
                 </SwiperSlide>
               );
             })}

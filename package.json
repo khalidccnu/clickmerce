@@ -39,6 +39,7 @@
     "canvas": "^3.2.0",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.11",
+    "devtools-detect": "^4.0.2",
     "file-type": "^21.0.0",
     "formidable": "^3.5.4",
     "framer-motion": "^12.23.24",

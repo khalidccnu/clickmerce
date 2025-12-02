@@ -1,5 +1,7 @@
+import { Env } from '.environments';
 import BrandLogo from '@base/components/BrandLogo';
 import CustomLink from '@base/components/CustomLink';
+import DevTools from '@base/components/DevTools';
 import { Paths } from '@lib/constant/paths';
 import { States } from '@lib/constant/states';
 import { useClickOutside } from '@lib/hooks/useClickOutside';
@@ -89,6 +91,7 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
 
   return (
     <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
+      {Env.isProduction && <DevTools />}
       <Layout.Sider
         ref={siderRef}
         collapsible

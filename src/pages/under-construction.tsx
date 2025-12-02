@@ -5,7 +5,6 @@ import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { GetServerSideProps, NextPage } from 'next';
-import Image from 'next/image';
 
 interface IProps extends IBasePageProps {}
 
@@ -23,14 +22,7 @@ const UnderConstructionPage: NextPage<IProps> = () => {
               </p>
             </div>
             <figure className="order-first md:order-none">
-              <Image
-                src={ImagePaths.underConstruction}
-                alt="under construction"
-                width="0"
-                height="0"
-                sizes="100vw"
-                className="w-full h-auto"
-              />
+              <img src={ImagePaths.underConstruction} alt="under construction" className="w-full h-auto" />
             </figure>
           </div>
         </div>

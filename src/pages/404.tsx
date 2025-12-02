@@ -2,7 +2,6 @@ import PageWrapper from '@base/container/PageWrapper';
 import { ImagePaths } from '@lib/constant/imagePaths';
 import { Paths } from '@lib/constant/paths';
 import { Button } from 'antd';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 
 const NotFoundPage = () => {
@@ -27,7 +26,7 @@ const NotFoundPage = () => {
               </div>
             </div>
             <figure className="order-first md:order-none">
-              <Image src={ImagePaths[404]} alt="404" width="0" height="0" sizes="100vw" className="w-full h-auto" />
+              <img src={ImagePaths[404]} alt="404" className="w-full h-auto" />
             </figure>
           </div>
         </div>

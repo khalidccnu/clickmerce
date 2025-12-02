@@ -3,7 +3,6 @@ import { Paths } from '@lib/constant/paths';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { ICategory } from '@modules/categories/lib/interfaces';
-import Image from 'next/image';
 import React from 'react';
 
 interface IProps {
@@ -24,10 +23,7 @@ const CategoryCard: React.FC<IProps> = ({ className, isPlaceholder = false, cate
           <div className="image_wrapper relative">
             <div className="absolute w-full h-full bg-[var(--color-primary)] rounded-full top-2 -left-2" />
             <div className="bg-gray-200 dark:bg-gray-200/70 rounded-full relative">
-              <Image
-                width={300}
-                height={300}
-                quality={100}
+              <img
                 src="/images/dots_horizontal.svg"
                 alt="More Categories"
                 className="w-full h-auto aspect-square rounded-full"
@@ -49,10 +45,7 @@ const CategoryCard: React.FC<IProps> = ({ className, isPlaceholder = false, cate
           <div className="image_wrapper relative">
             <div className="absolute w-full h-full bg-[var(--color-primary)] rounded-full top-2 -left-2" />
             <div className="bg-gray-200 dark:bg-gray-200/70 rounded-full relative overflow-hidden">
-              <Image
-                width={300}
-                height={300}
-                quality={100}
+              <img
                 src={imageSrc}
                 alt={name}
                 className="w-full h-auto aspect-square rounded-full group-hover:scale-110 transition-transform duration-500"

@@ -6,7 +6,6 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { hasProductInCartFn, hasProductInWishlistFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { Button } from 'antd';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { BsBasket2, BsFillBasket2Fill, BsHeart, BsHeartFill } from 'react-icons/bs';
@@ -82,7 +81,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
         <Button className="view" onClick={() => router.push(Paths.products.toSlug(product.slug))}>
           View
         </Button>
-        <Image src={featuredImage?.url} alt={product?.name} width={300} height={300} quality={100} />
+        <img src={featuredImage?.url} alt={product?.name} />
       </div>
       <div className="content_wrapper dark:text-white">
         <p className="title">{product?.name}</p>

@@ -1,3 +1,5 @@
+import { Env } from '.environments';
+import DevTools from '@base/components/DevTools';
 import ThemeToggler from '@base/components/ThemeToggler';
 import { States } from '@lib/constant/states';
 import { useClickOutside } from '@lib/hooks/useClickOutside';
@@ -7,7 +9,6 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { useAuthSession } from '@modules/auth/lib/utils/client';
 import { FloatButton, Grid, Layout } from 'antd';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import React, { type PropsWithChildren, useEffect, useRef, useState } from 'react';
 import { CgMenuGridO } from 'react-icons/cg';
@@ -81,6 +82,7 @@ const UserLayout: React.FC<IProps> = ({ children }) => {
           background: 'transparent',
         }}
       >
+        {Env.isProduction && <DevTools />}
         <div className="container max-w-6xl mx-auto">
           <Layout style={styles.layout}>
             <Layout.Sider
@@ -107,7 +109,7 @@ const UserLayout: React.FC<IProps> = ({ children }) => {
                   ((isCollapsed && screens.md) || (
                     <div className="text-center space-y-2">
                       <div className="bg-gray-300 rounded-full w-28 h-28 mx-auto flex items-center justify-center">
-                        <Image
+                        <img
                           src={Toolbox.generateCharacterSvg({ character: user?.name, type: 'url' })}
                           alt={user?.name}
                           width={80}
