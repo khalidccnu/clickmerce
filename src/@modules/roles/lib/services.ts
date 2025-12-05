@@ -86,7 +86,7 @@ export const RolesServices = {
         Database.permissions,
         {},
         {
-          selection: buildSelectionFn({ relations: { permission_type: { table: 'permission_types' } } }),
+          selection: buildSelectionFn({ relations: { permission_type: { table: Database.permissionTypes } } }),
         },
       );
 

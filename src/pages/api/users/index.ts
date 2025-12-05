@@ -70,8 +70,8 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
       {
         selection: buildSelectionFn({
           relations: {
-            user_info: { table: 'users_info' },
-            user_roles: { table: 'user_roles', nested: { role: { table: 'roles' } } },
+            user_info: { table: Database.usersInfo },
+            user_roles: { table: Database.userRoles, nested: { role: { table: Database.roles } } },
           },
           filters: newFilters,
         }),

@@ -57,6 +57,18 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
     return res.status(401).json(response);
   }
 
+  if (!user?.data?.is_active) {
+    const response: IBaseResponse = {
+      success: false,
+      statusCode: 403,
+      message: 'User account is deactivated',
+      data: null,
+      meta: null,
+    };
+
+    return res.status(403).json(response);
+  }
+
   const isPasswordMatched = await bcrypt.compare(password, user.data.password);
 
   if (!isPasswordMatched) {
@@ -105,7 +117,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
     {
       textFilters: { conditions: { user_id: { eq: user.data.id as string } } },
     },
-    { selection: buildSelectionFn({ relations: { role: { table: 'roles' } } }) },
+    { selection: buildSelectionFn({ relations: { role: { table: Database.roles } } }) },
   );
 
   const roles = userRoles.data.map((ur) => ur.role.name);
@@ -119,7 +131,7 @@ async function handleLogin(req: NextApiRequest, res: NextApiResponse) {
       {
         textFilters: { conditions: { role_id: { in: roleIds } } },
       },
-      { selection: buildSelectionFn({ relations: { permission: { table: 'permissions' } } }) },
+      { selection: buildSelectionFn({ relations: { permission: { table: Database.permissions } } }) },
     );
 
     permissions = rolePermissions?.data?.map((rp) => rp?.permission?.name);
