@@ -439,6 +439,7 @@ export type Database = {
           redeem_amount: number | null;
           round_off_amount: number | null;
           status: string | null;
+          street_address: string | null;
           sub_total_amount: number | null;
           tax_amount: number | null;
           updated_at: string;
@@ -466,6 +467,7 @@ export type Database = {
           redeem_amount?: number | null;
           round_off_amount?: number | null;
           status?: string | null;
+          street_address?: string | null;
           sub_total_amount?: number | null;
           tax_amount?: number | null;
           updated_at?: string;
@@ -493,6 +495,7 @@ export type Database = {
           redeem_amount?: number | null;
           round_off_amount?: number | null;
           status?: string | null;
+          street_address?: string | null;
           sub_total_amount?: number | null;
           tax_amount?: number | null;
           updated_at?: string;

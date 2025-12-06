@@ -127,20 +127,20 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
         <Card title="Order Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <p>
-              <span className="font-medium">Code: </span> {order.code}
+              <span className="font-medium">Code: </span> {order?.code}
             </p>
             <p>
               <span className="font-medium">Placed: </span>
-              {dayjs(order.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
+              {dayjs(order?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
             </p>
             <p>
               <span className="font-medium">Status: </span>
-              <Tag color={OrderStatusColorFn(order.status)}>{Toolbox.toPrettyText(order.status)}</Tag>
+              <Tag color={OrderStatusColorFn(order?.status)}>{Toolbox.toPrettyText(order?.status)}</Tag>
             </p>
             <p>
               <span className="font-medium">Payment: </span>
-              <Tag color={OrderPaymentStatusColorFn(order.payment_status)}>
-                {Toolbox.toPrettyText(order.payment_status)}
+              <Tag color={OrderPaymentStatusColorFn(order?.payment_status)}>
+                {Toolbox.toPrettyText(order?.payment_status)}
               </Tag>
             </p>
           </div>
@@ -148,16 +148,19 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
         <Card title="Customer Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <p>
-              <span className="font-medium">Name: </span> {order.customer.name}
+              <span className="font-medium">Name: </span> {order?.customer?.name}
             </p>
             <p>
-              <span className="font-medium">Phone: </span> {order.customer.phone}
+              <span className="font-medium">Phone: </span> {order?.customer?.phone}
             </p>
             <p>
-              <span className="font-medium">Email: </span> {order.customer.email || 'N/A'}
+              <span className="font-medium">Email: </span> {order?.customer?.email || 'N/A'}
             </p>
             <p>
-              <span className="font-medium">Delivery Zone: </span> {order.delivery_zone.name}
+              <span className="font-medium">Street Address: </span> {order?.street_address || 'N/A'}
+            </p>
+            <p>
+              <span className="font-medium">Delivery Zone: </span> {order?.delivery_zone?.name}
             </p>
           </div>
         </Card>
@@ -177,34 +180,34 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
           <div className="text-sm space-y-2">
             <div className="flex justify-between gap-2">
               <span>Subtotal</span>
-              <span>{Toolbox.withCurrency(order.sub_total_amount)}</span>
+              <span>{Toolbox.withCurrency(order?.sub_total_amount)}</span>
             </div>
             <div className="flex justify-between gap-2">
               <span>VAT</span>
-              <span>{Toolbox.withCurrency(order.vat_amount)}</span>
+              <span>{Toolbox.withCurrency(order?.vat_amount)}</span>
             </div>
             <div className="flex justify-between gap-2">
               <span>Tax</span>
-              <span>{Toolbox.withCurrency(order.tax_amount)}</span>
+              <span>{Toolbox.withCurrency(order?.tax_amount)}</span>
             </div>
             <div className="flex justify-between gap-2">
               <span>Delivery Charge</span>
-              <span>{Toolbox.withCurrency(order.delivery_charge)}</span>
+              <span>{Toolbox.withCurrency(order?.delivery_charge)}</span>
             </div>
-            {!order.redeem_amount || (
+            {!order?.redeem_amount || (
               <div className="flex justify-between gap-2">
                 <span>Redeem Amount</span>
-                <span className="text-green-600">-{Toolbox.withCurrency(order.redeem_amount)}</span>
+                <span className="text-green-600">-{Toolbox.withCurrency(order?.redeem_amount)}</span>
               </div>
             )}
             <div className="flex justify-between font-semibold border-t dark:border-white/10 pt-2">
               <span>Grand Total</span>
-              <span>{Toolbox.withCurrency(order.grand_total_amount)}</span>
+              <span>{Toolbox.withCurrency(order?.grand_total_amount)}</span>
             </div>
-            {!order.due_amount || (
+            {!order?.due_amount || (
               <div className="flex justify-between font-semibold">
                 <span>Due Amount</span>
-                <span className="text-red-500">{Toolbox.withCurrency(order.due_amount)}</span>
+                <span className="text-red-500">{Toolbox.withCurrency(order?.due_amount)}</span>
               </div>
             )}
           </div>

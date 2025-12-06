@@ -278,6 +278,19 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                             <FloatInput placeholder="Email Address" />
                           </Form.Item>
                         </Col>
+                        <Col xs={24}>
+                          <Form.Item
+                            name="street_address"
+                            rules={[{ required: true, message: 'Street address is required!' }]}
+                            className="!mb-0"
+                          >
+                            <FloatTextarea
+                              placeholder="Street Address"
+                              autoSize={{ minRows: 1, maxRows: 3 }}
+                              required
+                            />
+                          </Form.Item>
+                        </Col>
                         <Col xs={24} lg={12}>
                           <Form.Item
                             name="delivery_zone_id"

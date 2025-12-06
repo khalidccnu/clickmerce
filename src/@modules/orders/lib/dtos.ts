@@ -21,6 +21,7 @@ export const orderQuickCreateSchema = yup.object({
       }),
     )
     .required(),
+  street_address: yup.string().min(3).required(),
   delivery_zone_id: yup.string().uuid().required(),
   payment_method_id: yup.string().uuid().required(),
   coupon: yup.string().required().nullable(),
@@ -53,6 +54,7 @@ export const orderCreateSchema = yup.object({
   customer_id: yup.string().uuid().required(),
   coupon_id: yup.string().uuid().required().nullable(),
   status: yup.string().oneOf(orderStatusTypes).optional(),
+  street_address: yup.string().min(3).optional().nullable(),
   is_round_off: yup.boolean().required(),
   is_draft: yup.boolean().optional(),
   note: yup.string().optional().nullable(),

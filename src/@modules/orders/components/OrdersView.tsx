@@ -70,6 +70,7 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
         >
           <Descriptions.Item label="Payment Method">{order?.payment_method?.name || 'N/A'}</Descriptions.Item>
           <Descriptions.Item label="Delivery Zone">{order?.delivery_zone?.name}</Descriptions.Item>
+          <Descriptions.Item label="Street Address">{order?.street_address || 'N/A'}</Descriptions.Item>
         </Descriptions>
       </Card>
       <Card title="Financial Summary" size="small">
@@ -190,7 +191,7 @@ const OrdersView: React.FC<IProps> = ({ order }) => {
           labelStyle={{ fontWeight: 600 }}
         >
           <Descriptions.Item label="Created By" span={2}>
-            <span>{order?.created_by?.name}</span>
+            <span>{order?.created_by?.name || 'N/A'}</span>
             <br />
             <span className="text-xs text-gray-500">
               {dayjs(order?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}

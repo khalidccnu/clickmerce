@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS orders (
     payment_reference VARCHAR,
     payment_status VARCHAR,
     status VARCHAR DEFAULT 'PROCESSING',
+    street_address VARCHAR,
     note TEXT,
 
     customer_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -44,6 +45,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_round_off_amount ON orders(round_off_amoun
 CREATE INDEX IF NOT EXISTS idx_orders_payment_reference ON orders(payment_reference);
 CREATE INDEX IF NOT EXISTS idx_orders_payment_status ON orders(payment_status);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_street_address ON orders(street_address);
 CREATE INDEX IF NOT EXISTS idx_orders_customer_id ON orders(customer_id);
 CREATE INDEX IF NOT EXISTS idx_orders_payment_method_id ON orders(payment_method_id);
 CREATE INDEX IF NOT EXISTS idx_orders_delivery_zone_id ON orders(delivery_zone_id);

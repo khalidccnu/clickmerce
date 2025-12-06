@@ -36,6 +36,7 @@ export interface IOrder extends IBaseEntity {
   payment_reference: string;
   payment_status: TOrderPaymentStatusType;
   status: TOrderStatusType;
+  street_address: string;
   note: string;
 }
 
@@ -58,6 +59,7 @@ export interface IOrderCreate {
   customer_id: TId;
   coupon_id: TId;
   status: TOrderStatusType;
+  street_address: string;
   is_round_off: boolean;
   is_draft?: boolean;
   note: string;

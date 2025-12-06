@@ -142,6 +142,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
     sub_total_amount: elem?.sub_total_amount,
     grand_total_amount: elem?.grand_total_amount,
     round_off_amount: elem?.round_off_amount,
+    street_address: elem?.street_address,
     payment_method: elem?.payment_method,
     delivery_zone: elem?.delivery_zone,
     payment_status: elem?.payment_status,

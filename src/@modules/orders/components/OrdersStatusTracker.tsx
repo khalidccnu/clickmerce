@@ -122,6 +122,10 @@ const OrdersStatusTracker: React.FC<IProps> = ({ order }) => {
           Additional Information
         </Title>
         <div className="mb-2">
+          <Text strong>Street Address: </Text>
+          <Text>{order?.street_address || 'N/A'}</Text>
+        </div>
+        <div className="mb-2">
           <Text strong>Delivery Zone: </Text>
           <Text>{order?.delivery_zone?.name}</Text>
         </div>

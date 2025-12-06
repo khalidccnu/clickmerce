@@ -49,7 +49,6 @@ const HomePage: NextPage<IProps> = ({
 
   return (
     <PageWrapper
-      title="Home"
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}

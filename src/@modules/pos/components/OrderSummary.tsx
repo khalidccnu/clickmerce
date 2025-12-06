@@ -62,6 +62,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
   const orderGrandTotal = useAppSelector(orderGrandTotalSnap);
   const orderChangeAmount = useAppSelector(orderChangeAmountSnap);
   const dispatch = useAppDispatch();
+  const [streetAddress, setStreetAddress] = useState<string>(null);
   const [status, setStatus] = useState<TOrderStatusType>(ENUM_ORDER_STATUS_TYPES.DELIVERED);
   const [note, setNote] = useState<string>(null);
 
@@ -153,6 +154,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
         dispatch(loadOrderCustomerId());
         dispatch(loadOrderVatTax());
         dispatch(loadOrderPaymentMethodId());
+        setStreetAddress(null);
         setStatus(ENUM_ORDER_STATUS_TYPES.DELIVERED);
         setNote(null);
       },
@@ -359,6 +361,15 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
               />
             </Col>
             <Col xs={24}>
+              <FloatTextarea
+                placeholder="Street Address (Optional)"
+                autoSize={{ minRows: 1, maxRows: 3 }}
+                value={streetAddress}
+                onChange={(e) => setStreetAddress(e?.target?.value)}
+                size="large"
+              />
+            </Col>
+            <Col xs={24}>
               <FloatSelect
                 showSearch
                 virtual={false}
@@ -415,6 +426,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                       selected_quantity: item.selectedQuantity,
                       discount: item.discount,
                     })),
+                    street_address: streetAddress,
                     is_draft: true,
                     note,
                   });
@@ -449,6 +461,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
                       selected_quantity: item.selectedQuantity,
                       discount: item.discount,
                     })),
+                    street_address: streetAddress,
                     note,
                   });
                 }}

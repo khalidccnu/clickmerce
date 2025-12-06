@@ -61,7 +61,7 @@ const TransactionsView: React.FC<IProps> = ({ transaction }) => {
           labelStyle={{ fontWeight: 600 }}
         >
           <Descriptions.Item label="Created By" span={2}>
-            <span>{transaction?.created_by?.name}</span>
+            <span>{transaction?.created_by?.name || 'N/A'}</span>
             <br />
             <span className="text-xs text-gray-500">
               {dayjs(transaction?.created_at).format(Dayjs.dateTimeSecondsWithAmPm)}
