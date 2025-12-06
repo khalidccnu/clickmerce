@@ -1,6 +1,7 @@
 import { IBaseResponse } from '@base/interfaces';
 import { createSupabaseServerClient } from '@lib/config/supabase/serverClient';
 import { Database } from '@lib/constant/database';
+import { Roles } from '@lib/constant/roles';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
@@ -36,7 +37,10 @@ export async function handleGetSettings(
   supabase?: SupabaseClient,
 ): Promise<IBaseResponse<ISettings> | void> {
   const { token, user } = getServerAuthSession(req);
-  const settingsCallable = token && user?.is_admin && user?.permissions?.includes('settings:read');
+  const settingsCallable =
+    token &&
+    user?.is_admin &&
+    (user?.roles?.includes(Roles.SUPER_ADMIN) || user?.permissions?.includes('settings:read'));
 
   const supabaseClient = supabase || createSupabaseServerClient(req, res);
 
