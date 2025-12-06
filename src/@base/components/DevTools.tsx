@@ -3,36 +3,112 @@ import { useEffect } from 'react';
 
 interface IProps {
   showWarning?: boolean;
+  disableRightClick?: boolean;
+  disableTextSelection?: boolean;
+  disableDragStart?: boolean;
+  disableCopy?: boolean;
+  disableCut?: boolean;
+  disablePaste?: boolean;
+  disableSelectAll?: boolean;
+  disableInspect?: boolean;
 }
 
-const DevTools: React.FC<IProps> = ({ showWarning = false }) => {
+const DevTools: React.FC<IProps> = ({
+  showWarning = true,
+  disableRightClick = true,
+  disableTextSelection = true,
+  disableDragStart = true,
+  disableCopy = true,
+  disableCut = true,
+  disablePaste = true,
+  disableSelectAll = true,
+  disableInspect = true,
+}) => {
   const isDevToolsOpen = useDevToolsStatus();
 
   useEffect(() => {
-    const disableInspect = (e) => e.preventDefault();
-    const disableTextSelection = (e) => {
+    const disableInspectHandler = (e) => e.preventDefault();
+
+    const disableTextSelectionHandler = (e) => {
       e.preventDefault();
       return false;
     };
 
-    document.body.style.userSelect = 'none';
-    window.addEventListener('contextmenu', disableInspect);
-    document.addEventListener('selectstart', disableTextSelection);
-    document.addEventListener('dragstart', disableTextSelection);
-    window.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && ['a', 'A', 'c', 'C', 'v', 'V'].includes(e.key)) e.preventDefault();
-      if (e.ctrlKey && e.shiftKey && e.key === 'J') e.preventDefault();
-      if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J'))) e.preventDefault();
-    });
+    const handleKeydown = (e) => {
+      if (disableCopy && e.ctrlKey && (e.key === 'c' || e.key === 'C')) {
+        e.preventDefault();
+      }
+
+      if (disableCut && e.ctrlKey && (e.key === 'x' || e.key === 'X')) {
+        e.preventDefault();
+      }
+
+      if (disablePaste && e.ctrlKey && (e.key === 'v' || e.key === 'V')) {
+        e.preventDefault();
+      }
+
+      if (disableSelectAll && e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+        e.preventDefault();
+      }
+
+      if (disableInspect) {
+        if (e.key === 'F12') {
+          e.preventDefault();
+        }
+
+        if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) {
+          e.preventDefault();
+        }
+      }
+    };
+
+    if (disableTextSelection) {
+      document.body.style.userSelect = 'none';
+    }
+
+    if (disableRightClick) {
+      window.addEventListener('contextmenu', disableInspectHandler);
+    }
+
+    if (disableTextSelection) {
+      document.addEventListener('selectstart', disableTextSelectionHandler);
+    }
+
+    if (disableDragStart) {
+      document.addEventListener('dragstart', disableTextSelectionHandler);
+    }
+
+    window.addEventListener('keydown', handleKeydown);
 
     return () => {
-      document.body.style.userSelect = 'auto';
-      window.removeEventListener('contextmenu', disableInspect);
-      document.removeEventListener('selectstart', disableTextSelection);
-      document.removeEventListener('dragstart', disableTextSelection);
-      window.removeEventListener('keydown', disableInspect);
+      if (disableTextSelection) {
+        document.body.style.userSelect = 'auto';
+      }
+
+      if (disableRightClick) {
+        window.removeEventListener('contextmenu', disableInspectHandler);
+      }
+
+      if (disableTextSelection) {
+        document.removeEventListener('selectstart', disableTextSelectionHandler);
+      }
+
+      if (disableDragStart) {
+        document.removeEventListener('dragstart', disableTextSelectionHandler);
+      }
+
+      window.removeEventListener('keydown', handleKeydown);
     };
-  }, []);
+  }, [
+    disableRightClick,
+    disableTextSelection,
+    disableDragStart,
+    disableCopy,
+    disableCut,
+    disablePaste,
+    disableSelectAll,
+    disableInspect,
+  ]);
 
   return (
     isDevToolsOpen &&

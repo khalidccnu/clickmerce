@@ -91,7 +91,17 @@ const AdminLayout: React.FC<IProps> = ({ children }) => {
 
   return (
     <Layout style={{ minHeight: '100vh', background: 'transparent' }}>
-      {Env.isProduction && <DevTools />}
+      {Env.isProduction && (
+        <DevTools
+          showWarning={false}
+          disableTextSelection={false}
+          disableDragStart={false}
+          disableCopy={false}
+          disableCut={false}
+          disablePaste={false}
+          disableSelectAll={false}
+        />
+      )}
       <Layout.Sider
         ref={siderRef}
         collapsible

@@ -82,7 +82,17 @@ const UserLayout: React.FC<IProps> = ({ children }) => {
           background: 'transparent',
         }}
       >
-        {Env.isProduction && <DevTools />}
+        {Env.isProduction && (
+          <DevTools
+            showWarning={false}
+            disableTextSelection={false}
+            disableDragStart={false}
+            disableCopy={false}
+            disableCut={false}
+            disablePaste={false}
+            disableSelectAll={false}
+          />
+        )}
         <div className="container max-w-6xl mx-auto">
           <Layout style={styles.layout}>
             <Layout.Sider
