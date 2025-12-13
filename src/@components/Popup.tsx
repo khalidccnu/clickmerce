@@ -58,7 +58,13 @@ const Popup: React.FC<IProps> = ({ className, forceOpen = false, popup }) => {
         }}
       >
         {[ENUM_POPUP_TYPES.IMAGE, ENUM_POPUP_TYPES.TEXT_AND_IMAGE].includes(popup?.type as ENUM_POPUP_TYPES) && (
-          <img src={popup?.image} alt={popup?.name} className="w-full h-auto object-contain rounded-2xl" />
+          <img
+            fetchPriority="high"
+            loading="lazy"
+            src={popup?.image}
+            alt={popup?.name}
+            className="w-full h-auto object-contain rounded-2xl"
+          />
         )}
         {[ENUM_POPUP_TYPES.TEXT, ENUM_POPUP_TYPES.TEXT_AND_IMAGE].includes(popup?.type as ENUM_POPUP_TYPES) && (
           <p

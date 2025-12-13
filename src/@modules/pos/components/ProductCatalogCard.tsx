@@ -81,6 +81,7 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
           )}
           <Badge.Ribbon text={product?.quantity ? product?.quantity : 'Out of Stock'} color="var(--color-primary)">
             <Image
+              loading="lazy"
               src={featuredImage?.url}
               alt={product.name}
               wrapperStyle={{ display: 'block' }}

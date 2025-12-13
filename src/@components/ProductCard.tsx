@@ -81,7 +81,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
         <Button className="view" onClick={() => router.push(Paths.products.toSlug(product.slug))}>
           View
         </Button>
-        <img src={featuredImage?.url} alt={product?.name} />
+        <img loading="lazy" src={featuredImage?.url} alt={product?.name} />
       </div>
       <div className="content_wrapper dark:text-white">
         <p className="title">{product?.name}</p>

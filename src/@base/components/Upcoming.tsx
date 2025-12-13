@@ -21,6 +21,7 @@ const Upcoming: React.FC<IProps> = ({
   return (
     <div className={cn('text-center', className)}>
       <img
+        loading="lazy"
         src={ImagePaths.upcoming}
         alt="Coming Soon"
         width={imageWidth}

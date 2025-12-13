@@ -35,8 +35,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 }
 
 async function handleGet(req: NextApiRequest, res: NextApiResponse) {
-  const users = await SupabaseAdapter.find(supabaseServiceClient, Database.users);
-  const isInitiate = Toolbox.isNotEmpty(users.data);
+  const settings = await SupabaseAdapter.find(supabaseServiceClient, Database.settings);
+  const isInitiate = Toolbox.isNotEmpty(settings.data);
 
   const response: IBaseResponse<{ success: boolean }> = {
     success: true,

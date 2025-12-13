@@ -340,6 +340,11 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                           </Form.Item>
                         </Col>
                         <Col xs={24}>
+                          <Form.Item name="note" className="!mb-0">
+                            <FloatTextarea placeholder="Note (Optional)" autoSize={{ minRows: 1, maxRows: 5 }} />
+                          </Form.Item>
+                        </Col>
+                        <Col xs={24}>
                           <Divider style={{ marginBlock: 0 }} />
                         </Col>
                         <Col xs={24} lg={16}>
@@ -379,11 +384,6 @@ const CheckoutSection: React.FC<IProps> = ({ className, vat, tax }) => {
                             >
                               {couponDiscount ? 'Remove' : 'Apply'}
                             </Button>
-                          </Form.Item>
-                        </Col>
-                        <Col xs={24}>
-                          <Form.Item name="note" className="!mb-0">
-                            <FloatTextarea placeholder="Note (Optional)" autoSize={{ minRows: 1, maxRows: 5 }} />
                           </Form.Item>
                         </Col>
                       </Row>

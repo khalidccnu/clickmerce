@@ -60,7 +60,12 @@ const BannerSection: React.FC<IProps> = ({ className, banners }) => {
                       title={banner?.name}
                     />
                   )}
-                  <img src={banner?.image} alt={banner?.name} className="w-full h-auto aspect-[932_/_357]" />
+                  <img
+                    loading="lazy"
+                    src={banner?.image}
+                    alt={banner?.name}
+                    className="w-full h-auto aspect-[932_/_357]"
+                  />
                 </SwiperSlide>
               );
             })}

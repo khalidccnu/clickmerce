@@ -26,7 +26,7 @@ const NotFoundPage = () => {
               </div>
             </div>
             <figure className="order-first md:order-none">
-              <img src={ImagePaths[404]} alt="404" className="w-full h-auto" />
+              <img loading="lazy" src={ImagePaths[404]} alt="404" className="w-full h-auto" />
             </figure>
           </div>
         </div>

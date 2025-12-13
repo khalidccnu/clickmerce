@@ -23,7 +23,17 @@ const BrandLogo: React.FC<IProps> = ({ className, isBrand = true, width = 180, h
       (settingsQuery.data?.data?.identity?.initial_name ||
         (Env.webTitleInitial ? Toolbox.toLowerText(Env.webTitleInitial) : '')) + ' logo';
 
-    return <img width={width} height={height} src={src} alt={altText} className={className} />;
+    return (
+      <img
+        fetchPriority="high"
+        loading="lazy"
+        width={width}
+        height={height}
+        src={src}
+        alt={altText}
+        className={className}
+      />
+    );
   };
 
   return renderImageFn(settingsQuery.data?.data?.identity?.logo_url || ImagePaths.logo);

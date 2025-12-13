@@ -22,7 +22,12 @@ const UnderConstructionPage: NextPage<IProps> = () => {
               </p>
             </div>
             <figure className="order-first md:order-none">
-              <img src={ImagePaths.underConstruction} alt="under construction" className="w-full h-auto" />
+              <img
+                loading="lazy"
+                src={ImagePaths.underConstruction}
+                alt="under construction"
+                className="w-full h-auto"
+              />
             </figure>
           </div>
         </div>

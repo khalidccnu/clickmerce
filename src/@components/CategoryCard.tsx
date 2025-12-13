@@ -46,6 +46,7 @@ const CategoryCard: React.FC<IProps> = ({ className, isPlaceholder = false, cate
             <div className="absolute w-full h-full bg-[var(--color-primary)] rounded-full top-2 -left-2" />
             <div className="bg-gray-200 dark:bg-gray-200/70 rounded-full relative overflow-hidden">
               <img
+                loading="lazy"
                 src={imageSrc}
                 alt={name}
                 className="w-full h-auto aspect-square rounded-full group-hover:scale-110 transition-transform duration-500"
