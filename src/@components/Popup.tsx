@@ -3,6 +3,7 @@ import { cn } from '@lib/utils/cn';
 import { Session } from '@lib/utils/session';
 import { ENUM_POPUP_TYPES } from '@modules/popups/lib/enums';
 import { IPopup } from '@modules/popups/lib/interfaces';
+import { Image } from '@unpic/react';
 import { useEffect, useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai';
 
@@ -58,7 +59,13 @@ const Popup: React.FC<IProps> = ({ className, forceOpen = false, popup }) => {
         }}
       >
         {[ENUM_POPUP_TYPES.IMAGE, ENUM_POPUP_TYPES.TEXT_AND_IMAGE].includes(popup?.type as ENUM_POPUP_TYPES) && (
-          <img src={popup?.image} alt={popup?.name} className="w-full h-auto object-contain rounded-2xl" />
+          <Image
+            priority
+            layout="fullWidth"
+            src={popup?.image}
+            alt={popup?.name}
+            className="w-full h-auto object-contain rounded-2xl"
+          />
         )}
         {[ENUM_POPUP_TYPES.TEXT, ENUM_POPUP_TYPES.TEXT_AND_IMAGE].includes(popup?.type as ENUM_POPUP_TYPES) && (
           <p

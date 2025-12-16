@@ -1,3 +1,5 @@
+import { Env } from '.environments';
+import DevTools from '@base/components/DevTools';
 import Preloader from '@base/components/Preloader';
 import { ENUM_SORT_ORDER_TYPES } from '@base/enums';
 import Popup from '@components/Popup';
@@ -70,6 +72,17 @@ const LandingLayout: React.FC<IProps> = ({ children }) => {
 
   return (
     <React.Fragment>
+      {Env.isProduction && (
+        <DevTools
+          showWarning={false}
+          disableTextSelection={false}
+          disableDragStart={false}
+          disableCopy={false}
+          disableCut={false}
+          disablePaste={false}
+          disableSelectAll={false}
+        />
+      )}
       {isPreloader && <Preloader />}
       <LandingHeader
         ref={headerRef}

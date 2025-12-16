@@ -17,6 +17,7 @@ import {
 } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
 import { IReview } from '@modules/reviews/lib/interfaces';
+import { Image } from '@unpic/react';
 import { Alert, Image as AntImage, Button, Col, Grid, message, Row, Space, Tabs, Tag, Typography } from 'antd';
 import React, { useMemo, useState } from 'react';
 import { BsBasket2, BsFillBasket2Fill, BsHeart, BsHeartFill } from 'react-icons/bs';
@@ -225,12 +226,14 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
                   {product?.images?.map((image, idx) => (
                     <SwiperSlide key={idx}>
                       <div className="image_wrapper relative rounded-2xl overflow-hidden">
-                        <img
+                        <Image
+                          layout="fullWidth"
                           src={image?.url}
                           alt={product?.name}
                           className="absolute inset-0 hidden h-full w-full scale-110 object-cover blur-md lg:block"
                         />
                         <AntImage
+                          fetchPriority="high"
                           src={image?.url}
                           alt={product?.name}
                           wrapperStyle={{ display: 'block' }}
@@ -252,7 +255,8 @@ const ProductViewSection: React.FC<IProps> = ({ className, product, reviews, rev
               >
                 {product?.images?.map((image, idx) => (
                   <SwiperSlide key={idx}>
-                    <img
+                    <Image
+                      layout="fullWidth"
                       src={image.url}
                       alt={product.name}
                       className="w-full h-auto object-cover border dark:border-gray-700 rounded-2xl cursor-pointer"

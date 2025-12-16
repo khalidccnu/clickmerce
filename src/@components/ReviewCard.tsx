@@ -1,6 +1,6 @@
 import { cn } from '@lib/utils/cn';
 import { IReview } from '@modules/reviews/lib/interfaces';
-import { Avatar, Image, Rate } from 'antd';
+import { Avatar, Image, Rate, Typography } from 'antd';
 import React, { useState } from 'react';
 import { FaEye } from 'react-icons/fa';
 
@@ -22,7 +22,12 @@ const ReviewCard: React.FC<IProps> = ({ className, review }) => {
       title={review?.comment}
     >
       <Rate disabled allowHalf value={review?.rate} style={{ marginBottom: 8, color: 'var(--color-primary' }} />
-      <p className="text-gray-500 dark:text-gray-300 text-sm md:text-base line-clamp-5">{review?.comment}</p>
+      <Typography.Paragraph
+        ellipsis={{ rows: 5, expandable: true, symbol: 'More' }}
+        style={{ margin: 0, opacity: 0.75 }}
+      >
+        {review?.comment}
+      </Typography.Paragraph>
       <div className="flex items-center gap-2 mt-2">
         <Avatar size={24}>{review?.user?.name?.charAt(0)?.toUpperCase()}</Avatar>
         <p className="text-base font-semibold text-[--color-primary]">{review?.user?.name}</p>

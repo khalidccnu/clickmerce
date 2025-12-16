@@ -10,7 +10,7 @@ const BaseHeroWrapper: React.FC<IProps> = ({ title, breadcrumb }) => {
   return (
     <div
       className="relative h-60 bg-cover bg-center bg-no-repeat before:content-[''] before:absolute before:left-0 before:top-0 before:w-full before:h-full dark:before:bg-[#202020] before:bg-[#f1f1f3] before:z-[-1]"
-      style={{ backgroundImage: 'url(/images/hero_wrapper_pattern.png)' }}
+      style={{ background: 'url(/images/hero_wrapper_pattern.png) bottom center / cover no-repeat' }}
     >
       <div className="container h-full">
         <div className="flex flex-col justify-center items-center h-full">

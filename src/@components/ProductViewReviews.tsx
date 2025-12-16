@@ -54,7 +54,7 @@ const ProductViewReviews: React.FC<IProps> = ({ className, productId, reviews, r
 
   return (
     <div className={cn('product_view_reviews_section', className)}>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">{renderReviews}</div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-start gap-4">{renderReviews}</div>
       {reviewsMeta?.total > +reviewsOptions.limit && (
         <Pagination
           className="product_view_reviews_pagination"

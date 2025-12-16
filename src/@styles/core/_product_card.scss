@@ -5,7 +5,9 @@
         transform: scale(1.1);
       }
       .view {
-        transform: translate(-50%, -115%);
+        @include lg {
+          transform: translate(-50%, -115%);
+        }
       }
     }
   }
@@ -37,7 +39,7 @@
     }
     .view {
       position: absolute;
-      top: 100%;
+      top: 85%;
       left: 50%;
       transform: translateX(-50%);
       white-space: nowrap;
@@ -55,6 +57,9 @@
         background-color 500ms,
         transform 500ms linear 50ms;
       z-index: 1;
+      @include lg {
+        top: 100%;
+      }
       &::before,
       &::after {
         content: '';

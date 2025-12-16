@@ -29,20 +29,20 @@ const CategoriesSliderSection: React.FC<IProps> = ({ className, categories, cate
           <div className="slider_content">
             <Swiper
               loop
-              spaceBetween={25}
-              slidesPerView={1}
+              spaceBetween={24}
+              slidesPerView={1.2}
               breakpoints={{
                 640: {
-                  slidesPerView: 1,
+                  slidesPerView: 1.2,
                 },
                 768: {
-                  slidesPerView: 2,
+                  slidesPerView: 2.2,
                 },
                 1024: {
-                  slidesPerView: 3,
+                  slidesPerView: 3.2,
                 },
                 1280: {
-                  slidesPerView: 5,
+                  slidesPerView: 5.2,
                 },
               }}
             >

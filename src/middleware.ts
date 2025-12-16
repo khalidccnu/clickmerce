@@ -31,31 +31,6 @@ export default async function middleware(req: NextRequest) {
     return response;
   }
 
-  // Check initiate
-  try {
-    const initiateUrl = `${origin}${Env.apiUrl}/${Paths.initiate}`;
-    const initiateResponse = await fetch(initiateUrl);
-    const initiate = await initiateResponse.json();
-
-    if (pathname.startsWith(Paths.underConstruction) && search.includes(REDIRECT_PREFIX)) {
-      const decodedUrl = decodeURIComponent(search.split(`${REDIRECT_PREFIX}=`)[1]);
-      return redirectFn(decodedUrl);
-    }
-
-    if (pathname.startsWith(Paths.initiate) && initiate.data.success) {
-      return redirectFn(origin);
-    }
-
-    if (!pathname.startsWith(Paths.initiate) && !initiate.data.success) {
-      return redirectFn(`${origin}${Paths.initiate}`);
-    }
-  } catch {
-    if (!pathname.startsWith(Paths.underConstruction)) {
-      const encodedUrl = encodeURIComponent(`${origin}${pathname}${search}`);
-      return redirectFn(`${origin}${Paths.underConstruction}?${REDIRECT_PREFIX}=${encodedUrl}`);
-    }
-  }
-
   // Get session once
   let sessionCache: ISession = null;
 
@@ -68,6 +43,23 @@ export default async function middleware(req: NextRequest) {
     const settingsResponse = await fetch(settingsUrl);
     const settings: ISettingsResponse = await settingsResponse.json();
 
+    if (!settings?.success) {
+      throw new Error(settings?.message || 'Failed to fetch settings');
+    }
+
+    if (pathname.startsWith(Paths.underConstruction) && search.includes(REDIRECT_PREFIX) && settings?.data) {
+      const decodedUrl = decodeURIComponent(search.split(`${REDIRECT_PREFIX}=`)[1]);
+      return redirectFn(decodedUrl);
+    }
+
+    if (pathname.startsWith(Paths.initiate) && settings?.data) {
+      return redirectFn(origin);
+    }
+
+    if (!pathname.startsWith(Paths.initiate) && !settings.data) {
+      return redirectFn(`${origin}${Paths.initiate}`);
+    }
+
     const identity = settings.data?.identity;
     const needWebView = identity?.need_web_view;
 
@@ -79,7 +71,10 @@ export default async function middleware(req: NextRequest) {
       }
     }
   } catch {
-    return redirectFn(`${origin}${Paths.underConstruction}`);
+    if (!pathname.startsWith(Paths.underConstruction)) {
+      const encodedUrl = encodeURIComponent(`${origin}${pathname}${search}`);
+      return redirectFn(`${origin}${Paths.underConstruction}?${REDIRECT_PREFIX}=${encodedUrl}`);
+    }
   }
 
   // Handle unauthenticated paths

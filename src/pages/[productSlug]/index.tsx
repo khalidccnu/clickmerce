@@ -23,6 +23,8 @@ interface IProps extends IBasePageProps {
 const ProductPage: NextPage<IProps> = ({ settingsIdentity, product, reviews, reviewsMeta }) => {
   const { sendEventFn } = useAnalyticEvent();
 
+  const featuredImage = product?.images?.find((image) => image?.is_featured) || product?.images?.[0];
+
   useEffect(() => {
     sendEventFn({
       name: 'view_item',
@@ -36,7 +38,7 @@ const ProductPage: NextPage<IProps> = ({ settingsIdentity, product, reviews, rev
       baseTitle={settingsIdentity?.name}
       description={settingsIdentity?.description}
       icon={settingsIdentity?.icon_url}
-      image={settingsIdentity?.social_image_url}
+      image={featuredImage?.url || settingsIdentity?.social_image_url}
     >
       <ProductViewSection product={product} reviews={reviews} reviewsMeta={reviewsMeta} className="py-8 md:py-16" />
       <RelatedProductsSection

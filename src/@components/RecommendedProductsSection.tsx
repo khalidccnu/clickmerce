@@ -170,7 +170,7 @@ const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) =
           <div className="slider_content">
             <Swiper
               loop
-              spaceBetween={25}
+              spaceBetween={24}
               slidesPerView={1}
               modules={[Navigation, Pagination]}
               navigation={{

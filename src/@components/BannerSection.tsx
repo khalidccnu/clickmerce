@@ -2,6 +2,7 @@ import CustomLink from '@base/components/CustomLink';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IBanner } from '@modules/banners/lib/interfaces';
+import { Image } from '@unpic/react';
 import { Grid } from 'antd';
 import React from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
@@ -32,7 +33,7 @@ const BannerSection: React.FC<IProps> = ({ className, banners }) => {
           <Swiper
             loop
             autoplay={{ delay: 5000, pauseOnMouseEnter: true }}
-            spaceBetween={25}
+            spaceBetween={24}
             modules={[
               Autoplay,
               Navigation,
@@ -60,7 +61,12 @@ const BannerSection: React.FC<IProps> = ({ className, banners }) => {
                       title={banner?.name}
                     />
                   )}
-                  <img src={banner?.image} alt={banner?.name} className="w-full h-auto aspect-[932_/_357]" />
+                  <Image
+                    layout="fullWidth"
+                    src={banner?.image}
+                    alt={banner?.name}
+                    className="w-full h-auto aspect-[932_/_357]"
+                  />
                 </SwiperSlide>
               );
             })}

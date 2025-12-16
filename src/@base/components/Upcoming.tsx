@@ -1,5 +1,6 @@
 import { ImagePaths } from '@lib/constant/imagePaths';
 import { cn } from '@lib/utils/cn';
+import { Image } from '@unpic/react';
 
 interface IProps {
   className?: string;
@@ -20,7 +21,7 @@ const Upcoming: React.FC<IProps> = ({
 }) => {
   return (
     <div className={cn('text-center', className)}>
-      <img
+      <Image
         src={ImagePaths.upcoming}
         alt="Coming Soon"
         width={imageWidth}

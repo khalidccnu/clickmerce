@@ -31,7 +31,7 @@ const ReviewsSection: React.FC<IProps> = ({ className, reviews }) => {
               autoplay={{ delay: 5000, pauseOnMouseEnter: true }}
               modules={[Autoplay, Pagination]}
               pagination={{ el: '.rv_slider_pagination', clickable: true }}
-              spaceBetween={25}
+              spaceBetween={24}
               slidesPerView={1}
               breakpoints={{
                 640: {

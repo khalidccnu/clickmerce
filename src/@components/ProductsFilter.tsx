@@ -44,9 +44,12 @@ const ProductsFilter: React.FC<IProps> = ({ className, style }) => {
     <div className={cn('rounded-xl bg-white dark:bg-[var(--color-rich-black)]', className)} style={style}>
       <aside>
         <div
-          className={cn('flex items-center justify-between gap-2 p-4 bg-gray-300/70 dark:bg-gray-800 rounded-t-xl', {
-            'rounded-b-xl': !isExtended && !screens.lg,
-          })}
+          className={cn(
+            'flex items-center justify-between gap-2 p-4 rounded-t-xl border-b border-black/5 dark:border-gray-50/10',
+            {
+              'rounded-b-xl': !isExtended && !screens.lg,
+            },
+          )}
         >
           <p className="text-[var(--color-primary)] dark:text-white font-bold text-lg">Filters</p>
           {screens.lg || (

@@ -1,6 +1,7 @@
 import PageWrapper from '@base/container/PageWrapper';
 import { ImagePaths } from '@lib/constant/imagePaths';
 import { Paths } from '@lib/constant/paths';
+import { Image } from '@unpic/react';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 
@@ -26,7 +27,7 @@ const NotFoundPage = () => {
               </div>
             </div>
             <figure className="order-first md:order-none">
-              <img src={ImagePaths[404]} alt="404" className="w-full h-auto" />
+              <Image layout="fullWidth" src={ImagePaths[404]} alt="404" className="w-full h-auto" />
             </figure>
           </div>
         </div>

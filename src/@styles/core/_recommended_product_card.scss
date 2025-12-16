@@ -13,7 +13,7 @@
       left: 0;
       width: 4px;
       height: 100%;
-      border: 2px solid var(--color-primary);
+      background-color: var(--color-primary);
       pointer-events: none;
       opacity: 0;
       transition: opacity 500ms;

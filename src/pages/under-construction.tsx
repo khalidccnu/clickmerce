@@ -4,6 +4,7 @@ import { ImagePaths } from '@lib/constant/imagePaths';
 import { pageTypes } from '@modules/pages/lib/enums';
 import { PagesServices } from '@modules/pages/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
+import { Image } from '@unpic/react';
 import { GetServerSideProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {}
@@ -22,7 +23,12 @@ const UnderConstructionPage: NextPage<IProps> = () => {
               </p>
             </div>
             <figure className="order-first md:order-none">
-              <img src={ImagePaths.underConstruction} alt="under construction" className="w-full h-auto" />
+              <Image
+                layout="fullWidth"
+                src={ImagePaths.underConstruction}
+                alt="under construction"
+                className="w-full h-auto"
+              />
             </figure>
           </div>
         </div>

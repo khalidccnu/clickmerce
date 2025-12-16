@@ -119,7 +119,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
 
     const { data: features } = await FeaturesServices.find({
       page: '1',
-      limit: '50',
+      limit: '12',
       is_active: 'true',
     });
 
