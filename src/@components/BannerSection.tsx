@@ -2,7 +2,6 @@ import CustomLink from '@base/components/CustomLink';
 import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { IBanner } from '@modules/banners/lib/interfaces';
-import { Image } from '@unpic/react';
 import { Grid } from 'antd';
 import React from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
@@ -61,8 +60,8 @@ const BannerSection: React.FC<IProps> = ({ className, banners }) => {
                       title={banner?.name}
                     />
                   )}
-                  <Image
-                    layout="fullWidth"
+                  <img
+                    loading="lazy"
                     src={banner?.image}
                     alt={banner?.name}
                     className="w-full h-auto aspect-[932_/_357]"

@@ -23,7 +23,7 @@ import { IReview } from '@modules/reviews/lib/interfaces';
 import { ReviewsServices } from '@modules/reviews/lib/services';
 import { SettingsServices } from '@modules/settings/lib/services';
 import { Grid } from 'antd';
-import { GetServerSideProps, NextPage } from 'next';
+import { GetStaticProps, NextPage } from 'next';
 
 interface IProps extends IBasePageProps {
   banners: IBanner[];
@@ -76,14 +76,20 @@ const HomePage: NextPage<IProps> = ({
 
 export default HomePage;
 
-export const getServerSideProps: GetServerSideProps<IProps> = async () => {
+export const getStaticProps: GetStaticProps<IProps> = async () => {
   try {
-    const { success: settingsSuccess, data: settings } = await SettingsServices.find();
+    const settingsPromise = SettingsServices.find();
 
-    const { success: pagesSuccess, data: pages } = await PagesServices.find({
+    const pagesPromise = PagesServices.find({
       page: '1',
       limit: pageTypes.length.toString(),
     });
+
+    const [settingsQuery, pagesQuery] = await Promise.all([settingsPromise, pagesPromise]);
+
+    const { success: settingsSuccess, data: settings } = settingsQuery;
+
+    const { success: pagesSuccess, data: pages } = pagesQuery;
 
     if (!settingsSuccess || !pagesSuccess) {
       return {
@@ -91,43 +97,60 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
       };
     }
 
-    const { data: banners } = await BannersServices.find({
+    const bannersPromise = BannersServices.find({
       page: '1',
       limit: '12',
       is_active: 'true',
       sort_order: ENUM_SORT_ORDER_TYPES.DESC,
     });
 
-    const { data: categories, meta: categoriesMeta } = await CategoriesServices.find({
+    const categoriesPromise = CategoriesServices.find({
       page: '1',
       limit: '12',
       is_active: 'true',
     });
 
-    const { data: products } = await ProductsWebServices.find({
+    const productsPromise = ProductsWebServices.find({
       page: '1',
       limit: '12',
       is_active: 'true',
     });
 
-    const { data: recommendProducts } = await ProductsWebServices.find({
+    const recommendProductsPromise = ProductsWebServices.find({
       page: '1',
       limit: '12',
       is_recommend: 'true',
       is_active: 'true',
     });
 
-    const { data: features } = await FeaturesServices.find({
+    const featuresPromise = FeaturesServices.find({
       page: '1',
       limit: '12',
       is_active: 'true',
     });
 
-    const { data: reviews } = await ReviewsServices.findQuick({
+    const reviewsPromise = ReviewsServices.findQuick({
       page: '1',
       limit: '12',
       sort_order: ENUM_SORT_ORDER_TYPES.DESC,
     });
+
+    const [bannersQuery, categoriesQuery, productsQuery, recommendProductsQuery, featuresQuery, reviewsQuery] =
+      await Promise.all([
+        bannersPromise,
+        categoriesPromise,
+        productsPromise,
+        recommendProductsPromise,
+        featuresPromise,
+        reviewsPromise,
+      ]);
+
+    const { data: banners } = bannersQuery;
+    const { data: categories, meta: categoriesMeta } = categoriesQuery;
+    const { data: products } = productsQuery;
+    const { data: recommendProducts } = recommendProductsQuery;
+    const { data: features } = featuresQuery;
+    const { data: reviews } = reviewsQuery;
 
     return {
       props: {
@@ -142,6 +165,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async () => {
         features: features ?? [],
         reviews: reviews ?? [],
       },
+      revalidate: 60,
     };
   } catch (error) {
     return {

@@ -2413,20 +2413,6 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.3.0.tgz#d06bbb384ebcf6c505fde1c3d0ed4ddffe0aaff8"
   integrity sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==
 
-"@unpic/core@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@unpic/core/-/core-1.0.3.tgz#6f8dff89b0eba17743be3437616c99c533ad529c"
-  integrity sha512-aum9YNVUGso7MjGLD0Rp/08kywCGLqZ03/q6VQBFFakDBOXWEc8D4kPGcZ8v5wEnGRex3lE+++bOuucBp3KJ/w==
-  dependencies:
-    unpic "^4.2.2"
-
-"@unpic/react@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@unpic/react/-/react-1.0.2.tgz#fcfb66a178bc4ba1987c244eb4e4ea59e1b506b0"
-  integrity sha512-5RmRfELwTF8w+4zjtQGqjpvX+RU2VLvis3xDCS1O2uWk0PZN2cvatL+3/KAR3mshAuRrkFGTX1XwyAezSXaoCA==
-  dependencies:
-    "@unpic/core" "^1.0.3"
-
 "@unrs/resolver-binding-android-arm-eabi@1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@unrs/resolver-binding-android-arm-eabi/-/resolver-binding-android-arm-eabi-1.11.1.tgz#9f5b04503088e6a354295e8ea8fe3cb99e43af81"
@@ -6984,11 +6970,6 @@ unicode-trie@^2.0.0:
   dependencies:
     pako "^0.2.5"
     tiny-inflate "^1.0.0"
-
-unpic@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/unpic/-/unpic-4.2.2.tgz#644c83db82a7b048ded18e090eeb914ae99e33e0"
-  integrity sha512-z6T2ScMgRV2y2H8MwwhY5xHZWXhUx/YxtOCGJwfURSl7ypVy4HpLIMWoIZKnnxQa/RKzM0kg8hUh0paIrpLfvw==
 
 unrs-resolver@^1.6.2:
   version "1.11.1"

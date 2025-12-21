@@ -5,7 +5,6 @@ import { cn } from '@lib/utils/cn';
 import { Toolbox } from '@lib/utils/toolbox';
 import { hasProductInCartFn, hasProductInWishlistFn } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
-import { Image } from '@unpic/react';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
@@ -82,7 +81,7 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
         <Button className="view" onClick={() => router.push(Paths.products.toSlug(product.slug))}>
           View
         </Button>
-        <Image layout="fullWidth" src={featuredImage?.url} alt={product?.name} />
+        <img loading="lazy" src={featuredImage?.url} alt={product?.name} />
       </div>
       <div className="content_wrapper dark:text-white">
         <p className="title">{product?.name}</p>
