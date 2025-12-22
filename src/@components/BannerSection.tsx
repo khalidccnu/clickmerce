@@ -16,6 +16,10 @@ interface IProps {
 const BannerSection: React.FC<IProps> = ({ className, banners }) => {
   const screens = Grid.useBreakpoint();
 
+  if (Toolbox.isEmpty(banners)) {
+    return;
+  }
+
   return (
     <section className={cn('banner_section', className)}>
       <div className="slider_wrapper">
@@ -61,7 +65,7 @@ const BannerSection: React.FC<IProps> = ({ className, banners }) => {
                     />
                   )}
                   <img
-                    loading="lazy"
+                    fetchPriority="high"
                     src={banner?.image}
                     alt={banner?.name}
                     className="w-full h-auto aspect-[932_/_357]"

@@ -1,18 +1,24 @@
 import SectionIntro from '@base/components/SectionIntro';
-import { IMetaResponse } from '@base/interfaces';
 import { cn } from '@lib/utils/cn';
-import { ICategory } from '@modules/categories/lib/interfaces';
+import { Toolbox } from '@lib/utils/toolbox';
+import { CategoriesHooks } from '@modules/categories/lib/hooks';
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import CategoryCard from './CategoryCard';
 
 interface IProps {
   className?: string;
-  categories: ICategory[];
-  categoriesMeta: IMetaResponse;
 }
 
-const CategoriesSliderSection: React.FC<IProps> = ({ className, categories, categoriesMeta }) => {
+const CategoriesSliderSection: React.FC<IProps> = ({ className }) => {
+  const { isLoading, data: categories } = CategoriesHooks.useFind({
+    options: { page: '1', limit: '12', is_active: 'true' },
+  });
+
+  if (isLoading || Toolbox.isEmpty(categories?.data)) {
+    return;
+  }
+
   return (
     <section className={cn('categories_slider_section', className)}>
       <div className="container">
@@ -46,14 +52,14 @@ const CategoriesSliderSection: React.FC<IProps> = ({ className, categories, cate
                 },
               }}
             >
-              {categories.map((category) => {
+              {categories?.data?.map((category) => {
                 return (
                   <SwiperSlide key={category?.id}>
                     <CategoryCard category={category} />
                   </SwiperSlide>
                 );
               })}
-              {categoriesMeta.total > categoriesMeta.limit && (
+              {categories?.meta?.total > categories?.meta?.limit && (
                 <SwiperSlide key="placeholder">
                   <CategoryCard isPlaceholder category={null} />
                 </SwiperSlide>

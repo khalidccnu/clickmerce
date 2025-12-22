@@ -1,6 +1,7 @@
 import SectionIntro from '@base/components/SectionIntro';
 import { cn } from '@lib/utils/cn';
-import { IFeature } from '@modules/features/lib/interfaces';
+import { Toolbox } from '@lib/utils/toolbox';
+import { FeaturesHooks } from '@modules/features/lib/hooks';
 import { Col, Row } from 'antd';
 import { motion } from 'framer-motion';
 import React from 'react';
@@ -8,10 +9,17 @@ import WhyShopWithUsCard from './WhyShopWithUsCard';
 
 interface IProps {
   className?: string;
-  features: IFeature[];
 }
 
-const WhyShopWithUsSection: React.FC<IProps> = ({ className, features }) => {
+const WhyShopWithUsSection: React.FC<IProps> = ({ className }) => {
+  const { isLoading, data: features } = FeaturesHooks.useFind({
+    options: { page: '1', limit: '12', is_active: 'true' },
+  });
+
+  if (isLoading || Toolbox.isEmpty(features?.data)) {
+    return;
+  }
+
   return (
     <section className={cn('why_shop_with_us_section', className)}>
       <div className="container">
@@ -25,7 +33,7 @@ const WhyShopWithUsSection: React.FC<IProps> = ({ className, features }) => {
           className="mb-8 lg:mb-16 text-center"
         />
         <Row gutter={[16, 16]} justify="center">
-          {features.map((feature, idx) => (
+          {features?.data?.map((feature, idx) => (
             <Col key={feature.id} xs={24} md={12} lg={8} xl={6}>
               <motion.div
                 style={{ height: '100%' }}

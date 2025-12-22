@@ -5,6 +5,7 @@ import { useAnalyticEvent } from '@lib/hooks/useAnalyticEvent';
 import useLocalState from '@lib/hooks/useLocalState';
 import { IOrderCartItem } from '@lib/redux/order/orderSlice';
 import { cn } from '@lib/utils/cn';
+import { Toolbox } from '@lib/utils/toolbox';
 import {
   cartItemIdxFn,
   hasProductInCartFn,
@@ -12,6 +13,7 @@ import {
   wishlistItemIdxFn,
 } from '@modules/orders/lib/utils';
 import { IProduct } from '@modules/products/lib/interfaces';
+import { ProductsWebHooks } from '@modules/products/lib/webHooks';
 import { message } from 'antd';
 import React, { useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
@@ -22,10 +24,9 @@ import RecommendedProductCard from './RecommendedProductCard';
 
 interface IProps {
   className?: string;
-  products: IProduct[];
 }
 
-const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) => {
+const RecommendedProductsSection: React.FC<IProps> = ({ className }) => {
   const [messageApi, messageHolder] = message.useMessage();
   const { sendEventFn } = useAnalyticEvent();
   const [order, setOrder] = useLocalState(States.order);
@@ -153,6 +154,14 @@ const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) =
     setProduct(null);
   };
 
+  const { isLoading, data: products } = ProductsWebHooks.useFind({
+    options: { page: '1', limit: '12', is_recommend: 'true', is_active: 'true' },
+  });
+
+  if (isLoading || Toolbox.isEmpty(products?.data)) {
+    return;
+  }
+
   return (
     <section className={cn('recommended_products_section', className)}>
       {messageHolder}
@@ -182,11 +191,11 @@ const RecommendedProductsSection: React.FC<IProps> = ({ className, products }) =
               pagination={{ el: '.rp_slider_pagination', clickable: true }}
               breakpoints={{
                 640: {
-                  slidesPerView: products.length > 1 ? 1.2 : 1,
+                  slidesPerView: products?.data?.length > 1 ? 1.2 : 1,
                 },
               }}
             >
-              {products.map((product) => (
+              {products?.data?.map((product) => (
                 <SwiperSlide key={product.id} className="group" style={{ height: 'auto' }}>
                   <RecommendedProductCard
                     product={product}

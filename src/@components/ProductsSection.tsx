@@ -23,7 +23,7 @@ import ProductViewVariations from './ProductViewVariations';
 
 interface IProps {
   className?: string;
-  isContainerClass?: boolean;
+  needContainerClass?: boolean;
   showForProductsPage?: boolean;
   products: IProduct[];
   meta?: IMetaResponse;
@@ -31,7 +31,7 @@ interface IProps {
 
 const ProductsSection: React.FC<IProps> = ({
   className,
-  isContainerClass = true,
+  needContainerClass = true,
   showForProductsPage = false,
   products,
   meta,
@@ -164,10 +164,14 @@ const ProductsSection: React.FC<IProps> = ({
     setProduct(null);
   };
 
+  if (!showForProductsPage && Toolbox.isEmpty(products)) {
+    return;
+  }
+
   return (
     <section className={cn('products_section', className)}>
       {messageHolder}
-      <div className={cn(isContainerClass && 'container')}>
+      <div className={cn(needContainerClass && 'container')}>
         {showForProductsPage || (
           <SectionIntro
             title={
@@ -186,7 +190,7 @@ const ProductsSection: React.FC<IProps> = ({
             </Col>
           ) : (
             products.map((product, idx) => (
-              <Col key={product.id} xs={24} md={12} lg={8} xl={isContainerClass ? 6 : 8}>
+              <Col key={product.id} xs={24} md={12} lg={8} xl={needContainerClass ? 6 : 8}>
                 <motion.div
                   style={{ height: '100%' }}
                   initial={{ opacity: 0, y: 30 }}

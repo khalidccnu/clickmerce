@@ -41,7 +41,7 @@ const ProductsPage: NextPage<IProps> = ({ settingsIdentity, products, productsMe
             />
           </Col>
           <Col xs={24} lg={16} xl={18}>
-            <ProductsSection showForProductsPage isContainerClass={false} products={products} meta={productsMeta} />
+            <ProductsSection showForProductsPage needContainerClass={false} products={products} meta={productsMeta} />
           </Col>
         </Row>
       </div>
