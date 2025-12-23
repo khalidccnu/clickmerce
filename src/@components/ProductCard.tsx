@@ -12,12 +12,19 @@ import { BsBasket2, BsFillBasket2Fill, BsHeart, BsHeartFill } from 'react-icons/
 
 interface IProps {
   className?: string;
+  showForProductsPage?: boolean;
   product: IProduct;
   onCartUpdate: (product: IProduct) => void;
   onWishlistUpdate: (product: IProduct) => void;
 }
 
-const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWishlistUpdate }) => {
+const ProductCard: React.FC<IProps> = ({
+  className,
+  showForProductsPage = false,
+  product,
+  onCartUpdate,
+  onWishlistUpdate,
+}) => {
   const router = useRouter();
   const [order] = useLocalState(States.order);
 
@@ -74,7 +81,13 @@ const ProductCard: React.FC<IProps> = ({ className, product, onCartUpdate, onWis
           <Button
             type="primary"
             icon={isCart ? <BsFillBasket2Fill size={20} className="mt-1" /> : <BsBasket2 size={20} className="mt-1" />}
-            onClick={() => onCartUpdate(product)}
+            onClick={() => {
+              if (showForProductsPage) {
+                onCartUpdate(product);
+              } else {
+                router.push(Paths.products.toSlug(product.slug));
+              }
+            }}
             ghost
           />
         </div>

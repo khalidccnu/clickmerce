@@ -201,7 +201,12 @@ const ProductsSection: React.FC<IProps> = ({
                   }}
                   viewport={{ once: true }}
                 >
-                  <ProductCard product={product} onCartUpdate={handleAddToCartFn} onWishlistUpdate={addToWishlistFn} />
+                  <ProductCard
+                    showForProductsPage={showForProductsPage}
+                    product={product}
+                    onCartUpdate={handleAddToCartFn}
+                    onWishlistUpdate={addToWishlistFn}
+                  />
                 </motion.div>
               </Col>
             ))

@@ -1,6 +1,9 @@
+import { Env } from '.environments';
 import { IBaseResponse, TId } from '@base/interfaces';
+import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
+import { Paths } from '@lib/constant/paths';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { IPage, IPageCreate, IPagesFilter, IPagesResponse } from './interfaces';
@@ -68,6 +71,12 @@ export const PagesServices = {
       }
 
       const res = await SupabaseAdapter.create<IPage>(supabaseBrowserClient, END_POINT, payload);
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -110,6 +119,12 @@ export const PagesServices = {
       }
 
       const res = await SupabaseAdapter.update<IPage>(supabaseBrowserClient, END_POINT, payload.id, payload.data);
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -119,6 +134,12 @@ export const PagesServices = {
   delete: async (id: TId): Promise<IBaseResponse<IPage>> => {
     try {
       const res = await SupabaseAdapter.delete<IPage>(supabaseBrowserClient, END_POINT, id);
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);

@@ -109,7 +109,6 @@ export const getStaticProps: GetStaticProps<IProps> = async () => {
         banners: banners ?? [],
         products: products ?? [],
       },
-      revalidate: 60,
     };
   } catch (error) {
     return {

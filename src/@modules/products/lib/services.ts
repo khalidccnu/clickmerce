@@ -1,6 +1,9 @@
+import { Env } from '.environments';
 import { IBaseResponse, TId } from '@base/interfaces';
+import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
+import { Paths } from '@lib/constant/paths';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { buildSelectionFn, SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { Toolbox } from '@lib/utils/toolbox';
@@ -151,6 +154,12 @@ export const ProductsServices = {
         selection:
           '*, dosage_form:dosage_forms(*), generic:generics(*), supplier:suppliers(*), variations:product_variations(*)',
       });
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -227,6 +236,12 @@ export const ProductsServices = {
         selection:
           '*, dosage_form:dosage_forms(*), generic:generics(*), supplier:suppliers(*), variations:product_variations(*)',
       });
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);

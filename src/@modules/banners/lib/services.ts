@@ -1,6 +1,9 @@
+import { Env } from '.environments';
 import { IBaseResponse, TId } from '@base/interfaces';
+import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
 import { Database } from '@lib/constant/database';
+import { Paths } from '@lib/constant/paths';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { SupabaseAdapter } from '@lib/utils/supabaseAdapter';
 import { IBanner, IBannerCreate, IBannersFilter, IBannersResponse } from './interfaces';
@@ -42,6 +45,12 @@ export const BannersServices = {
   create: async (payload: IBannerCreate): Promise<IBaseResponse<IBanner>> => {
     try {
       const res = await SupabaseAdapter.create<IBanner>(supabaseBrowserClient, END_POINT, payload);
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -51,6 +60,12 @@ export const BannersServices = {
   update: async (payload: { id: TId; data: Partial<IBannerCreate> }): Promise<IBaseResponse<IBanner>> => {
     try {
       const res = await SupabaseAdapter.update<IBanner>(supabaseBrowserClient, END_POINT, payload.id, payload.data);
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
@@ -60,6 +75,12 @@ export const BannersServices = {
   delete: async (id: TId): Promise<IBaseResponse<IBanner>> => {
     try {
       const res = await SupabaseAdapter.delete<IBanner>(supabaseBrowserClient, END_POINT, id);
+
+      await AxiosSecureInstance.post('/revalidate', {
+        secret: Env.revalidationSecret,
+        route: Paths.root,
+      });
+
       return Promise.resolve(res);
     } catch (error) {
       throw responseHandlerFn(error);
