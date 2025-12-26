@@ -23,7 +23,7 @@ export const orderSubtotalSnap = createSelector([orderState], (edge) => {
       price = productSalePriceWithDiscountFn(cartProduct.costPrice, cartProduct.salePrice, cartItem.discount);
     }
 
-    return sum + price * cartProduct.selectedQuantity;
+    return sum + (price || cartProduct.salePrice) * cartProduct.selectedQuantity;
   }, 0);
 
   return { subTotalCost, subTotalSale };
