@@ -65,7 +65,7 @@ const LoginSection: React.FC<IProps> = ({ settingsIdentity }) => {
 
           const token = extractToken(data.data.token);
 
-          window.location.replace(redirectUrl || token?.user?.is_admin ? Paths.admin.aRoot : Paths.user.uRoot);
+          window.location.replace(redirectUrl || (token?.user?.is_admin ? Paths.admin.aRoot : Paths.user.uRoot));
         });
       },
     },

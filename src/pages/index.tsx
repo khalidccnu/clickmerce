@@ -86,13 +86,14 @@ export const getStaticProps: GetStaticProps<IProps> = async () => {
     const bannersPromise = BannersServices.find({
       page: '1',
       limit: '12',
-      is_active: 'true',
       sort_order: ENUM_SORT_ORDER_TYPES.DESC,
+      is_active: 'true',
     });
 
     const productsPromise = ProductsWebServices.find({
       page: '1',
-      limit: '12',
+      limit: '8',
+      sort_order: ENUM_SORT_ORDER_TYPES.DESC,
       is_active: 'true',
     });
 

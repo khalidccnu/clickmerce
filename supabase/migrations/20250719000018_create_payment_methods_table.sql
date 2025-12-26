@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS payment_methods (
     type VARCHAR NOT NULL,
     reference_type VARCHAR NOT NULL,
     description TEXT,
+    configuration JSONB,
+
     is_default BOOLEAN NOT NULL DEFAULT FALSE,
     is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
@@ -19,3 +21,6 @@ CREATE INDEX IF NOT EXISTS idx_payment_methods_type ON payment_methods(type);
 CREATE INDEX IF NOT EXISTS idx_payment_methods_reference_type ON payment_methods(reference_type);
 CREATE INDEX IF NOT EXISTS idx_payment_methods_is_default ON payment_methods(is_default);
 CREATE INDEX IF NOT EXISTS idx_payment_methods_is_active ON payment_methods(is_active);
+
+-- Create GIN index for JSONB columns for better query performance
+CREATE INDEX IF NOT EXISTS idx_payment_methods_configuration_gin ON payment_methods USING GIN (configuration);
