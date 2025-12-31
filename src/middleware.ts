@@ -13,11 +13,12 @@ import { NextResponse } from 'next/server';
 
 const PUBLIC_FILE_PATTERN = /\.(.*)$/;
 
-const redirectFn = (url: string) =>
-  NextResponse.redirect(new URL(url), {
+const redirectFn = (url: string) => {
+  return NextResponse.redirect(new URL(url), {
     status: 302,
     headers: { 'Cache-Control': 'no-store' },
   });
+};
 
 export default async function middleware(req: NextRequest) {
   const response = NextResponse.next();
@@ -27,7 +28,7 @@ export default async function middleware(req: NextRequest) {
   const origin = `${hostProtocol}://${host}`;
 
   // Skip paths
-  if (pathname.startsWith('/_next') || pathname.includes('/api/') || PUBLIC_FILE_PATTERN.test(pathname)) {
+  if (pathname.startsWith('/_next') || pathname.startsWith('/api/') || PUBLIC_FILE_PATTERN.test(pathname)) {
     return response;
   }
 
@@ -41,11 +42,12 @@ export default async function middleware(req: NextRequest) {
   try {
     const settingsUrl = `${origin}${Env.apiUrl}/${Database.settings}`;
     const settingsResponse = await fetch(settingsUrl);
-    const settings: ISettingsResponse = await settingsResponse.json();
 
-    if (!settings?.success) {
-      throw new Error(settings?.message || 'Failed to fetch settings');
+    if (!settingsResponse.ok) {
+      throw new Error(settingsResponse.statusText || 'Failed to fetch settings');
     }
+
+    const settings: ISettingsResponse = await settingsResponse.json();
 
     if (pathname.startsWith(Paths.underConstruction) && search.includes(REDIRECT_PREFIX) && settings?.data) {
       const decodedUrl = decodeURIComponent(search.split(`${REDIRECT_PREFIX}=`)[1]);
