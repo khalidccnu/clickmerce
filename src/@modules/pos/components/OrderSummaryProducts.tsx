@@ -24,7 +24,6 @@ import { pdf } from '@react-pdf/renderer';
 import { Button, Empty, message, Popconfirm, Spin, Tag } from 'antd';
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
-import { normalizeReceiptImageUrlFn } from '../lib/utils';
 import OrderSummaryProduct from './OrderSummaryProduct';
 
 interface IProps {
@@ -47,9 +46,6 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
     setReceiptPreviewLoading(true);
 
     try {
-      const webLogo = await normalizeReceiptImageUrlFn(
-        settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
-      );
       const { data: customer } = await UsersServices.findById(customerId);
       const { data: profile } = await AuthServices.profile();
       const products = [...cart]
@@ -80,7 +76,7 @@ const OrderSummaryProducts: React.FC<IProps> = ({ className }) => {
         .filter(Boolean);
 
       const order = {
-        webLogo,
+        webLogo: settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
         webTitle: settingsQuery.data?.data?.identity?.name || Env.webTitle,
         moneyReceiptDate: dayjs().format(Dayjs.dateTimeSecondsWithAmPm),
         trxId: invId,

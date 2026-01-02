@@ -4,7 +4,6 @@ import { TId } from '@base/interfaces';
 import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
-import { normalizeReceiptImageUrlFn } from '@modules/pos/lib/utils';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
 import { pdf } from '@react-pdf/renderer';
 import type { PaginationProps, TableColumnsType } from 'antd';
@@ -45,9 +44,6 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
 
   const handlePdfFn = async (order: IOrder) => {
     try {
-      const webLogo = await normalizeReceiptImageUrlFn(
-        settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
-      );
       const products = order?.products
         ?.flatMap((product) =>
           (product?.variations || []).map((variation) => ({
@@ -66,7 +62,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         .filter(Boolean);
 
       const props = {
-        webLogo,
+        webLogo: settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
         webTitle: settingsQuery.data?.data?.identity?.name || Env.webTitle,
         moneyReceiptDate: dayjs(order.created_at).format(Dayjs.dateTimeSecondsWithAmPm),
         trxId: order?.code,

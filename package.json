@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8051",
-    "build": "next build",
+    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
     "start": "next start",
     "lint": "next lint",
     "lint:check": "eslint .",
@@ -36,7 +36,7 @@
     "aws-sdk": "^2.1692.0",
     "axios": "^1.6.7",
     "bcryptjs": "^3.0.2",
-    "canvas": "^3.2.0",
+    "canvg": "^4.0.3",
     "clsx": "^2.1.0",
     "dayjs": "^1.11.11",
     "devtools-detect": "^4.0.2",

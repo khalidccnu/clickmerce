@@ -40,7 +40,6 @@ import { Alert, Button, Col, Form, message, Modal, Row, Space, Tag } from 'antd'
 import dayjs from 'dayjs';
 import React, { useEffect, useState } from 'react';
 import { FaShoppingBag, FaTrash, FaUserPlus } from 'react-icons/fa';
-import { normalizeReceiptImageUrlFn } from '../lib/utils';
 import OrderSummaryPrice from './OrderSummaryPrice';
 import OrderSummaryProducts from './OrderSummaryProducts';
 
@@ -68,9 +67,6 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
 
   const handlePdfFn = async (order: IOrder) => {
     try {
-      const webLogo = await normalizeReceiptImageUrlFn(
-        settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
-      );
       const products = order?.products
         ?.flatMap((product) =>
           (product?.variations || []).map((variation) => ({
@@ -89,7 +85,7 @@ const OrderSummary: React.FC<IProps> = ({ className }) => {
         .filter(Boolean);
 
       const props = {
-        webLogo,
+        webLogo: settingsQuery.data?.data?.identity?.logo_url || Env.webBrandLogo,
         webTitle: settingsQuery.data?.data?.identity?.name || Env.webTitle,
         moneyReceiptDate: dayjs(order.created_at).format(Dayjs.dateTimeSecondsWithAmPm),
         trxId: order?.code,

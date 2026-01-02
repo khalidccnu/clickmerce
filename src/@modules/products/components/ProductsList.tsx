@@ -186,7 +186,7 @@ const ProductsList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
             value={barcodeProductCount}
             onChange={(value) => setBarcodeProductCount(value)}
             className="w-full"
-            max={360}
+            max={357}
           />
         </Form.Item>
       </BaseModalWithoutClicker>
