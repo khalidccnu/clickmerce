@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 8051",
-    "build": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next build",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "lint:check": "eslint .",
@@ -91,5 +91,6 @@
     "supabase": "^2.62.5",
     "tailwindcss": "^3.3.0",
     "typescript": "5.3.3"
-  }
+  },
+  "packageManager": "yarn@4.12.0"
 }
