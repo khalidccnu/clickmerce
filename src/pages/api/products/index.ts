@@ -36,7 +36,7 @@ async function handleGet(req: NextApiRequest, res: NextApiResponse) {
   if (!success) return res.status(400).json({ success, data, ...restProps });
 
   const { category_ids, is_low_stock, except_ids, price_min, price_max, ...restFilters } = data;
-  const newFilters: any = { ...restFilters };
+  const newFilters: any = { ...restFilters, is_show_web: true };
 
   if (is_low_stock) {
     if (!newFilters.numericFilters) newFilters.numericFilters = {};

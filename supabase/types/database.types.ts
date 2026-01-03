@@ -810,6 +810,7 @@ export type Database = {
           images: Json | null;
           is_active: boolean;
           is_recommend: boolean;
+          is_show_web: boolean;
           medicine_type: string | null;
           name: string;
           quantity: number;
@@ -830,6 +831,7 @@ export type Database = {
           images?: Json | null;
           is_active?: boolean;
           is_recommend?: boolean;
+          is_show_web?: boolean;
           medicine_type?: string | null;
           name: string;
           quantity?: number;
@@ -850,6 +852,7 @@ export type Database = {
           images?: Json | null;
           is_active?: boolean;
           is_recommend?: boolean;
+          is_show_web?: boolean;
           medicine_type?: string | null;
           name?: string;
           quantity?: number;
@@ -1350,6 +1353,7 @@ export type Database = {
           images: Json | null;
           is_active: boolean;
           is_recommend: boolean;
+          is_show_web: boolean;
           medicine_type: string | null;
           name: string;
           quantity: number;
@@ -1379,6 +1383,7 @@ export type Database = {
           images: Json | null;
           is_active: boolean;
           is_recommend: boolean;
+          is_show_web: boolean;
           medicine_type: string | null;
           name: string;
           quantity: number;

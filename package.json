@@ -14,7 +14,7 @@
     "db:start": "npx supabase start",
     "db:stop": "npx supabase stop",
     "db:status": "npx supabase status",
-    "db:link": "cross-env dotenv -e .env.local -- supabase link --project-ref $NEXT_PUBLIC_SUPABASE_PROJECT_REF",
+    "db:link": "dotenv -e .env.local -- node -e \"require('child_process').execSync('npx supabase link --project-ref ' + process.env.NEXT_PUBLIC_SUPABASE_PROJECT_REF, {stdio: 'inherit'})\"",
     "db:migration": "npx supabase migration up --linked --include-all",
     "db:reset": "npx supabase db reset --linked",
     "db:types": "node -e \"require('fs').mkdirSync('supabase/types', {recursive: true})\" && npx supabase gen types typescript --linked --schema public > supabase/types/database.types.ts",
@@ -88,7 +88,7 @@
     "postcss": "^8",
     "prettier": "^3.2.4",
     "sass": "^1.70.0",
-    "supabase": "^2.62.5",
+    "supabase": "^2.70.5",
     "tailwindcss": "^3.3.0",
     "typescript": "5.3.3"
   },

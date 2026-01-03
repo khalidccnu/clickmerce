@@ -4115,7 +4115,7 @@ __metadata:
     react-redux: "npm:^9.2.0"
     redux-persist: "npm:^6.0.0"
     sass: "npm:^1.70.0"
-    supabase: "npm:^2.62.5"
+    supabase: "npm:^2.70.5"
     swiper: "npm:^12.0.3"
     tailwind-merge: "npm:^2.2.0"
     tailwindcss: "npm:^3.3.0"
@@ -9099,7 +9099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supabase@npm:^2.62.5":
+"supabase@npm:^2.70.5":
   version: 2.70.5
   resolution: "supabase@npm:2.70.5"
   dependencies:

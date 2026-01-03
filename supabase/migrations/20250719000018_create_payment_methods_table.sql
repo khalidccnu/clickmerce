@@ -4,15 +4,17 @@ CREATE TABLE IF NOT EXISTS payment_methods (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
 
-    name VARCHAR UNIQUE NOT NULL,
+    name VARCHAR NOT NULL,
     image VARCHAR,
     type VARCHAR NOT NULL,
-    reference_type VARCHAR NOT NULL,
+    reference_type VARCHAR DEFAULT "AUTO",
     description TEXT,
     configuration JSONB,
 
     is_default BOOLEAN NOT NULL DEFAULT FALSE,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    CONSTRAINT payment_methods_name_type_unique UNIQUE (name, type)
 );
 
 -- Create indexes for better performance

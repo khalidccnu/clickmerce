@@ -27,6 +27,7 @@ import { SuppliersHooks } from '@modules/suppliers/lib/hooks';
 import { ISupplier } from '@modules/suppliers/lib/interfaces';
 import {
   Button,
+  Checkbox,
   Col,
   ColorPicker,
   Divider,
@@ -898,6 +899,11 @@ const ProductsForm: React.FC<IProps> = ({ isLoading, form, formType = 'create', 
           <Col xs={24}>
             <Form.Item name="description" className="!mb-0">
               <RichTextEditor placeholder="Description" isDark={isDark} makePublicFile />
+            </Form.Item>
+          </Col>
+          <Col xs={24}>
+            <Form.Item name="is_show_web" valuePropName="checked" className="!mb-0">
+              <Checkbox>Show on Web</Checkbox>
             </Form.Item>
           </Col>
           <Col xs={24}>

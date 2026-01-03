@@ -45,4 +45,13 @@ export const UsersServices = {
       throw responseHandlerFn(error);
     }
   },
+
+  findCourierHealth: async (phone: string): Promise<IBaseResponse> => {
+    try {
+      const res = await AxiosSecureInstance.post(`${END_POINT}/courier-health`, { phone });
+      return Promise.resolve(res?.data);
+    } catch (error) {
+      throw responseHandlerFn(error);
+    }
+  },
 };

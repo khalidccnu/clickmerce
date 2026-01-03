@@ -7,7 +7,12 @@ import { Toolbox } from '@lib/utils/toolbox';
 import { GalleriesHooks } from '@modules/galleries/lib/hooks';
 import { Button, Col, Form, FormInstance, message, Radio, Row } from 'antd';
 import React, { useEffect } from 'react';
-import { ENUM_PAYMENT_METHOD_REFERENCE_TYPES, paymentMethodReferenceTypes, paymentMethodTypes } from '../lib/enums';
+import {
+  ENUM_PAYMENT_METHOD_REFERENCE_TYPES,
+  ENUM_PAYMENT_METHOD_TYPES,
+  paymentMethodReferenceTypes,
+  paymentMethodTypes,
+} from '../lib/enums';
 import { IPaymentMethodCreate } from '../lib/interfaces';
 
 interface IProps {
@@ -97,37 +102,41 @@ const PaymentMethodsForm: React.FC<IProps> = ({ isLoading, form, formType = 'cre
               <FloatInput placeholder="Name" />
             </Form.Item>
           </Col>
-          <Col xs={24}>
-            <Form.Item
-              name="reference_type"
-              rules={[
-                {
-                  required: true,
-                  message: 'Reference type is required!',
-                },
-              ]}
-              className="!mb-0"
-            >
-              <FloatSelect
-                allowClear
-                showSearch
-                virtual={false}
-                placeholder="Reference Type"
-                filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
-                options={paymentMethodReferenceTypes.map((referenceType) => ({
-                  key: referenceType,
-                  label: Toolbox.toPrettyText(referenceType),
-                  value: referenceType,
-                }))}
-              />
-            </Form.Item>
-          </Col>
+          {formValues?.type === ENUM_PAYMENT_METHOD_TYPES.AUTO || (
+            <Col xs={24}>
+              <Form.Item
+                name="reference_type"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Reference type is required!',
+                  },
+                ]}
+                className="!mb-0"
+              >
+                <FloatSelect
+                  allowClear
+                  showSearch
+                  virtual={false}
+                  placeholder="Reference Type"
+                  filterOption={(input, option: any) => option.label.toLowerCase().includes(input.toLowerCase())}
+                  options={paymentMethodReferenceTypes.map((referenceType) => ({
+                    key: referenceType,
+                    label: Toolbox.toPrettyText(referenceType),
+                    value: referenceType,
+                  }))}
+                />
+              </Form.Item>
+            </Col>
+          )}
           <Col xs={24}>
             <Form.Item
               name="description"
               rules={[
                 {
-                  required: formValues?.reference_type !== ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO,
+                  required:
+                    formValues?.reference_type &&
+                    formValues?.reference_type !== ENUM_PAYMENT_METHOD_REFERENCE_TYPES.AUTO,
                   message: 'Description is required!',
                 },
               ]}

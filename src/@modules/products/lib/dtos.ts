@@ -37,6 +37,7 @@ export const productFilterSchema = yup
     supplier_id: yup.string().uuid().optional(),
     is_expired: yup.string().optional(),
     is_low_stock: yup.string().optional(),
+    is_show_web: yup.string().optional(),
     is_recommend: yup.string().optional(),
     is_special: yup.string().optional(),
     except_ids: yup

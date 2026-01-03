@@ -23,6 +23,7 @@ jobs:
           echo "NEXT_PUBLIC_WEB_PHONE_CODE=${{ vars.WEB_PHONE_CODE }}" >> .env.local
           echo "NEXT_PUBLIC_WEB_CURRENCY=${{ vars.WEB_CURRENCY }}" >> .env.local
           echo "NEXT_PUBLIC_API_URL=${{ vars.API_URL }}" >> .env.local
+          echo "NEXT_PUBLIC_TP_COURIER_API_URL=${{ vars.TP_COURIER_API_URL }}" >> .env.local
           echo "NEXT_PUBLIC_SUPABASE_PROJECT_REF=${{ vars.SUPABASE_PROJECT_REF }}" >> .env.local
           echo "NEXT_PUBLIC_SUPABASE_URL=${{ vars.SUPABASE_URL }}" >> .env.local
           echo "SUPABASE_ACCESS_TOKEN=${{ secrets.SUPABASE_ACCESS_TOKEN }}" >> .env.local

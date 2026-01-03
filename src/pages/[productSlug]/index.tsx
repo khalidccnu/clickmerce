@@ -65,7 +65,7 @@ export const getServerSideProps: GetServerSideProps<IProps> = async ({ params })
 
     const { data: product } = await ProductsWebServices.findBySlug(productSlug);
 
-    if (!settingsSuccess || !pagesSuccess || !product || !product?.is_active) {
+    if (!settingsSuccess || !pagesSuccess || !product || !product?.is_show_web || !product?.is_active) {
       return {
         notFound: true,
       };

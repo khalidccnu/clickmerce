@@ -71,4 +71,16 @@ export const UsersHooks = {
       ...config,
     });
   },
+
+  useFindCourierHealth: ({ config }: { config?: MutationConfig<typeof UsersServices.findCourierHealth> } = {}) => {
+    return useMutation({
+      mutationFn: UsersServices.findCourierHealth,
+      onSettled: (data) => {
+        if (!data?.success) return;
+
+        // queryClient.invalidateQueries({ queryKey: [UsersServices.NAME] });
+      },
+      ...config,
+    });
+  },
 };

@@ -10,6 +10,7 @@ export const Env = {
 
   // Configuration
   apiUrl: process.env.NEXT_PUBLIC_API_URL,
+  tpCourierApiUrl: process.env.NEXT_PUBLIC_TP_COURIER_API_URL,
   supabaseProjectRef: process.env.NEXT_PUBLIC_SUPABASE_PROJECT_REF,
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
   supabaseAccessToken: process.env.SUPABASE_ACCESS_TOKEN,
