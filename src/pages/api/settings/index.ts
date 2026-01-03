@@ -68,7 +68,7 @@ export async function handleGetSettings(
         statusCode: 200,
         message: 'Settings fetched successfully',
         data: result.data?.[0] || null,
-        meta: result.meta,
+        meta: null,
       };
 
       return res.status(200).json(response);
@@ -100,7 +100,7 @@ export async function handleGetSettings(
         email,
         sms,
       },
-      meta: result.meta,
+      meta: null,
     };
 
     return supabase ? response : res.status(200).json(response);
