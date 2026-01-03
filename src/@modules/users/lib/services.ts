@@ -3,7 +3,7 @@ import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { Database } from '@lib/constant/database';
 import { responseHandlerFn } from '@lib/utils/errorHandler';
 import { Toolbox } from '@lib/utils/toolbox';
-import { IUser, IUserCreate, IUsersFilter, IUsersResponse } from './interfaces';
+import { IUser, IUserCourierHealth, IUserCreate, IUsersFilter, IUsersResponse } from './interfaces';
 
 const END_POINT: string = `/${Database.users}`;
 
@@ -46,7 +46,7 @@ export const UsersServices = {
     }
   },
 
-  findCourierHealth: async (phone: string): Promise<IBaseResponse> => {
+  findCourierHealth: async (phone: string): Promise<IBaseResponse<IUserCourierHealth>> => {
     try {
       const res = await AxiosSecureInstance.post(`${END_POINT}/courier-health`, { phone });
       return Promise.resolve(res?.data);

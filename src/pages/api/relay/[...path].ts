@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { decompressBufferFn } from '../lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { webUrl, baseApiUrl, path, ...rest } = req.query;
+  const { webUrl, baseApiUrl, acceptHeadersKey, path, ...rest } = req.query;
 
   if (!webUrl || !baseApiUrl) {
     const response: IBaseResponse = {
@@ -30,15 +30,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const apiUrlPath = Array.isArray(path) ? path.join('/') : path;
     const apiUrl = `${baseApiUrl}/${apiUrlPath}`;
 
-    const { host: _host, connection: _connection, 'content-length': _contentLength, ...restHeaders } = req.headers;
+    const { accept, 'content-type': contentType, 'accept-encoding': acceptEncoding } = req.headers;
+
+    const headersToInclude: Record<string, string> = {
+      Accept: accept || '*/*',
+      'Content-Type': contentType || 'application/json',
+      'Accept-Encoding': acceptEncoding || 'gzip, deflate, br',
+      origin: webUrl as string,
+    };
+
+    if (acceptHeadersKey && typeof acceptHeadersKey === 'string') {
+      const headerKeys = acceptHeadersKey.split(/\s*,\s*/).map((k) => k.trim());
+
+      headerKeys.forEach((key) => {
+        const headerValue = req.headers[key.toLowerCase()];
+
+        if (headerValue) {
+          headersToInclude[key] = Array.isArray(headerValue) ? headerValue[0] : headerValue;
+        }
+      });
+    }
 
     const arraybufferResponse = await axios({
       method: req.method,
       url: apiUrl,
-      headers: {
-        ...restHeaders,
-        origin: webUrl,
-      },
+      headers: headersToInclude,
       params: rest,
       responseType: 'arraybuffer',
       data: req.method !== 'GET' ? req.body : undefined,
@@ -67,6 +83,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const isSuccess = upstreamStatus >= 200 && upstreamStatus < 300;
+    const cookieHeader = arraybufferResponse.headers['set-cookie'];
+
+    if (cookieHeader) {
+      res.setHeader('Set-Cookie', cookieHeader);
+    }
 
     const response: IBaseResponse = {
       success: isSuccess,

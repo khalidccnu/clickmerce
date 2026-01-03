@@ -5,6 +5,9 @@ import { Dayjs } from '@lib/constant/dayjs';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import { SettingsHooks } from '@modules/settings/lib/hooks';
+import UserCourierHealthView from '@modules/users/components/UserCourierHealthView';
+import { UsersHooks } from '@modules/users/lib/hooks';
+import { IUser, IUserCourierHealth } from '@modules/users/lib/interfaces';
 import { pdf } from '@react-pdf/renderer';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Dropdown, Form, message, Space, Table } from 'antd';
@@ -13,6 +16,7 @@ import React, { useState } from 'react';
 import { AiFillEye } from 'react-icons/ai';
 import { BiCaretDown } from 'react-icons/bi';
 import { FaEdit } from 'react-icons/fa';
+import { GiHealthPotion } from 'react-icons/gi';
 import { IoReturnUpBack } from 'react-icons/io5';
 import { TbInvoice, TbReceipt, TbTruckDelivery } from 'react-icons/tb';
 import { ENUM_ORDER_STATUS_TYPES } from '../lib/enums';
@@ -41,6 +45,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [updateItem, setUpdateItem] = useState<IOrder>(null);
   const [returnItem, setReturnItem] = useState<IOrder>(null);
   const [statusTrackerItem, setStatusTrackerItem] = useState<IOrder>(null);
+  const [courierHealth, setCourierHealth] = useState<{ user: IUser; data: IUserCourierHealth }>(null);
   const [orderLoadingId, setOrderLoadingId] = useState<TId>(null);
 
   const handlePdfFn = async (type: 'INVOICE' | 'RECEIPT', order: IOrder) => {
@@ -105,6 +110,25 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   };
 
   const settingsQuery = SettingsHooks.useFind();
+
+  const userCourierHealthFn = UsersHooks.useFindCourierHealth({
+    config: {
+      onSuccess: (res) => {
+        setOrderLoadingId(null);
+
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        setCourierHealth((prev) => ({
+          ...prev,
+          data: res.data,
+        }));
+        messageApi.success(res.message);
+      },
+    },
+  });
 
   const orderUpdateFn = OrdersHooks.useUpdate({
     config: {
@@ -323,6 +347,16 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
                     label: 'Return',
                     disabled: record?.status !== ENUM_ORDER_STATUS_TYPES.DELIVERED,
                   },
+                  {
+                    key: 'health',
+                    icon: <GiHealthPotion />,
+                    onClick: () => {
+                      setOrderLoadingId(id);
+                      setCourierHealth({ user: item?.customer, data: null });
+                      userCourierHealthFn.mutate(item.customer.phone);
+                    },
+                    label: 'Health',
+                  },
                 ],
               }}
               trigger={['click']}
@@ -422,6 +456,15 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
             });
           }}
         />
+      </BaseModalWithoutClicker>
+      <BaseModalWithoutClicker
+        width={1024}
+        title={`Courier Health - ${courierHealth?.user?.name}`}
+        open={!!courierHealth?.data}
+        onCancel={() => setCourierHealth(null)}
+        footer={null}
+      >
+        <UserCourierHealthView data={courierHealth?.data} />
       </BaseModalWithoutClicker>
     </React.Fragment>
   );

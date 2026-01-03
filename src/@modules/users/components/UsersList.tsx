@@ -1,13 +1,16 @@
 import BaseModalWithoutClicker from '@base/components/BaseModalWithoutClicker';
 import CustomSwitch from '@base/components/CustomSwitch';
+import { TId } from '@base/interfaces';
 import { Toolbox } from '@lib/utils/toolbox';
 import { getAccess } from '@modules/auth/lib/utils/client';
 import type { PaginationProps, TableColumnsType } from 'antd';
 import { Button, Drawer, Form, Space, Table, message } from 'antd';
 import React, { useState } from 'react';
 import { AiFillEdit, AiFillEye } from 'react-icons/ai';
+import { FaTruck } from 'react-icons/fa';
 import { UsersHooks } from '../lib/hooks';
-import { IUser } from '../lib/interfaces';
+import { IUser, IUserCourierHealth } from '../lib/interfaces';
+import UserCourierHealthView from './UserCourierHealthView';
 import UsersForm from './UsersForm';
 import UsersView from './UsersView';
 
@@ -22,6 +25,27 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [formInstance] = Form.useForm();
   const [viewItem, setViewItem] = useState<IUser>(null);
   const [updateItem, setUpdateItem] = useState<IUser>(null);
+  const [courierHealth, setCourierHealth] = useState<{ user: IUser; data: IUserCourierHealth }>(null);
+  const [userLoadingId, setUserLoadingId] = useState<TId>(null);
+
+  const userCourierHealthFn = UsersHooks.useFindCourierHealth({
+    config: {
+      onSuccess: (res) => {
+        setUserLoadingId(null);
+
+        if (!res.success) {
+          messageApi.error(res.message);
+          return;
+        }
+
+        setCourierHealth((prev) => ({
+          ...prev,
+          data: res.data,
+        }));
+        messageApi.success(res.message);
+      },
+    },
+  });
 
   const userUpdateFn = UsersHooks.useUpdate({
     config: {
@@ -112,6 +136,16 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               <AiFillEye />
             </Button>
             <Button
+              onClick={() => {
+                setUserLoadingId(id);
+                setCourierHealth({ user: item, data: null });
+                userCourierHealthFn.mutate(item.phone);
+              }}
+              loading={id === userLoadingId}
+            >
+              <FaTruck />
+            </Button>
+            <Button
               type="primary"
               onClick={() => {
                 getAccess({
@@ -147,6 +181,15 @@ const UsersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         footer={null}
       >
         <UsersView data={viewItem} />
+      </BaseModalWithoutClicker>
+      <BaseModalWithoutClicker
+        width={1024}
+        title={`Courier Health - ${courierHealth?.user?.name}`}
+        open={!!courierHealth?.data}
+        onCancel={() => setCourierHealth(null)}
+        footer={null}
+      >
+        <UserCourierHealthView data={courierHealth?.data} />
       </BaseModalWithoutClicker>
       <Drawer
         width={640}

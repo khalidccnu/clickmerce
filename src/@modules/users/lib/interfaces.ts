@@ -9,6 +9,27 @@ export interface IUsersFilter extends IBaseFilter {
   is_verified?: string;
 }
 
+export interface IUserCourierHealth {
+  couriers: Record<
+    string,
+    {
+      total: number;
+      delivered: number;
+      rating: string;
+      failed: number;
+      success_rate: number;
+      status: string;
+      error: string;
+    }
+  >;
+  summary: {
+    total: number;
+    delivered: number;
+    failed: number;
+    success_rate: number;
+  };
+}
+
 export interface IUserInfo extends IBaseEntity {
   birthday: string;
   blood_group: string;

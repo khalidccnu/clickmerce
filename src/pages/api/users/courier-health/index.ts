@@ -1,10 +1,11 @@
 import { Env } from '.environments';
 import { IBaseResponse } from '@base/interfaces';
 import { AxiosInstance } from '@lib/config/axiosInstance';
-import { CSRF_TOKEN_KEY } from '@modules/auth/lib/constant';
+import { CSRF_TOKEN_KEY, CSRF_TOKEN_SESSION_KEY } from '@modules/auth/lib/constant';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
+import { IUserCourierHealth } from '@modules/users/lib/interfaces';
 import { NextApiRequest, NextApiResponse } from 'next';
-import { handleGetCookieFn, handleSetCookieFn } from '../../lib/utils';
+import { handleGetCookieFn, handleSetManyCookieFn } from '../../lib/utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { method } = req;
@@ -56,8 +57,16 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     return res.status(400).json(response);
   }
 
+  const parseCookiesFn = (cookies: string[]) => {
+    return cookies.map((cookie) => {
+      const [nameValue] = cookie.split(';');
+      const [name, value] = nameValue.split('=');
+      return { name, value };
+    });
+  };
+
   const csrfTokenFn = async () => {
-    const { data: csrfData } = await AxiosInstance.get<IBaseResponse<{ token: string }>>('/relay/csrf-token', {
+    const { data: csrfData, headers } = await AxiosInstance.get<IBaseResponse<{ token: string }>>('/relay/csrf-token', {
       params: {
         webUrl: Env.tpCourierApiUrl,
         baseApiUrl: Env.tpCourierApiUrl,
@@ -65,18 +74,35 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
     });
 
     const csrfToken = csrfData.data.token;
+    const cookieHeader = headers['set-cookie'];
 
-    handleSetCookieFn(res, CSRF_TOKEN_KEY, JSON.stringify(csrfToken), {
-      path: '/',
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: !Env.isDevelopment,
-    });
+    handleSetManyCookieFn(res, [
+      {
+        name: CSRF_TOKEN_KEY,
+        value: csrfToken,
+        options: {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: !Env.isDevelopment,
+        },
+      },
+      {
+        name: CSRF_TOKEN_SESSION_KEY,
+        value: JSON.stringify(parseCookiesFn(cookieHeader)),
+        options: {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: !Env.isDevelopment,
+        },
+      },
+    ]);
 
-    return csrfToken;
+    return { csrfToken, sessionCookie: cookieHeader };
   };
 
-  const makeRequestFn = async (csrfToken: string) => {
+  const makeRequestFn = async (csrfToken: string, sessionCookie: string[]) => {
     return await AxiosInstance.post<IBaseResponse>(
       'relay/statistics',
       { phone: phone?.length > 11 ? phone.slice(-11) : phone },
@@ -84,9 +110,11 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
         params: {
           webUrl: Env.tpCourierApiUrl,
           baseApiUrl: Env.tpCourierApiUrl,
+          acceptHeadersKey: 'X-CSRF-TOKEN, Cookie',
         },
         headers: {
           'X-CSRF-TOKEN': csrfToken,
+          Cookie: sessionCookie.join('; '),
         },
       },
     );
@@ -94,16 +122,21 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     let csrfToken: string = handleGetCookieFn(req, CSRF_TOKEN_KEY);
+    const sessionCookie: { name: string; value: string }[] = handleGetCookieFn(req, CSRF_TOKEN_SESSION_KEY);
 
-    if (!csrfToken) {
-      csrfToken = await csrfTokenFn();
+    let sanitizedSessionCookie: string[] = sessionCookie?.map((cookie) => `${cookie.name}=${cookie.value}`) || [];
+
+    if (!csrfToken || !sanitizedSessionCookie.length) {
+      const { csrfToken: newCsrfToken, sessionCookie: newSessionCookie } = await csrfTokenFn();
+      csrfToken = newCsrfToken;
+      sanitizedSessionCookie = newSessionCookie;
     }
 
-    let { data } = await makeRequestFn(csrfToken);
+    let { data } = await makeRequestFn(csrfToken, sanitizedSessionCookie);
 
     if (data?.statusCode === 419) {
-      csrfToken = await csrfTokenFn();
-      const { data: retryData } = await makeRequestFn(csrfToken);
+      const { csrfToken: retryCsrfToken, sessionCookie: retrySessionCookie } = await csrfTokenFn();
+      const { data: retryData } = await makeRequestFn(retryCsrfToken, retrySessionCookie);
 
       data = retryData;
     }
@@ -120,7 +153,7 @@ async function handlePost(req: NextApiRequest, res: NextApiResponse) {
       return res.status(data.statusCode || 400).json(response);
     }
 
-    const response: IBaseResponse = {
+    const response: IBaseResponse<IUserCourierHealth> = {
       success: true,
       statusCode: 200,
       message: 'Health fetched successfully',
