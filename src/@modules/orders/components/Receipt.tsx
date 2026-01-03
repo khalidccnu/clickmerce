@@ -7,34 +7,67 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { ENUM_ORDER_PAYMENT_STATUS_TYPES, TOrderPaymentStatusType } from '../lib/enums';
 
+// Font.register({
+//   family: 'Alan Sans',
+//   fonts: [
+//     {
+//       src: '/fonts/alansans/regular.ttf',
+//     },
+//     {
+//       src: '/fonts/alansans/light.ttf',
+//       fontWeight: 'light',
+//     },
+//     {
+//       src: '/fonts/alansans/medium.ttf',
+//       fontWeight: 'medium',
+//     },
+//     {
+//       src: '/fonts/alansans/semibold.ttf',
+//       fontWeight: 'semibold',
+//     },
+//     {
+//       src: '/fonts/alansans/bold.ttf',
+//       fontWeight: 'bold',
+//     },
+//     {
+//       src: '/fonts/alansans/extrabold.ttf',
+//       fontWeight: 'ultrabold',
+//     },
+//     {
+//       src: '/fonts/alansans/black.ttf',
+//       fontWeight: 'heavy',
+//     },
+//   ],
+// });
+
 Font.register({
-  family: 'Alan Sans',
+  family: 'Noto Sans Bengali',
   fonts: [
     {
-      src: '/fonts/alansans/regular.ttf',
+      src: '/fonts/notoSansBengali/regular.ttf',
     },
     {
-      src: '/fonts/alansans/light.ttf',
+      src: '/fonts/notoSansBengali/light.ttf',
       fontWeight: 'light',
     },
     {
-      src: '/fonts/alansans/medium.ttf',
+      src: '/fonts/notoSansBengali/medium.ttf',
       fontWeight: 'medium',
     },
     {
-      src: '/fonts/alansans/semibold.ttf',
+      src: '/fonts/notoSansBengali/semibold.ttf',
       fontWeight: 'semibold',
     },
     {
-      src: '/fonts/alansans/bold.ttf',
+      src: '/fonts/notoSansBengali/bold.ttf',
       fontWeight: 'bold',
     },
     {
-      src: '/fonts/alansans/extrabold.ttf',
+      src: '/fonts/notoSansBengali/extrabold.ttf',
       fontWeight: 'ultrabold',
     },
     {
-      src: '/fonts/alansans/black.ttf',
+      src: '/fonts/notoSansBengali/black.ttf',
       fontWeight: 'heavy',
     },
   ],
@@ -43,7 +76,7 @@ Font.register({
 const styles = StyleSheet.create({
   body: {
     position: 'relative',
-    fontFamily: 'Alan Sans',
+    fontFamily: 'Noto Sans Bengali',
     fontSize: 10,
     padding: 16,
     width: '75mm',
@@ -268,15 +301,15 @@ const Receipt: React.FC<IProps> = ({
                 {product.saleDiscountPrice ? (
                   <View style={{ alignItems: 'flex-end' }}>
                     <Text style={{ textDecoration: 'line-through', fontSize: 8, color: '#666' }}>
-                      {Toolbox.truncateNumber(product.salePrice)}
+                      {Toolbox.withCurrency(product.salePrice)}
                     </Text>
                     <Text style={{ fontSize: 10, fontWeight: 500 }}>
-                      {Toolbox.truncateNumber(product.saleDiscountPrice)} ({product.quantity})
+                      {Toolbox.withCurrency(product.saleDiscountPrice)} ({product.quantity})
                     </Text>
                   </View>
                 ) : (
                   <Text style={{ fontSize: 10, fontWeight: 500 }}>
-                    {Toolbox.truncateNumber(product.salePrice)} ({product.quantity})
+                    {Toolbox.withCurrency(product.salePrice)} ({product.quantity})
                   </Text>
                 )}
               </View>
@@ -286,17 +319,17 @@ const Receipt: React.FC<IProps> = ({
           {type === 'PRINT' ? (
             <View style={styles.totalRow}>
               <Text>Redeem</Text>
-              <Text>{Toolbox.truncateNumber(discount)}</Text>
+              <Text>{Toolbox.withCurrency(discount)}</Text>
             </View>
           ) : (
             <React.Fragment>
               <View style={styles.totalRow}>
                 <Text>Coupon</Text>
-                <Text>{Toolbox.truncateNumber(coupon)}</Text>
+                <Text>{Toolbox.withCurrency(coupon)}</Text>
               </View>
               <View style={styles.totalRow}>
                 <Text>Discount</Text>
-                <Text>{Toolbox.truncateNumber(discount)}</Text>
+                <Text>{Toolbox.withCurrency(discount)}</Text>
               </View>
             </React.Fragment>
           )}
@@ -305,36 +338,36 @@ const Receipt: React.FC<IProps> = ({
               <Text>Vat</Text>
               {!vatPercent || <Text>({vatPercent}%)</Text>}
             </View>
-            <Text>{Toolbox.truncateNumber(vat)}</Text>
+            <Text>{Toolbox.withCurrency(vat)}</Text>
           </View>
           <View style={styles.totalRow}>
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <Text>Tax</Text>
               {!taxPercent || <Text>({taxPercent}%)</Text>}
             </View>
-            <Text>{Toolbox.truncateNumber(tax)}</Text>
+            <Text>{Toolbox.withCurrency(tax)}</Text>
           </View>
           <View style={styles.totalRow}>
             <Text>Delivery Charge</Text>
-            <Text>{Toolbox.truncateNumber(deliveryCharge)}</Text>
+            <Text>{Toolbox.withCurrency(deliveryCharge)}</Text>
           </View>
           <View style={styles.totalRow}>
             <Text>Sub Total</Text>
-            <Text>{Toolbox.truncateNumber(subTotal)}</Text>
+            <Text>{Toolbox.withCurrency(subTotal)}</Text>
           </View>
           <View style={styles.totalRow}>
             <Text>Round Off</Text>
-            <Text>{Toolbox.truncateNumber(roundOff)}</Text>
+            <Text>{Toolbox.withCurrency(roundOff)}</Text>
           </View>
           <View style={styles.dashed}></View>
           <View style={styles.totalRow}>
             <Text>Grand Total</Text>
-            <Text>{Toolbox.truncateNumber(grandTotal)}</Text>
+            <Text>{Toolbox.withCurrency(grandTotal)}</Text>
           </View>
           <View style={styles.footer}>
             <View style={styles.itemRow}>
               <Text>Received By</Text>
-              <Text>{receivedBy}</Text>
+              <Text>{receivedBy || '-'}</Text>
             </View>
             <Text style={styles.thankYou}>Thank You, Please Come Again</Text>
           </View>

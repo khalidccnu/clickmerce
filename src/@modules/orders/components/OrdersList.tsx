@@ -14,10 +14,11 @@ import { AiFillEye } from 'react-icons/ai';
 import { BiCaretDown } from 'react-icons/bi';
 import { FaEdit } from 'react-icons/fa';
 import { IoReturnUpBack } from 'react-icons/io5';
-import { TbInvoice, TbTruckDelivery } from 'react-icons/tb';
+import { TbInvoice, TbReceipt, TbTruckDelivery } from 'react-icons/tb';
 import { ENUM_ORDER_STATUS_TYPES } from '../lib/enums';
 import { OrdersHooks } from '../lib/hooks';
 import { IOrder } from '../lib/interfaces';
+import Invoice from './Invoice';
 import OrdersPayForm from './OrdersPayForm';
 import OrdersReturnForm from './OrdersReturnForm';
 import OrdersStatusForm from './OrdersStatusForm';
@@ -40,9 +41,9 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
   const [updateItem, setUpdateItem] = useState<IOrder>(null);
   const [returnItem, setReturnItem] = useState<IOrder>(null);
   const [statusTrackerItem, setStatusTrackerItem] = useState<IOrder>(null);
-  const [orderInvoiceId, setOrderInvoiceId] = useState<TId>(null);
+  const [orderLoadingId, setOrderLoadingId] = useState<TId>(null);
 
-  const handlePdfFn = async (order: IOrder) => {
+  const handlePdfFn = async (type: 'INVOICE' | 'RECEIPT', order: IOrder) => {
     try {
       const products = order?.products
         ?.flatMap((product) =>
@@ -83,12 +84,23 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
         receivedBy: order?.created_by?.name,
       };
 
-      const blob = await pdf(<Receipt type="PRINT" order={props} />).toBlob();
+      let blob: Blob;
+
+      if (type === 'INVOICE') {
+        blob = await pdf(
+          <Invoice
+            order={{ ...props, streetAddress: order?.street_address, deliveryZone: order?.delivery_zone?.name }}
+          />,
+        ).toBlob();
+      } else {
+        blob = await pdf(<Receipt type="PRINT" order={props} />).toBlob();
+      }
+
       Toolbox.printWindow('pdf', URL.createObjectURL(blob));
     } catch (error) {
       messageApi.error('Failed to generate receipt preview. Please try again.');
     } finally {
-      setOrderInvoiceId(null);
+      setOrderLoadingId(null);
     }
   };
 
@@ -264,11 +276,20 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               menu={{
                 items: [
                   {
+                    key: 'receipt',
+                    icon: <TbReceipt />,
+                    onClick: () => {
+                      setOrderLoadingId(id);
+                      handlePdfFn('RECEIPT', item);
+                    },
+                    label: 'Receipt',
+                  },
+                  {
                     key: 'invoice',
                     icon: <TbInvoice />,
                     onClick: () => {
-                      setOrderInvoiceId(id);
-                      handlePdfFn(item);
+                      setOrderLoadingId(id);
+                      handlePdfFn('INVOICE', item);
                     },
                     label: 'Invoice',
                   },
@@ -306,7 +327,7 @@ const OrdersList: React.FC<IProps> = ({ isLoading, data, pagination }) => {
               }}
               trigger={['click']}
             >
-              <Button loading={orderInvoiceId === id} icon={<BiCaretDown />}>
+              <Button loading={orderLoadingId === id} icon={<BiCaretDown />}>
                 Action
               </Button>
             </Dropdown>

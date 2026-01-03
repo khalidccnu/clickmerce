@@ -12,11 +12,17 @@ import { FaHome, FaShoppingCart } from 'react-icons/fa';
 
 interface IProps {
   className?: string;
+  needContainerClass?: boolean;
   showActionButtons?: boolean;
   order: IOrder;
 }
 
-const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = true, order }) => {
+const OrderSuccessSection: React.FC<IProps> = ({
+  className,
+  needContainerClass = true,
+  showActionButtons = true,
+  order,
+}) => {
   const router = useRouter();
 
   const dataSource = useMemo(() => {
@@ -123,7 +129,7 @@ const OrderSuccessSection: React.FC<IProps> = ({ className, showActionButtons = 
 
   return (
     <section className={cn('order_success_section', className)}>
-      <div className="container space-y-4">
+      <div className={cn(needContainerClass && 'container', 'space-y-4')}>
         <Card title="Order Information">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <p>

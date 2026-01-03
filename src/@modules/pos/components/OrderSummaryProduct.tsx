@@ -74,7 +74,7 @@ const OrderSummaryProduct: React.FC<IProps> = ({ className, idx, product }) => {
           <span className="text-sm font-medium text-gray-600 dark:text-gray-300">Unit Price:</span>
           <span className="text-lg font-bold text-blue-500 dark:text-blue-300">
             {saleDiscountPrice ? (
-              <span className="line-through mr-1 text-sm text-gray-400 dark:text-gray-300">
+              <span className="line-through mr-1 text-sm text-gray-400 dark:text-gray-300 font-normal">
                 {Toolbox.withCurrency(product?.selectedVariation?.sale_price)}
               </span>
             ) : null}

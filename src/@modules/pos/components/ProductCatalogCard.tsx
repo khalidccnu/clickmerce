@@ -101,16 +101,16 @@ const ProductCatalogCard = React.forwardRef<HTMLDivElement, IProps>(
             </p>
           </div>
           <div className="border-t border-dotted border-gray-300 pt-4 flex items-center justify-between gap-4">
-            <p className="font-semibold text-sm dark:text-white">
+            <p className="text-sm dark:text-white">
               <span
                 className={cn({
-                  'line-through mr-1 text-sm text-gray-400 dark:text-gray-300': hasSaleDiscount,
+                  'line-through mr-1 text-gray-400 dark:text-gray-300': hasSaleDiscount,
                 })}
               >
                 {priceInfo.regular}
               </span>
               {hasSaleDiscount && (
-                <span className="text-[var(--color-primary)] font-semibold text-sm">{priceInfo.special}</span>
+                <span className="text-[var(--color-primary)] font-semibold">{priceInfo.special}</span>
               )}
             </p>
             <Button
