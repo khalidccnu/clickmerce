@@ -1,4 +1,3 @@
-import { Env } from '.environments';
 import { IBaseResponse, TId } from '@base/interfaces';
 import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
@@ -47,7 +46,6 @@ export const BannersServices = {
       const res = await SupabaseAdapter.create<IBanner>(supabaseBrowserClient, END_POINT, payload);
 
       await AxiosSecureInstance.post('/revalidate', {
-        secret: Env.revalidationSecret,
         route: Paths.root,
       });
 
@@ -62,7 +60,6 @@ export const BannersServices = {
       const res = await SupabaseAdapter.update<IBanner>(supabaseBrowserClient, END_POINT, payload.id, payload.data);
 
       await AxiosSecureInstance.post('/revalidate', {
-        secret: Env.revalidationSecret,
         route: Paths.root,
       });
 
@@ -77,7 +74,6 @@ export const BannersServices = {
       const res = await SupabaseAdapter.delete<IBanner>(supabaseBrowserClient, END_POINT, id);
 
       await AxiosSecureInstance.post('/revalidate', {
-        secret: Env.revalidationSecret,
         route: Paths.root,
       });
 

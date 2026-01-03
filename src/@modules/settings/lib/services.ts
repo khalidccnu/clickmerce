@@ -1,4 +1,3 @@
-import { Env } from '.environments';
 import { TId } from '@base/interfaces';
 import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { Database } from '@lib/constant/database';
@@ -26,7 +25,6 @@ export const SettingsServices = {
       const res = await AxiosSecureInstance.patch(`${END_POINT}/${payload.id}`, payload.data);
 
       await AxiosSecureInstance.post('/revalidate', {
-        secret: Env.revalidationSecret,
         route: Paths.root,
       });
 

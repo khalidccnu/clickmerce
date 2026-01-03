@@ -29,8 +29,6 @@ jobs:
           echo "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY=${{ secrets.SUPABASE_PUBLISHABLE_OR_ANON_KEY }}" >> .env.local
           echo "NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" >> .env.local
           echo "SUPABASE_JWT_SECRET=${{ secrets.SUPABASE_JWT_SECRET }}" >> .env.local
-          echo "REVALIDATION_SECRET=${{ secrets.REVALIDATION_SECRET }}" >> .env.local
-          echo "NEXT_PUBLIC_REVALIDATION_SECRET=${{ secrets.REVALIDATION_SECRET }}" >> .env.local
           echo "NEXT_PUBLIC_WEB_HOST_URL=${{ vars.WEB_HOST_URL }}" >> .env.local
           echo "NEXT_PUBLIC_WEB_IDENTIFIER=${{ vars.WEB_IDENTIFIER }}" >> .env.local
           echo "NEXT_PUBLIC_WEB_MODE=${{ vars.WEB_MODE }}" >> .env.local

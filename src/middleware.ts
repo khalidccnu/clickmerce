@@ -67,7 +67,7 @@ export default async function middleware(req: NextRequest) {
         {
           httpOnly: true,
           sameSite: 'lax',
-          secure: Env.isProduction,
+          secure: !Env.isDevelopment,
         },
       );
     }

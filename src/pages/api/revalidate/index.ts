@@ -1,7 +1,9 @@
+import { IBaseResponse } from '@base/interfaces';
+import { getServerAuthSession } from '@modules/auth/lib/utils/server';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { secret, route } = req.body;
+  const { route } = req.body;
 
   if (req.method !== 'POST') {
     return res.status(405).json({
@@ -15,16 +17,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  if (secret !== process.env.REVALIDATION_SECRET) {
-    return res.status(401).json({
+  const { token } = getServerAuthSession(req);
+
+  if (!token) {
+    const response: IBaseResponse = {
       success: false,
       statusCode: 401,
-      message: 'Invalid token',
-      meta: null,
+      message: 'Unauthorized',
       data: {
         revalidated: false,
       },
-    });
+      meta: null,
+    };
+
+    return res.status(401).json(response);
   }
 
   if (!route) {

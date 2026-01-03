@@ -16,7 +16,6 @@ export const Env = {
   supabasePublishableOrAnonKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_OR_ANON_KEY,
   supabaseServiceRoleKey: process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY,
   supabaseJwtSecret: process.env.SUPABASE_JWT_SECRET,
-  revalidationSecret: process.env.NEXT_PUBLIC_REVALIDATION_SECRET,
   webHostUrl: process.env.NEXT_PUBLIC_WEB_HOST_URL,
   webIdentifier: process.env.NEXT_PUBLIC_WEB_IDENTIFIER,
   webMode: process.env.NEXT_PUBLIC_WEB_MODE,

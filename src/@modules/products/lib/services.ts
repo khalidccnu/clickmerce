@@ -1,4 +1,3 @@
-import { Env } from '.environments';
 import { IBaseResponse, TId } from '@base/interfaces';
 import { AxiosSecureInstance } from '@lib/config/axiosInstance';
 import { supabaseBrowserClient } from '@lib/config/supabase/browserClient';
@@ -156,7 +155,6 @@ export const ProductsServices = {
       });
 
       await AxiosSecureInstance.post('/revalidate', {
-        secret: Env.revalidationSecret,
         route: Paths.root,
       });
 
@@ -238,7 +236,6 @@ export const ProductsServices = {
       });
 
       await AxiosSecureInstance.post('/revalidate', {
-        secret: Env.revalidationSecret,
         route: Paths.root,
       });
 
