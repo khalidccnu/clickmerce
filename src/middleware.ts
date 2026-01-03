@@ -1,24 +1,20 @@
 import { Env } from '.environments';
+import { IBaseResponse } from '@base/interfaces';
 import { AdminPaths, AuthPaths } from '@lib/constant/authPaths';
 import { Database } from '@lib/constant/database';
 import { InternalViewPaths, Paths } from '@lib/constant/paths';
 import { UnAuthPaths } from '@lib/constant/unAuthPaths';
+import { handleGetCookieFn, handleSetCookieFn, redirectFn } from '@lib/utils/middleware';
 import { Toolbox } from '@lib/utils/toolbox';
 import { REDIRECT_PREFIX } from '@modules/auth/lib/constant';
 import { ISession } from '@modules/auth/lib/interfaces';
 import { getServerAuthSession } from '@modules/auth/lib/utils/server';
-import { ISettingsResponse } from '@modules/settings/lib/interfaces';
+import { ISettingsIdentity } from '@modules/settings/lib/interfaces';
+import { SettingsServices } from '@modules/settings/lib/services';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
 const PUBLIC_FILE_PATTERN = /\.(.*)$/;
-
-const redirectFn = (url: string) => {
-  return NextResponse.redirect(new URL(url), {
-    status: 302,
-    headers: { 'Cache-Control': 'no-store' },
-  });
-};
 
 export default async function middleware(req: NextRequest) {
   const response = NextResponse.next();
@@ -40,14 +36,41 @@ export default async function middleware(req: NextRequest) {
   } catch {}
 
   try {
-    const settingsUrl = `${origin}${Env.apiUrl}/${Database.settings}`;
-    const settingsResponse = await fetch(settingsUrl);
+    let settings: IBaseResponse<{
+      identity: { need_web_view: ISettingsIdentity['need_web_view'] };
+    }> = handleGetCookieFn(req, SettingsServices.NAME);
 
-    if (!settingsResponse.ok) {
-      throw new Error(settingsResponse.statusText || 'Failed to fetch settings');
+    if (!settings) {
+      const settingsUrl = `${origin}${Env.apiUrl}/${Database.settings}`;
+
+      const settingsResponse = await fetch(settingsUrl, {
+        cache: 'no-store',
+      });
+
+      if (!settingsResponse.ok) {
+        throw new Error(settingsResponse.statusText || 'Failed to fetch settings');
+      }
+
+      settings = await settingsResponse.json();
+
+      handleSetCookieFn(
+        response,
+        SettingsServices.NAME,
+        JSON.stringify({
+          ...settings,
+          data: {
+            identity: {
+              need_web_view: settings.data?.identity.need_web_view ?? false,
+            },
+          },
+        }),
+        {
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: Env.isProduction,
+        },
+      );
     }
-
-    const settings: ISettingsResponse = await settingsResponse.json();
 
     if (pathname.startsWith(Paths.underConstruction) && search.includes(REDIRECT_PREFIX) && settings?.data) {
       const decodedUrl = decodeURIComponent(search.split(`${REDIRECT_PREFIX}=`)[1]);
